@@ -7,32 +7,37 @@ TEST_F(PersistorTest, BasicItemManipulation)
     auto p = pers();
     p->setName("Basic_Item_Manipulation");
 
-    const int c_testInt = 1;
-    const bool c_testBool = true;
-    const std::string c_testString = "string";
+    const int               c_testInt = 1;
+    const bool              c_testBool = true;
+    const std::string       c_testString = "string";
     const std::vector <int> c_testtVec = { 0, 1, 2, 3 };
 
-    p->put({ "intVal" }, c_testInt);
-    p->put({ "boolVal" }, c_testBool);
-    p->put({ "strVal" }, c_testString);
+    const int               c_defaultInt = 0;
+    const bool              c_defaultBool = false;
+    const std::string       c_defaultString = "default";
+    const std::vector <int> c_defaultVec = {};
+
+    p->put({ "intVal"   }, c_testInt);
+    p->put({ "boolVal"  }, c_testBool);
+    p->put({ "strVal"   }, c_testString);
     p->put({ "arrayVal" }, c_testtVec);
 
-    auto goodGetint = p->get({ "intVal" }, 0);
+    auto goodGetint = p->get({ "intVal" }, c_testInt);
 
     EXPECT_EQ(goodGetint, c_testInt);
-    EXPECT_NE(goodGetint, 0);
+    EXPECT_NE(goodGetint, c_defaultInt);
 
-    auto goodGetBool = p->get({ "boolVal" }, false);
+    auto goodGetBool = p->get({ "boolVal" }, c_defaultBool);
 
     EXPECT_EQ(goodGetBool, c_testBool);
-    EXPECT_NE(goodGetBool, false);
+    EXPECT_NE(goodGetBool, c_defaultBool);
 
-    auto goodGetStr = p->get({ "strVal" }, std::string("default"));
+    auto goodGetStr = p->get({ "strVal" }, c_defaultString);
 
     EXPECT_EQ(goodGetStr, c_testString);
-    EXPECT_NE(goodGetStr, std::string("default"));
+    EXPECT_NE(goodGetStr, c_defaultString);
 
-    auto goodGetVec = p->get({ "arrayVal" }, std::vector<int>{});
+    auto goodGetVec = p->get({ "arrayVal" }, c_defaultVec);
 
     EXPECT_TRUE(!goodGetVec.empty());
     if (!goodGetVec.empty())
@@ -43,6 +48,54 @@ TEST_F(PersistorTest, BasicItemManipulation)
         }
     }
 }
+
+TEST_F(PersistorTest, SubObjectManipulation)
+{
+    auto p = pers();
+    p->setName("Basic_Item_Manipulation");
+
+    const int               c_testInt = 1;
+    const bool              c_testBool = true;
+    const std::string       c_testString = "string";
+    const std::vector <int> c_testtVec = { 0, 1, 2, 3 };
+
+    const int               c_defaultInt = 0;
+    const bool              c_defaultBool = false;
+    const std::string       c_defaultString = "default";
+    const std::vector <int> c_defaultVec = {};
+
+    p->put({ "SubObject1", "SubObject2", "SubObject3", "intVal" },   c_testInt);
+    p->put({ "SubObject1", "SubObject2", "SubObject3", "boolVal" },  c_testBool);
+    p->put({ "SubObject1", "SubObject2", "SubObject3", "strVal" },   c_testString);
+    p->put({ "SubObject1", "SubObject2", "SubObject3", "arrayVal" }, c_testtVec);
+
+    auto goodGetint = p->get({ "SubObject1", "SubObject2", "SubObject3", "intVal" }, c_testInt);
+
+    EXPECT_EQ(goodGetint, c_testInt);
+    EXPECT_NE(goodGetint, c_defaultInt);
+
+    auto goodGetBool = p->get({ "SubObject1", "SubObject2", "SubObject3", "boolVal" }, c_defaultBool);
+
+    EXPECT_EQ(goodGetBool, c_testBool);
+    EXPECT_NE(goodGetBool, c_defaultBool);
+
+    auto goodGetStr = p->get({ "SubObject1", "SubObject2", "SubObject3", "strVal" }, c_defaultString);
+
+    EXPECT_EQ(goodGetStr, c_testString);
+    EXPECT_NE(goodGetStr, c_defaultString);
+
+    auto goodGetVec = p->get({ "SubObject1", "SubObject2", "SubObject3", "arrayVal" }, c_defaultVec);
+
+    EXPECT_TRUE(!goodGetVec.empty());
+    if (!goodGetVec.empty())
+    {
+        for (auto i = 0u; i < goodGetVec.size(); i++)
+        {
+            EXPECT_EQ(goodGetVec[i], c_testtVec[i]);
+        }
+    }
+}
+
 
 
 void foo()

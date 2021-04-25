@@ -48,3 +48,7 @@
 /Utils/StateMachine/x64/Debug
 /Utils/Persistor/x64/Debug
 /Utils/DirectoryManager/Debug
+/Utils/DirectoryManager/Release
+/Utils/Persistor/x64/Release
+/Utils/StateMachine/x64/Release
+/Utils/Utils/x64/Release
