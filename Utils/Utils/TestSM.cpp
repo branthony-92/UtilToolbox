@@ -16,6 +16,8 @@ void CTestSM::initSM()
 	auto stateFirst = static_cast<unsigned int>(CSMTestState::StateID::eStateFirst);
 	auto stateCount = static_cast<unsigned int>(CSMTestState::StateID::eStateCount);
 
+	TStateList stateTable;
+
 	// init our state list and transition tables
 	for (auto i = stateFirst; i < stateCount; i++)
 	{
@@ -25,9 +27,11 @@ void CTestSM::initSM()
 		if (pState)
 		{
 			pState->initTransitionTable();
-			m_stateTable.push_back(pState);
+			stateTable.push_back(pState);
 		}
 	}
+
+	setStateTable(stateTable);
 
 	auto idleIndex = static_cast<unsigned int>(CSMTestState::StateID::eStateIdle);
 	auto errorIndex = static_cast<unsigned int>(CSMTestState::StateID::eStateError);

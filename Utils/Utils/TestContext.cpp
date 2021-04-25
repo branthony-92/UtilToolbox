@@ -10,8 +10,6 @@ CTestContext::CTestContext()
 	, m_pSM(nullptr)
 	, m_testDone(false)
 {
-	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventStart);
-	postEvent(pEvent);
 }
 
 CTestContext::~CTestContext()
@@ -32,6 +30,12 @@ CSMTestState::StateID CTestContext::getCurrentState() const
 {
 	if (m_stateHistory.empty()) return CSMTestState::StateID::eStateInvalid;
 	return m_stateHistory.back();
+}
+
+void CTestContext::start()
+{
+	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventStart);
+	postEvent(pEvent);
 }
 
 void CTestContext::step_1()

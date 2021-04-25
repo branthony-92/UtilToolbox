@@ -20,15 +20,19 @@ protected:
 
 public:
 
+	TStatePtr getCurrentState() const { return m_pCurrentState; }
+	void setCurrentState(TStatePtr pState) { m_pCurrentState = pState; }
+
+	void setStateTable(TStateList table) { m_stateTable = table; }
+
 	void setNextState(TStatePtr pState);
 	TStatePtr getNextState(uint32_t eventID);
 
 	void setErrorState(TStatePtr pState)  { m_pErrorState = pState; }
-	void setStateTable(TStateList states) { m_stateTable = states; }
 
 protected:
 	std::thread					m_ticThread;
-	std::atomic<uint32_t>   m_ticIntervalMS;
+	std::atomic<uint32_t>		m_ticIntervalMS;
 	std::atomic<bool>			m_smEnabled;
 	std::atomic<bool>			m_finalStateReached;
 

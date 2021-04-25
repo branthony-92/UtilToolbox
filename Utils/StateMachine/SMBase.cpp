@@ -136,4 +136,3 @@ TStatePtr CSMBase::getNextState(uint32_t eventID)
 	}
 	return pNextState;
 }
-

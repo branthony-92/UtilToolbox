@@ -45,6 +45,7 @@ protected:
 		CSMState::addTransition(static_cast<unsigned int>(evnt), static_cast<unsigned int>(state));
 	};
 };
+typedef std::shared_ptr<CSMTestState> TTestStatePtr;
 
 class CSMTestStateIdle : public CSMTestState
 {

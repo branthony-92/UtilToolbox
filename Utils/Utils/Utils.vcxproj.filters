@@ -36,12 +36,6 @@
     <ClCompile Include="PersistorTest.cpp">
       <Filter>Source Files\Persistor</Filter>
     </ClCompile>
-    <ClCompile Include="TestSM.cpp">
-      <Filter>Header Files\StateMachine</Filter>
-    </ClCompile>
-    <ClCompile Include="TestSMEvent.cpp">
-      <Filter>Header Files\StateMachine</Filter>
-    </ClCompile>
     <ClCompile Include="TestSMState.cpp">
       <Filter>Source Files\StateMachine</Filter>
     </ClCompile>
@@ -82,6 +76,12 @@
       <Filter>Source Files\StateMachine</Filter>
     </ClCompile>
     <ClCompile Include="StateMachineTest.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSM.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSMEvent.cpp">
       <Filter>Source Files\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>

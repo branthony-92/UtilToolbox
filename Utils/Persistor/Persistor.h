@@ -18,7 +18,7 @@ class CPersistor
 public:
 	enum class ReturnStatus : unsigned int
 	{
-		Invalid = 0xffff,
+		Invalid = 0xffffffff,
 
 		OK = 0,
 		NoFile,

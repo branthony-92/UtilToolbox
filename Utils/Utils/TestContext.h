@@ -30,6 +30,8 @@ public:
 	TStateIDQueue& getStateHistory() { return m_stateHistory; }
 	CSMTestState::StateID getCurrentState() const;
 
+	void start();
+
 	void step_1();
 	void step_2();
 	void step_3();
@@ -44,5 +46,6 @@ public:
 	void setTestDone(bool done) { m_testDone.store(done); }
 
 };
+typedef std::shared_ptr<CTestContext> TTestContextPtr;
 
 #endif // !TESTCONTEXT_H

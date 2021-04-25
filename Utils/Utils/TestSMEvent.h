@@ -6,9 +6,10 @@
 class CTestSMEvent : public CSMEvent
 {
 public:
-	enum class EventID {
-		eEventInvalid,
-		eEventFirst,
+	enum class EventID : unsigned int
+	{
+		eEventInvalid = 0xffffffff,
+		eEventFirst = 0,
 
 		eEventStart =  eEventFirst,
 		eEventNext,
