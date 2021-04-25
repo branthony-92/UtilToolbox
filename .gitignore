@@ -39,3 +39,6 @@
 *.idb
 *.log
 *.ilk
+/.vs/UtilToolbox/v16
+*.json
+*.sqlite
