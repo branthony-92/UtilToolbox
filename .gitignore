@@ -42,3 +42,9 @@
 /.vs/UtilToolbox/v16
 *.json
 *.sqlite
+/Utils/Utils/.vs/Utils/v16
+/Utils/Utils/x64/Debug/Utils.tlog
+/Utils/Utils/x64/Debug
+/Utils/StateMachine/x64/Debug
+/Utils/Persistor/x64/Debug
+/Utils/DirectoryManager/Debug
