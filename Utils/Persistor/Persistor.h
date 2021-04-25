@@ -3,18 +3,24 @@
 
 #include <nlohmann/json.hpp>
 #include <deque>
-typedef std::deque<std::string> TKeyPath;
+#include <type_traits>
 
+
+typedef std::deque<std::string> TKeyPath;
 using JSON = nlohmann::json;
+
+#define SFINAE_TO_JSON(T) std::enable_if_t<std::is_convertible<T, nlohmann::json>::value>*
+#define SFINAE_FROM_JSON(T) std::enable_if_t<std::is_convertible<nlohmann::json, T>::value>*
 
 class CPersistor
 {
 
 public:
-	enum class ReturnStatus {
-		Invalid = -1,
+	enum class ReturnStatus : unsigned int
+	{
+		Invalid = 0xffff,
 
-		OK,
+		OK = 0,
 		NoFile,
 
 		Error,
@@ -29,10 +35,9 @@ public:
 	
 	// load a json file from disk using the set name and path and store it in the JSON object
 	ReturnStatus load(); 
-
 	// recursively locate the appropriate subkey and set it to the provided value
 	template <typename T>
-	void put(TKeyPath keys, T val); 
+	bool put(TKeyPath keys, T val); 
 
 	// recursively locate the appropriate subkey and retrieve its value
 	template <typename T>
@@ -117,22 +122,24 @@ T CPersistor::getVal(JSON& json, TKeyPath& keys, T& def)
 }
 
 template <typename T>
-void CPersistor::put(TKeyPath keys, T val)
+bool CPersistor::put(TKeyPath keys, T val)
 {
 	try
 	{
 		putVal(m_persistor, keys, val);
+		return true;
 	}
 	catch (std::exception&)
 	{
-
 	}
+	return false;
 }
 
 template <typename T>
 T CPersistor::get(TKeyPath keys, T defaultVal)
 {
-	try {
+	try 
+	{
 		return getVal(m_persistor, keys, defaultVal);
 	}
 	catch (std::exception&)

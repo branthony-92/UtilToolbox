@@ -1,14 +1,14 @@
 #ifndef DIRECTORYMANAGER_H
 #define DIRECTORYMANAGER_H
 
-enum class OSType
+enum class OSType : unsigned int
 {
 	Windows,
 	Linux,
 	IOS,
 };
 
-enum class WorkingDirectory
+enum class WorkingDirectory : unsigned int
 {
 	Root,
 	Config,
@@ -17,7 +17,8 @@ enum class WorkingDirectory
 	CustomRelative,
 };
 
-enum class DirectoryReturnCode {
+enum class DirectoryReturnCode : unsigned int
+{
 	OK,
 	PathAlreadyExists,
 	PathDoesNotExist,

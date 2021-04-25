@@ -23,6 +23,7 @@ protected:
 		}
 		m_path = pNode->getPathStr();
 		m_pPers = std::make_shared<CPersistor>();
+		m_pPers->setPath(m_path);
 	}
 
 	void TearDown()

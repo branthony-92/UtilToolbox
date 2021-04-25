@@ -4,7 +4,7 @@
 class CSMEvent
 {
 public:
-	enum class Priority
+	enum class Priority : unsigned int
 	{
 		Low, 
 		Medium,
