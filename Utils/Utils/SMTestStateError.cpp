@@ -8,11 +8,12 @@ bool CSMTestStateError::enterState(TContextPtr pCtx, TEventPtr pEvent)
 	auto pContext = getContext<CTestContext>(pCtx);
 	if (!pContext) return false;
 
-	//auto pErrorEvent = std::dynamic_pointer_cast<CSMTestStateError>(pEvent);
-	//if (!pErrorEvent) return false;
+	auto pErrorEvent = std::dynamic_pointer_cast<CSMErrorEvent>(pEvent);
+	if (!pErrorEvent) return false;
 
-	// do error handling
-	
+	// log the last error
+	pContext->setLastError(pErrorEvent->getErrorMsg());
+	pContext->logLastError();
 
 	return true;
 }
@@ -21,9 +22,6 @@ bool CSMTestStateError::ticState(TContextPtr pCtx)
 {
 	auto pContext = getContext<CTestContext>(pCtx);
 	if (!pContext) return false;
-
-	// check the context for recovery options
-	pContext->recover();
 
 	return true;
 }

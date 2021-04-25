@@ -38,6 +38,12 @@ void CTestContext::start()
 	postEvent(pEvent);
 }
 
+void CTestContext::next()
+{
+	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventNext);
+	postEvent(pEvent);
+}
+
 void CTestContext::step_1()
 {
 	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventNext);
@@ -73,4 +79,9 @@ void CTestContext::recover()
 {
 	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventRecover);
 	postEvent(pEvent);
+}
+
+void CTestContext::logLastError()
+{
+	// std::cout << m_lastError << "/n";
 }

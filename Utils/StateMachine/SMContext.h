@@ -22,9 +22,12 @@ public:
 
 protected:
 	const std::string c_contextName;
-
+	std::string m_lastError;
 public:
 	std::string getName() const { return c_contextName; }
+
+	std::string getLastError() const { return m_lastError; }
+	void setLastError(std::string err) { m_lastError = err; }
 };
 typedef std::shared_ptr<CSMStateContext> TContextPtr;
 

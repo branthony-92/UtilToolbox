@@ -32,6 +32,8 @@ public:
 
 	void start();
 
+	void next();
+
 	void step_1();
 	void step_2();
 	void step_3();
@@ -41,6 +43,8 @@ public:
 	void abort();
 
 	void recover();
+
+	void logLastError();
 
 	std::atomic<bool> m_testDone;
 

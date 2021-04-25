@@ -96,7 +96,7 @@ void CSMBase::onTic()
 		if (!isOk)
 		{
 			std::ostringstream oss;
-			oss << "Transition Failure: Event:" << pEvent->c_eventName << "- Failed to Leave State: " << m_pCurrentState->c_stateName;
+			oss << "Transition Failure: Event: " << pEvent->c_eventName << " - Failed to Leave State: " << m_pCurrentState->c_stateName;
 			m_pErrorEvent->setErrorMsg(oss.str());
 			m_pContext->clearEventQueue();
 			m_pContext->postEvent(m_pErrorEvent);
@@ -114,13 +114,12 @@ void CSMBase::onTic()
 		if (!isOk)
 		{
 			std::ostringstream oss;
-			oss << "Transition Failure: Event:" << pEvent->c_eventName << "- Failed to Enter State: " << pNextState->c_stateName;
+			oss << "Transition Failure: Event: " << pEvent->c_eventName << " - Failed to Enter State: " << pNextState->c_stateName;
 			m_pErrorEvent->setErrorMsg(oss.str());
 			m_pContext->clearEventQueue();
 			m_pContext->postEvent(m_pErrorEvent);
 			return;
 		}
-
 		setNextState(pNextState);
 	}
 	else
