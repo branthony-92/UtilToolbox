@@ -1,17 +1,51 @@
-// PersistorTest.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 #include <stdafx.h>
-#include <PersistorTest.h>
-
-#include <iostream>
-#include <vector>
-#include <array>
-#include "Persistor.h"
-#include "DirectoryTree.h"
+#include "PersistorTest.h"
 
 
+TEST_F(PersistorTest, BasicItemManipulation)
+{
+    auto p = pers();
+    p->setName("Basic_Item_Manipulation");
 
-int foo()
+    const int c_testInt = 1;
+    const bool c_testBool = true;
+    const std::string c_testString = "string";
+    const std::vector <int> c_testtVec = { 0, 1, 2, 3 };
+
+    p->put({ "intVal" }, c_testInt);
+    p->put({ "boolVal" }, c_testBool);
+    p->put({ "strVal" }, c_testString);
+    p->put({ "arrayVal" }, c_testtVec);
+
+    auto goodGetint = p->get({ "intVal" }, 0);
+
+    EXPECT_EQ(goodGetint, c_testInt);
+    EXPECT_NE(goodGetint, 0);
+
+    auto goodGetBool = p->get({ "boolVal" }, false);
+
+    EXPECT_EQ(goodGetBool, c_testBool);
+    EXPECT_NE(goodGetBool, false);
+
+    auto goodGetStr = p->get({ "strVal" }, std::string("default"));
+
+    EXPECT_EQ(goodGetStr, c_testString);
+    EXPECT_NE(goodGetStr, std::string("default"));
+
+    auto goodGetVec = p->get({ "arrayVal" }, std::vector<int>{});
+
+    EXPECT_TRUE(!goodGetVec.empty());
+    if (!goodGetVec.empty())
+    {
+        for (auto i = 0u; i < goodGetVec.size(); i++)
+        {
+            EXPECT_EQ(goodGetVec[i], c_testtVec[i]);
+        }
+    }
+}
+
+
+void foo()
 {
     try
     {

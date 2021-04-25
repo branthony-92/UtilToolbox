@@ -2,15 +2,36 @@
 #define PERSISTORTEST_H
 
 #include "Persistor.h"
+#include "DirectoryTree.h"
 #include "gtest/gtest.h"
 
 class PersistorTest : public ::testing::Test
 {
-public:
-	void SetUp();
-	void TearDown();
+	std::shared_ptr<CPersistor>     m_pPers;
+	std::shared_ptr<CDirectoryTree> m_pDir;
+	std::string						m_path;
+
+protected:
+	void SetUp()
+	{
+		m_pDir = std::make_shared< CDirectoryTree>(WorkingDirectory::CustomRelative, "TestDirectory");
+		auto pNode = m_pDir->getDir({ }, "JsonTest", true);
+
+		if (!pNode)
+		{
+			throw std::runtime_error("Folder could not found/created");
+		}
+		m_path = pNode->getPathStr();
+		m_pPers = std::make_shared<CPersistor>();
+	}
+
+	void TearDown()
+	{
+		m_pPers = nullptr;
+		m_pDir = nullptr;
+	}
+
+	std::shared_ptr<CPersistor> pers() { return m_pPers; }
 };
-
-
 
 #endif // !
