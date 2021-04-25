@@ -1,2 +1,0 @@
-C:\Users\xs_br\source\repos\StateMachine\x64\Debug\StateMachine.lib
-C:\Users\xs_br\source\repos\Utils\StateMachine\x64\Debug\StateMachine.lib
