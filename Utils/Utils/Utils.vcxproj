@@ -154,11 +154,32 @@
   <ItemGroup>
     <ClCompile Include="PersistorTest.cpp" />
     <ClCompile Include="RunTests.cpp" />
+    <ClCompile Include="SMTestEventAbort.cpp" />
+    <ClCompile Include="SMTestEventError.cpp" />
+    <ClCompile Include="SMTestEventRecover.cpp" />
+    <ClCompile Include="SMTestEventStart.cpp" />
+    <ClCompile Include="SMTestEventStop.cpp" />
+    <ClCompile Include="SMTestStateDone.cpp" />
+    <ClCompile Include="SMTestStateError.cpp" />
+    <ClCompile Include="SMTestStateIdle.cpp" />
+    <ClCompile Include="SMTestStateOne.cpp" />
+    <ClCompile Include="SMTestStateThree.cpp" />
+    <ClCompile Include="SMTestStateTwo.cpp" />
+    <ClCompile Include="StateMachineTest.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TestContext.cpp" />
+    <ClCompile Include="TestSM.cpp" />
+    <ClCompile Include="TestSMEvent.cpp" />
+    <ClCompile Include="TestSMState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PersistorTest.h" />
+    <ClInclude Include="StateMachineTest.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TestContext.h" />
+    <ClInclude Include="TestSM.h" />
+    <ClInclude Include="TestSMEvent.h" />
+    <ClInclude Include="TestSMState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

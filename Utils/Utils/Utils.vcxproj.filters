@@ -13,6 +13,18 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\Persistor">
+      <UniqueIdentifier>{d0da111d-920f-4b7c-892b-ee77cbad92cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Persistor">
+      <UniqueIdentifier>{bfad1c83-32c3-4a0e-9efc-54237e11e725}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\StateMachine">
+      <UniqueIdentifier>{48c60e70-7d79-4704-a79f-1c1884b48e0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\StateMachine">
+      <UniqueIdentifier>{28ad5ef0-0098-481b-8496-dde547a36b65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RunTests.cpp">
@@ -22,7 +34,55 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PersistorTest.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Persistor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSM.cpp">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSMEvent.cpp">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestSMState.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="TestContext.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestEventAbort.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestEventError.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestEventRecover.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestEventStart.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestEventStop.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestStateDone.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestStateError.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestStateIdle.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestStateOne.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestStateThree.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="SMTestStateTwo.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachineTest.cpp">
+      <Filter>Source Files\StateMachine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -30,7 +90,22 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PersistorTest.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Persistor</Filter>
+    </ClInclude>
+    <ClInclude Include="TestContext.h">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSM.h">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSMEvent.h">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSMState.h">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="StateMachineTest.h">
+      <Filter>Header Files\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
