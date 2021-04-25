@@ -40,6 +40,8 @@ public:
 
 	void abort();
 
+	void recover();
+
 	std::atomic<bool> m_testDone;
 
 	bool getTestDone() const { return m_testDone.load(); }

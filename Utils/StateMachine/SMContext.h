@@ -2,6 +2,7 @@
 #define SMCONTEXT_H
 
 #include "SMEvent.h"
+
 typedef std::deque<TEventPtr> TEventQueue;
 
 class CSMStateContext

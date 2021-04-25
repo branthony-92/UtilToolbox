@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "TestSM.h"
 #include "TestSMState.h"
+#include "TestSMEvent.h"
 
 CTestSM::CTestSM(TContextPtr pCtx)
 	: CSMBase(pCtx, -1, "State Test SM")
@@ -33,9 +34,11 @@ void CTestSM::initSM()
 
 	setStateTable(stateTable);
 
-	auto idleIndex = static_cast<unsigned int>(CSMTestState::StateID::eStateIdle);
-	auto errorIndex = static_cast<unsigned int>(CSMTestState::StateID::eStateError);
+	auto idleIndex   = static_cast<unsigned int>(CSMTestState::StateID::eStateIdle);
+	auto errorIndex  = static_cast<unsigned int>(CSMTestState::StateID::eStateError);
+	auto pEvent      = CTestSMEvent::createErrorEvent();
 
+	setErrorEvent(pEvent);
 	setErrorState(m_stateTable[errorIndex]);
 	startSM(m_stateTable[idleIndex]);
 }

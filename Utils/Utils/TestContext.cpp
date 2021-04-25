@@ -69,3 +69,8 @@ void CTestContext::abort()
 	postEvent(pEvent);
 }
 
+void CTestContext::recover()
+{
+	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventRecover);
+	postEvent(pEvent);
+}

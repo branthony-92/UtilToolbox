@@ -65,6 +65,12 @@ TEST_F(StateMachineTest, TestStateTransitions)
 	EXPECT_TRUE(pNextState == nullptr);
 }
 
+TEST_F(StateMachineTest, TestBadStateTransitions)
+{
+	m_pTestSM->setCurrentState(m_pInitialState);
+	auto pCureState = m_pTestSM->getCurrentState();
+}
+
 TEST_F(StateMachineTest, TestStateMachineStateControl)
 {
 	m_pTestSM->setCurrentState(m_pInitialState);

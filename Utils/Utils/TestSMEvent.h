@@ -23,9 +23,10 @@ public:
 	};
 
 	CTestSMEvent(EventID id, std::string name, CSMEvent::Priority priority = CSMEvent::Priority::Medium);
-	~CTestSMEvent();
+	virtual ~CTestSMEvent();
 	
 	static TEventPtr createEvent(EventID id);
+	static TErrorEventPtr createErrorEvent(std::string errMsg = "");
 	
 	template <typename eventType> static
 	 std::shared_ptr<eventType> getEvent(std::shared_ptr<CTestSMEvent> pEvent) {
@@ -33,6 +34,16 @@ public:
 	}
 };
 typedef std::shared_ptr<CTestSMEvent> TTestEventPtr;
+
+class CTestSMEventError : public CTestSMEvent, public CSMErrorEvent 
+{
+public:
+	CTestSMEventError()
+		: CSMErrorEvent(static_cast<unsigned int>(CTestSMEvent::EventID::eEventError), "Event Error")
+		, CTestSMEvent(CTestSMEvent::EventID::eEventError, "Event Error")
+	{}
+	virtual ~CTestSMEventError() {}
+};
 
 class CTestSMEventStart : public CTestSMEvent
 {
@@ -66,13 +77,6 @@ public:
 	{}
 };
 
-class CTestSMEventError : public CTestSMEvent
-{
-public:
-	CTestSMEventError()
-		: CTestSMEvent(CTestSMEvent::EventID::eEventError, "Event Error")
-	{}
-};
 
 class CTestSMEventRecover : public CTestSMEvent
 {

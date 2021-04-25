@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SMBase.h"
 
-#ifdef _DEBUG
+#if  defined(_DEBUG) && defined(DEBUG_LOGGING)
 #define CONSOLE_LOG(str) std::cout << str << std::endl
 #else
 #define CONSOLE_LOG(str)
@@ -21,6 +21,7 @@ CSMBase::CSMBase(TContextPtr pCtx, uint32_t id, std::string name)
 	, m_pContext(pCtx)
 	, m_pCurrentState(nullptr)
 	, m_pErrorState(nullptr)
+	, m_pErrorEvent(nullptr)
 {
 }
 
@@ -76,7 +77,12 @@ void CSMBase::onTic()
 		auto pNextState = getNextState(pEvent->c_eventID);
 		if (!pNextState)
 		{
-			throw std::runtime_error("No state detected");
+			std::ostringstream oss;
+			oss << "Transition Failure: Event:" << pEvent->c_eventName << "- Failed to retrieve Next State for " << m_pCurrentState->c_stateName;
+			m_pErrorEvent->setErrorMsg(oss.str());
+			m_pContext->clearEventQueue();
+			m_pContext->postEvent(m_pErrorEvent);
+			return;
 		}
 
 		// exit current state and enter the next
@@ -86,7 +92,16 @@ void CSMBase::onTic()
 		ossExit << "Leaving State " << m_pCurrentState->c_stateName;
 		CONSOLE_LOG(ossExit.str());
 
-		isOk &= m_pCurrentState->exitState(m_pContext, pEvent);
+		isOk = m_pCurrentState->exitState(m_pContext, pEvent);
+		if (!isOk)
+		{
+			std::ostringstream oss;
+			oss << "Transition Failure: Event:" << pEvent->c_eventName << "- Failed to Leave State: " << m_pCurrentState->c_stateName;
+			m_pErrorEvent->setErrorMsg(oss.str());
+			m_pContext->clearEventQueue();
+			m_pContext->postEvent(m_pErrorEvent);
+			return;
+		}
 
 		pNextState->resetTimer();
 
@@ -94,7 +109,17 @@ void CSMBase::onTic()
 		ossEnter << "Entering State " << pNextState->c_stateName;
 		CONSOLE_LOG(ossEnter.str());
 
-		isOk &= pNextState->enterState(m_pContext, pEvent);
+		isOk = pNextState->enterState(m_pContext, pEvent);
+
+		if (!isOk)
+		{
+			std::ostringstream oss;
+			oss << "Transition Failure: Event:" << pEvent->c_eventName << "- Failed to Enter State: " << pNextState->c_stateName;
+			m_pErrorEvent->setErrorMsg(oss.str());
+			m_pContext->clearEventQueue();
+			m_pContext->postEvent(m_pErrorEvent);
+			return;
+		}
 
 		setNextState(pNextState);
 	}
@@ -105,6 +130,15 @@ void CSMBase::onTic()
 		CONSOLE_LOG(ossExit.str());
 
 		bool isOk = m_pCurrentState->ticState(m_pContext);
+		if (!isOk)
+		{
+			std::ostringstream oss;
+			oss << "State Failure: Failed to Tic State: " << m_pCurrentState->c_stateName;
+			m_pErrorEvent->setErrorMsg(oss.str());
+			m_pContext->clearEventQueue();
+			m_pContext->postEvent(m_pErrorEvent);
+			return;
+		}
 		
 		if (m_pCurrentState->getIsFinalState())
 		{

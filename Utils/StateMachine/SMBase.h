@@ -14,9 +14,10 @@ public:
 	virtual void onTic();
 
 protected:
-	TStateList  m_stateTable;
-	TStatePtr   m_pCurrentState;
-	TStatePtr   m_pErrorState;
+	TStateList       m_stateTable;
+	TStatePtr        m_pCurrentState;
+	TStatePtr        m_pErrorState;
+	TErrorEventPtr   m_pErrorEvent;
 
 public:
 
@@ -29,6 +30,7 @@ public:
 	TStatePtr getNextState(uint32_t eventID);
 
 	void setErrorState(TStatePtr pState)  { m_pErrorState = pState; }
+	void setErrorEvent(TErrorEventPtr pEvent) { m_pErrorEvent = pEvent; }
 
 protected:
 	std::thread					m_ticThread;

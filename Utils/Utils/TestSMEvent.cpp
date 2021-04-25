@@ -27,9 +27,6 @@ TEventPtr CTestSMEvent::createEvent(EventID id)
 	case CTestSMEvent::EventID::eEventAbort:
 		pEvent = std::make_shared<CTestSMEventAbort>();
 		break;
-	case CTestSMEvent::EventID::eEventError:
-		pEvent = std::make_shared<CTestSMEventError>();
-		break;
 	case CTestSMEvent::EventID::eEventRecover:
 		pEvent = std::make_shared<CTestSMEventRecover>();
 		break;
@@ -37,5 +34,12 @@ TEventPtr CTestSMEvent::createEvent(EventID id)
 		break;
 	}
 
+	return pEvent;
+}
+
+TErrorEventPtr CTestSMEvent::createErrorEvent(std::string errMsg)
+{
+	auto pEvent = std::make_shared<CTestSMEventError>();
+	pEvent->setErrorMsg(errMsg);
 	return pEvent;
 }
