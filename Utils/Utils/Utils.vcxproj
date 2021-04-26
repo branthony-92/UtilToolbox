@@ -172,6 +172,7 @@
     <ClCompile Include="TestSM.cpp" />
     <ClCompile Include="TestSMEvent.cpp" />
     <ClCompile Include="TestSMState.cpp" />
+    <ClCompile Include="TestSubSM.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PersistorTest.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="TestSM.h" />
     <ClInclude Include="TestSMEvent.h" />
     <ClInclude Include="TestSMState.h" />
+    <ClInclude Include="TestSubSM.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

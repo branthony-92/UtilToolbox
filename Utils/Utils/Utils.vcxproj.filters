@@ -93,6 +93,9 @@
     <ClCompile Include="SMTestMgr.cpp">
       <Filter>Source Files\StateMachine</Filter>
     </ClCompile>
+    <ClCompile Include="TestSubSM.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -118,6 +121,9 @@
     </ClInclude>
     <ClInclude Include="SMTestMgr.h">
       <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSubSM.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -24,6 +24,8 @@ public:
 
 		eStateIdle = eStateFirst,
 
+		eStateSubSM,
+
 		eStateOne,
 		eStateTwo,
 		eStateThree,
