@@ -153,6 +153,7 @@
     <ClCompile Include="SMEvent.cpp" />
     <ClCompile Include="SMState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
+    <ClCompile Include="SMBaseManager.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +161,7 @@
     <ClInclude Include="SMContext.h" />
     <ClInclude Include="SMEvent.h" />
     <ClInclude Include="SMState.h" />
+    <ClInclude Include="SMBaseManager.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

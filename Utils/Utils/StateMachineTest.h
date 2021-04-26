@@ -3,16 +3,20 @@
 
 #include <gtest/gtest.h>
 #include "TestSM.h"
-#include "TestSMState.h"
-#include "TestContext.h"
+
+class CSMTestMgr;
+class CTestSM;
+class CTestContext;
+
 
 class StateMachineTest : public ::testing::Test
 {
 protected:
 
-	TTestSMPtr      m_pTestSM;
-	TTestContextPtr m_pTestCtx;
-	TStatePtr       m_pInitialState;
+	std::shared_ptr<CSMTestMgr>		   m_pSMTestMgr;
+	std::shared_ptr<CTestSM>		   m_pTestSM;
+	std::shared_ptr<CTestContext>      m_pTestCtx;
+	TStatePtr						   m_pInitialState;
 
 	void SetUp();
 	void TearDown();

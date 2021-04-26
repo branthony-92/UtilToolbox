@@ -1,6 +1,6 @@
-
 #include "stdafx.h"
 #include "PersistorTest.h"
+#include "StateMachineTest.h"
 
 int main()
 {

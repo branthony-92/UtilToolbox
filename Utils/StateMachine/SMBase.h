@@ -11,6 +11,8 @@ public:
 	~CSMBase();
 
 	void startSM(TStatePtr pInitialState = nullptr);
+	void stopSM();
+	void resetTimer(unsigned int intervalMS);
 	virtual void onTic();
 
 protected:
@@ -50,6 +52,10 @@ public:
 
 protected:
 	TContextPtr m_pContext;
+
+public:
+	TContextPtr getContext() const { return m_pContext; }
 };
+typedef std::shared_ptr<CSMBase> TSMPtr;
 #endif // !SMBASE_H
 

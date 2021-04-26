@@ -45,6 +45,9 @@
     <ClCompile Include="SMContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SMBaseManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -60,6 +63,9 @@
       <Filter>Header Files\States</Filter>
     </ClInclude>
     <ClInclude Include="SMContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SMBaseManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

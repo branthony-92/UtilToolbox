@@ -159,6 +159,7 @@
     <ClCompile Include="SMTestEventRecover.cpp" />
     <ClCompile Include="SMTestEventStart.cpp" />
     <ClCompile Include="SMTestEventStop.cpp" />
+    <ClCompile Include="SMTestMgr.cpp" />
     <ClCompile Include="SMTestStateDone.cpp" />
     <ClCompile Include="SMTestStateError.cpp" />
     <ClCompile Include="SMTestStateIdle.cpp" />
@@ -174,6 +175,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="PersistorTest.h" />
+    <ClInclude Include="SMTestMgr.h" />
     <ClInclude Include="StateMachineTest.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestContext.h" />

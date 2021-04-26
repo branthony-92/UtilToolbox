@@ -1,14 +1,24 @@
 #include "stdafx.h"
 #include "StateMachineTest.h"
 #include "TestSMState.h"
+#include "SMTestMgr.h"
+#include "TestSM.h"
+#include "TestContext.h"
+
 void StateMachineTest::SetUp()
 {
-	m_pTestCtx = std::make_shared<CTestContext>();
-	m_pTestSM  = std::make_unique<CTestSM>(m_pTestCtx);
-	m_pInitialState = std::make_shared<CSMTestStateIdle>();
+	m_pSMTestMgr = std::make_shared<CSMTestMgr>();
 	
-	EXPECT_TRUE(m_pTestCtx != nullptr);
-	EXPECT_TRUE(m_pTestSM != nullptr);
+	EXPECT_TRUE(m_pSMTestMgr != nullptr);
+	m_pSMTestMgr->init();
+	
+	auto pTestSM      = std::dynamic_pointer_cast<CTestSM>(m_pSMTestMgr->getSM());
+	auto pTestContext = std::dynamic_pointer_cast<CTestContext>(m_pSMTestMgr->getContext());
+
+	EXPECT_TRUE(m_pSMTestMgr->getSM() != nullptr);
+	EXPECT_TRUE(m_pSMTestMgr->getContext() != nullptr);
+	
+	m_pInitialState = std::make_shared<CSMTestStateIdle>();
 	EXPECT_TRUE(m_pInitialState != nullptr);
 
 	auto stateFirst = static_cast<unsigned int>(CSMTestState::StateID::eStateFirst);
@@ -43,15 +53,22 @@ void StateMachineTest::SetUp()
 	// Our error event needs to exist
 	auto pEvent = CTestSMEvent::createErrorEvent();
 	EXPECT_TRUE(pEvent != nullptr);
-	m_pTestSM->setErrorEvent(pEvent);
+	pTestSM->setErrorEvent(pEvent);
 
-	m_pTestSM->setStateTable(stateTable);
+	pTestSM->setStateTable(stateTable);
+
+	m_pTestSM  = pTestSM;
+	m_pTestCtx = pTestContext;
+
 }
 
 void StateMachineTest::TearDown()
 {
-	m_pTestCtx = nullptr;
 	m_pTestSM  = nullptr;
+	m_pTestCtx = nullptr;
+
+	m_pSMTestMgr->reset();
+	m_pSMTestMgr = nullptr;
 	m_pInitialState = nullptr;
 }
 
@@ -137,7 +154,12 @@ TEST_F(StateMachineTest, TestStateMachineStateControl)
 	m_pTestSM->setCurrentState(m_pInitialState);
 	auto pCureState = m_pTestSM->getCurrentState();
 
-	// idle->state_1->state_2->state_3->done->idle
+	/* 
+	 *	Test the state trasitions defined in the test
+	 *	state machine's state table:
+	 * 
+	 *	idle->state_1->state_2->state_3->done->idle 
+	 */
 
 	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateIdle);
 	m_pTestCtx->start();

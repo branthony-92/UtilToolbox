@@ -90,6 +90,9 @@
     <ClCompile Include="TestSMEvent.cpp">
       <Filter>Source Files\StateMachine\Events</Filter>
     </ClCompile>
+    <ClCompile Include="SMTestMgr.cpp">
+      <Filter>Source Files\StateMachine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -111,6 +114,9 @@
       <Filter>Header Files\StateMachine</Filter>
     </ClInclude>
     <ClInclude Include="StateMachineTest.h">
+      <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="SMTestMgr.h">
       <Filter>Header Files\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>

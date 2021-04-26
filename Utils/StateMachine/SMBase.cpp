@@ -27,11 +27,7 @@ CSMBase::CSMBase(TContextPtr pCtx, uint32_t id, std::string name)
 
 CSMBase::~CSMBase()
 {
-	setSMEnabled(false);
-	if (m_ticThread.joinable())
-	{
-		m_ticThread.join();
-	}
+	stopSM();
 }
 
 void CSMBase::startSM(TStatePtr pInitialState)
@@ -53,6 +49,22 @@ void CSMBase::startSM(TStatePtr pInitialState)
 		setSMDone(true);
 		CONSOLE_LOG("Ending SM Loop");
 	});
+}
+
+void CSMBase::stopSM()
+{
+	setSMEnabled(false);
+	if (m_ticThread.joinable())
+	{
+		m_ticThread.join();
+	}
+}
+
+void CSMBase::resetTimer(unsigned int intervalMS)
+{
+	stopSM();
+	setTicInterval(intervalMS);
+	startSM();
 }
 
 void CSMBase::onTic()
