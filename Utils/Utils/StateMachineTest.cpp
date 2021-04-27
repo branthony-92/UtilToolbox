@@ -4,6 +4,8 @@
 #include "SMTestMgr.h"
 #include "TestSM.h"
 #include "TestContext.h"
+#include "TestSubSM.h"
+
 
 void StateMachineTest::SetUp()
 {
@@ -222,5 +224,97 @@ TEST_F(StateMachineTest, TestStateMachineStateControl)
 	pCureState = m_pTestSM->getCurrentState();
 
 	// We should now be in stateIdle
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateIdle);
+}
+
+TEST_F(StateMachineTest, TestSubStateMachine)
+{
+	m_pTestSM->setCurrentState(m_pInitialState);
+	auto pCureState = m_pTestSM->getCurrentState();
+
+	/*
+	 *	Test the state trasitions defined in the test
+	 *	state machine's state table:
+	 *
+	 *	idle->state_1->state_2->state_3->done->idle
+	 */
+
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateIdle);
+	m_pTestCtx->startSubSM();
+
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
+
+	auto pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	auto pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubSM != nullptr);
+
+	// first tic does nothing to transition the sate
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubSM != nullptr);
+
+	// Main SM should be in state SubSM
+	// sub SM should be in subState_1
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
+	EXPECT_EQ(static_cast<CTestSubState::StateID>(pSubState->c_stateID), CTestSubState::StateID::eSubState_1);
+	
+	
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubSM != nullptr);
+
+	// Main SM should be in state SubSM
+	// sub SM should be in subState_2
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
+	EXPECT_EQ(static_cast<CTestSubState::StateID>(pSubState->c_stateID), CTestSubState::StateID::eSubState_2);
+
+	// first tic does nothing to transition the sate
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubSM != nullptr);
+
+	// Main SM should be in state SubSM
+	// sub SM should be in subState_2
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
+	EXPECT_EQ(static_cast<CTestSubState::StateID>(pSubState->c_stateID), CTestSubState::StateID::eSubState_2);
+
+	// second tic does transition in the state's onTic()
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	pSubState = pSubSM->getCurrentState();
+
+	// Main SM should be in state SubSM
+	// sub SM should be in subState_3
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
+	EXPECT_EQ(static_cast<CTestSubState::StateID>(pSubState->c_stateID), CTestSubState::StateID::eSubState_3);
+
+	// first tic does nothing to transition the state
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	pSubState = pSubSM->getCurrentState();
+
+	// Main SM should be in state SubSM
+	// sub SM should be in subState_3
+	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
+	EXPECT_EQ(static_cast<CTestSubState::StateID>(pSubState->c_stateID), CTestSubState::StateID::eSubState_3);
+
+	// second tic does transition in the state's onTic()
+	m_pTestSM->onTic();
+	pCureState = m_pTestSM->getCurrentState();
+	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	EXPECT_TRUE(pSubSM == nullptr);
+
+	// Main SM should be in state idle
+	// sub SM should have ended
 	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateIdle);
 }

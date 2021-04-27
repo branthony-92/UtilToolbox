@@ -45,11 +45,13 @@ void CTestSubSM::initSM()
 	auto pEvent = CTestSMEvent::createErrorEvent();
 
 	setErrorEvent(pEvent);
+	setCurrentState(m_stateTable[idleIndex]);
 	setErrorState(m_stateTable[errorIndex]);
 }
 
 bool CTestSubSM::enterState(TContextPtr pCtx, TEventPtr pEvent)
 {
+	initSM();
 	return true;
 }
 
@@ -75,7 +77,6 @@ bool CTestSubSM::exitState(TContextPtr pCtx, TEventPtr pEvent)
 
 void CTestSubSM::initTransitionTable()
 {
-	initSM();
 	addTransition(CTestSMEvent::EventID::eEventStop,  CSMTestState::StateID::eStateIdle);
 	addTransition(CTestSMEvent::EventID::eEventAbort, CSMTestState::StateID::eStateIdle);
 	addTransition(CTestSMEvent::EventID::eEventError, CSMTestState::StateID::eStateError);
