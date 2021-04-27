@@ -5,7 +5,7 @@
 
 bool CSMTestStateDone::enterState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;
@@ -13,7 +13,7 @@ bool CSMTestStateDone::enterState(TContextPtr pCtx, TEventPtr pEvent)
 
 bool CSMTestStateDone::ticState(TContextPtr pCtx)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	pContext->stop();
@@ -23,7 +23,7 @@ bool CSMTestStateDone::ticState(TContextPtr pCtx)
 
 bool CSMTestStateDone::exitState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;

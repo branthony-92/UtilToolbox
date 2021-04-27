@@ -50,10 +50,9 @@ public:
 
 	virtual void handleTimeOut() { resetTimer(); } // override this for state-specific timeout handling
 
-
 protected:
 	template <typename context>
-	std::shared_ptr<context> getContext(TContextPtr pCtx) {
+	std::shared_ptr<context> recoverCtx(TContextPtr pCtx) {
 		return std::dynamic_pointer_cast<context>(pCtx);
 	}
 };

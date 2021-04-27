@@ -15,6 +15,9 @@ TEventPtr CTestSMEvent::createEvent(EventID id)
 	TEventPtr pEvent = nullptr;
 	switch (id)
 	{
+	case CTestSMEvent::EventID::eEventStartSubSM:
+		pEvent = std::make_shared<CTestSMEventStartSubSM>();
+		break;
 	case CTestSMEvent::EventID::eEventStart:
 		pEvent = std::make_shared<CTestSMEventStart>();
 		break;

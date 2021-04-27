@@ -4,7 +4,7 @@
 #include "TestSMEvent.h"
 
 CTestSM::CTestSM(TContextPtr pCtx)
-	: CSMBase(pCtx, -1, "State Test SM")
+	: CSMBase(-1, "State Test SM", pCtx)
 {
 }
 

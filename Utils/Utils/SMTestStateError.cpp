@@ -5,7 +5,7 @@
 
 bool CSMTestStateError::enterState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	auto pErrorEvent = std::dynamic_pointer_cast<CSMErrorEvent>(pEvent);
@@ -20,7 +20,7 @@ bool CSMTestStateError::enterState(TContextPtr pCtx, TEventPtr pEvent)
 
 bool CSMTestStateError::ticState(TContextPtr pCtx)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;
@@ -28,7 +28,7 @@ bool CSMTestStateError::ticState(TContextPtr pCtx)
 
 bool CSMTestStateError::exitState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	// cleanup

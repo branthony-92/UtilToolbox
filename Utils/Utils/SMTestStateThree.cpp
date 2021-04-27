@@ -5,7 +5,7 @@
 
 bool CSMTestStateThree::enterState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;
@@ -13,7 +13,7 @@ bool CSMTestStateThree::enterState(TContextPtr pCtx, TEventPtr pEvent)
 
 bool CSMTestStateThree::ticState(TContextPtr pCtx)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	pContext->step_3();
@@ -23,7 +23,7 @@ bool CSMTestStateThree::ticState(TContextPtr pCtx)
 
 bool CSMTestStateThree::exitState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;

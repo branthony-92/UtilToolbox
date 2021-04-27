@@ -30,6 +30,7 @@ public:
 	TStateIDQueue& getStateHistory() { return m_stateHistory; }
 	CSMTestState::StateID getCurrentState() const;
 
+	void startSubSM();
 	void start();
 
 	void next();

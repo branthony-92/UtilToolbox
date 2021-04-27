@@ -7,7 +7,7 @@
 class CSMBase : public CSMState
 {
 public:
-	CSMBase(TContextPtr pCtx, uint32_t id, std::string name);
+	CSMBase(uint32_t id, std::string name, TContextPtr pCtx = nullptr);
 	~CSMBase();
 
 	void startSM(TStatePtr pInitialState = nullptr);
@@ -55,6 +55,7 @@ protected:
 
 public:
 	TContextPtr getContext() const { return m_pContext; }
+	void setContext(TContextPtr pCtx) { m_pContext = pCtx; }
 };
 typedef std::shared_ptr<CSMBase> TSMPtr;
 #endif // !SMBASE_H

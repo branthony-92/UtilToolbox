@@ -1,7 +1,7 @@
 #ifndef TESTSMSTATE_H
 #define TESTSMSTATE_H
 
-#include "SMState.h"
+#include "SMBase.h"
 #include "TestSMEvent.h"
 
 #ifdef _DEBUG 
@@ -14,7 +14,7 @@
 #define LOG_STATE_LEAVE
 #endif
 
-class CSMTestState : public CSMState
+class CSMTestState : public CSMBase // give eachs state the option to behave as a state machine if desired
 {
 public:
 	enum class StateID

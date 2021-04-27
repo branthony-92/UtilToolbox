@@ -5,7 +5,7 @@
 
 bool CSMTestStateIdle::enterState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;
@@ -13,7 +13,7 @@ bool CSMTestStateIdle::enterState(TContextPtr pCtx, TEventPtr pEvent)
 
 bool CSMTestStateIdle::ticState(TContextPtr pCtx)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;
@@ -21,7 +21,7 @@ bool CSMTestStateIdle::ticState(TContextPtr pCtx)
 
 bool CSMTestStateIdle::exitState(TContextPtr pCtx, TEventPtr pEvent)
 {
-	auto pContext = getContext<CTestContext>(pCtx);
+	auto pContext = recoverCtx<CTestContext>(pCtx);
 	if (!pContext) return false;
 
 	return true;
@@ -29,6 +29,7 @@ bool CSMTestStateIdle::exitState(TContextPtr pCtx, TEventPtr pEvent)
 
 void CSMTestStateIdle::initTransitionTable()
 {
-	addTransition( CTestSMEvent::EventID::eEventStart,  CSMTestState::StateID::eStateOne );
-	addTransition( CTestSMEvent::EventID::eEventError,  CSMTestState::StateID::eStateError );
+	addTransition( CTestSMEvent::EventID::eEventStart,     CSMTestState::StateID::eStateOne );
+	addTransition(CTestSMEvent::EventID::eEventStartSubSM, CSMTestState::StateID::eStateSubSM);
+	addTransition( CTestSMEvent::EventID::eEventError,     CSMTestState::StateID::eStateError );
 }

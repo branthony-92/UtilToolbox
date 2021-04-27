@@ -38,6 +38,12 @@ void CTestContext::start()
 	postEvent(pEvent);
 }
 
+void CTestContext::startSubSM()
+{
+	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventStartSubSM);
+	postEvent(pEvent);
+}
+
 void CTestContext::next()
 {
 	auto pEvent = CTestSMEvent::createEvent(CTestSMEvent::EventID::eEventNext);

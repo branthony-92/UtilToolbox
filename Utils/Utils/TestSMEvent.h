@@ -12,11 +12,11 @@ public:
 		eEventFirst = 0,
 
 		eEventStart =  eEventFirst,
+		eEventStartSubSM,
 		eEventNext,
 		eEventStop,
 		eEventAbort,
 		eEventRecover,
-
 		eEventError,
 		eEventLast = eEventError,
 		eEventCount,
@@ -43,6 +43,14 @@ public:
 		, CTestSMEvent(CTestSMEvent::EventID::eEventError, "Event Error")
 	{}
 	virtual ~CTestSMEventError() {}
+};
+
+class CTestSMEventStartSubSM : public CTestSMEvent
+{
+public:
+	CTestSMEventStartSubSM()
+		: CTestSMEvent(CTestSMEvent::EventID::eEventStartSubSM, "Event Start Sub SM")
+	{}
 };
 
 class CTestSMEventStart : public CTestSMEvent

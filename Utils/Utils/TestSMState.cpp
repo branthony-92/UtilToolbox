@@ -1,8 +1,10 @@
 #include "stdafx.h"
+
 #include "TestSMState.h"
+#include "TestSubSM.h"
 
 CSMTestState::CSMTestState(StateID id, std::string name, bool isFinal)
-	: CSMState(static_cast<unsigned int>(id), name, isFinal)
+	: CSMBase(static_cast<unsigned int>(id), name)
 {
 }
 
@@ -32,6 +34,9 @@ std::shared_ptr<CSMTestState> CSMTestState::createState(StateID id)
 		break;
 	case CSMTestState::StateID::eStateError:
 		pState = std::make_shared<CSMTestStateError>();
+		break;
+	case CSMTestState::StateID::eStateSubSM:
+		pState = std::make_shared<CTestSubSM>();
 		break;
 	default:
 		break;
