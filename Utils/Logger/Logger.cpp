@@ -45,9 +45,9 @@ void CLogger::logMsg(CLogMessage log)
 void CLogger::startLog()
 {
 	m_writeEnabled = true;
+	initLogFile();
 
 	m_logThread = std::thread([&]() {
-		initLogFile();
 		while (m_writeEnabled.load())
 		{
 			std::this_thread::sleep_for(1000ms);
@@ -75,7 +75,7 @@ void CLogger::stopLog()
 	}
 }
 
-void CLogger::initLogFile()
+bool CLogger::initLogFile()
 {
 	if (m_logFile.is_open())
 	{
@@ -84,9 +84,10 @@ void CLogger::initLogFile()
 
 	std::ostringstream oss;
 	auto now = std::chrono::system_clock::now();
-	oss << m_logPath << getTimePointString(now) << ".log";
+	oss << m_logPath << getTimePointString(now) << ".txt";
 
-	m_logFile.open(oss.str(), std::fstream::in | std::fstream::app);
+	m_logFile.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
+	return m_logFile.is_open();
 }
 
 void CLogger::writeChunk(int chunkSize)
@@ -94,10 +95,14 @@ void CLogger::writeChunk(int chunkSize)
 	unsigned int maxWrite = chunkSize;
 
 	TLock lock(m_mutex);
+	bool init = true;
+
 	if (!m_logFile.is_open())
 	{
-		initLogFile();
+		init = initLogFile();
 	}
+
+	if (!init) return;
 
 	for (auto i = 0u; i < m_logs.size(); i++)
 	{
@@ -136,7 +141,11 @@ std::string CLogger::getTimePointString(TimePoint timePoint)
 	// todo - determine local
 	std::time_t t = std::chrono::system_clock::to_time_t(timePoint);
 	std::string ts = std::ctime(&t);
-	ts.resize(ts.size());
+	ts.resize(ts.size() - 1);
+	for (auto& c : ts)
+	{
+		if (c == ' ') c = '_';
+	}
 	return ts;
 }
 

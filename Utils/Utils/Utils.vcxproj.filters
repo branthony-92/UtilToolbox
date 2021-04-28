@@ -31,6 +31,12 @@
     <Filter Include="Source Files\StateMachine\States">
       <UniqueIdentifier>{8f0c229a-c4cf-4476-97d7-9e9f545f4df3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Logger">
+      <UniqueIdentifier>{6d83cc8b-fd80-46ed-9a97-3e715fa072fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Logger">
+      <UniqueIdentifier>{2889caa9-37fc-45b6-ac1f-5c07d7d82e9a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RunTests.cpp">
@@ -96,6 +102,9 @@
     <ClCompile Include="TestSubSM.cpp">
       <Filter>Source Files\StateMachine</Filter>
     </ClCompile>
+    <ClCompile Include="LoggerTest.cpp">
+      <Filter>Source Files\Logger</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -124,6 +133,9 @@
     </ClInclude>
     <ClInclude Include="TestSubSM.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LoggerTest.h">
+      <Filter>Header Files\Logger</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

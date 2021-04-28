@@ -17,7 +17,7 @@ public:
 
 	void enableLog(bool enabled) { m_writeEnabled.store(enabled); }
 private:
-	std::fstream	 m_logFile;
+	std::ofstream	 m_logFile;
 	std::string		 m_logPath;
 	std::string		 m_logName;
 	TLogQueue		 m_logs;
@@ -31,7 +31,7 @@ private:
 
 
 private:
-	void initLogFile();
+	bool initLogFile();
 	void writeChunk(int chunkSize = -1);
 
 	void queueMessage(CLogMessage msg);
@@ -41,5 +41,6 @@ private:
 	std::string getTimePointString(TimePoint timePoint);
 	std::string constructMessageString(CLogMessage log);
 };
+typedef std::shared_ptr<CLogger> TLoggerPtr;
 
 #endif // !LOGGER_H
