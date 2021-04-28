@@ -152,15 +152,16 @@ void CTestSubState3::initTransitionTable()
 
 std::shared_ptr<CTestSubEvent> CTestSubEvent::createEvent(EventID id)
 {
-	TEventPtr pEvent = nullptr;
+	std::shared_ptr<CTestSubEvent> pEvent = nullptr;
 	switch (id)
 	{
 	case EventID::eNext:
-		return std::make_shared< CTestSubEventNext>();
+		pEvent = std::make_shared< CTestSubEventNext>();
 		break;
 	default:
 		break;
 	}
+	return pEvent;
 }
 
 std::shared_ptr<CTestSubState> CTestSubState::createState(StateID id)

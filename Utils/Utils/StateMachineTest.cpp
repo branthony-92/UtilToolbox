@@ -231,6 +231,7 @@ TEST_F(StateMachineTest, TestSubStateMachine)
 {
 	m_pTestSM->setCurrentState(m_pInitialState);
 	auto pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 
 	/*
 	 *	Test the state trasitions defined in the test
@@ -244,30 +245,35 @@ TEST_F(StateMachineTest, TestSubStateMachine)
 
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
 
 	auto pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
 	auto pSubState = pSubSM->getCurrentState();
 	ASSERT_TRUE(pSubSM != nullptr);
+	ASSERT_TRUE(pSubState != nullptr);
 
 	// first tic does nothing to transition the sate
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
-	pSubState = pSubSM->getCurrentState();
 	ASSERT_TRUE(pSubSM != nullptr);
+	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubState != nullptr);
 
 	// Main SM should be in state SubSM
 	// sub SM should be in subState_1
 	EXPECT_EQ(static_cast<CSMTestState::StateID>(pCureState->c_stateID), CSMTestState::StateID::eStateSubSM);
 	EXPECT_EQ(static_cast<CTestSubState::StateID>(pSubState->c_stateID), CTestSubState::StateID::eSubState_1);
 	
-	
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
-	pSubState = pSubSM->getCurrentState();
 	ASSERT_TRUE(pSubSM != nullptr);
+	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubState != nullptr);
 
 	// Main SM should be in state SubSM
 	// sub SM should be in subState_2
@@ -277,9 +283,11 @@ TEST_F(StateMachineTest, TestSubStateMachine)
 	// first tic does nothing to transition the sate
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
-	pSubState = pSubSM->getCurrentState();
 	ASSERT_TRUE(pSubSM != nullptr);
+	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubState != nullptr);
 
 	// Main SM should be in state SubSM
 	// sub SM should be in subState_2
@@ -289,8 +297,11 @@ TEST_F(StateMachineTest, TestSubStateMachine)
 	// second tic does transition in the state's onTic()
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	ASSERT_TRUE(pSubSM != nullptr);
 	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubState != nullptr);
 
 	// Main SM should be in state SubSM
 	// sub SM should be in subState_3
@@ -300,8 +311,11 @@ TEST_F(StateMachineTest, TestSubStateMachine)
 	// first tic does nothing to transition the state
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
+	ASSERT_TRUE(pSubSM != nullptr);
 	pSubState = pSubSM->getCurrentState();
+	ASSERT_TRUE(pSubState != nullptr);
 
 	// Main SM should be in state SubSM
 	// sub SM should be in subState_3
@@ -311,6 +325,7 @@ TEST_F(StateMachineTest, TestSubStateMachine)
 	// second tic does transition in the state's onTic()
 	m_pTestSM->onTic();
 	pCureState = m_pTestSM->getCurrentState();
+	ASSERT_TRUE(pCureState != nullptr);
 	pSubSM = std::dynamic_pointer_cast<CTestSubSM>(pCureState);
 	EXPECT_TRUE(pSubSM == nullptr);
 
