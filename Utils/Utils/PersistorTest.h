@@ -14,8 +14,8 @@ class PersistorTest : public ::testing::Test
 protected:
 	void SetUp()
 	{
-		m_pDir = std::make_shared< CDirectoryTree>(WorkingDirectory::CustomRelative, "TestDirectory");
-		auto pNode = m_pDir->getDir({ }, "JsonTest", true);
+		m_pDir = std::make_shared< CDirectoryTree>(WorkingDirectory::Config, "Test Directory");
+		auto pNode = m_pDir->getDir({ }, "Json Test", true);
 
 		if (!pNode)
 		{
