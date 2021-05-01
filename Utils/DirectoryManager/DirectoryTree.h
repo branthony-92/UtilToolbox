@@ -7,7 +7,8 @@ class CDirectoryTree
 {
 	class CDirectory;
 	typedef std::shared_ptr<CDirectory> TDirPtr;
-	typedef std::vector<TDirPtr> TDirList;
+	typedef std::unordered_map<std::string, TDirPtr> TDirList;
+	typedef std::pair<std::string, TDirPtr> TDirListData;
 	typedef std::vector<std::string> TPath;
 
 	TDirPtr m_pRoot;
@@ -23,7 +24,7 @@ public:
 	TDirPtr getDir(TPath path, std::string dirName, bool createParents = false);
 	TDirPtr getDir(std::string dirName);
 
-	TDirList search(std::string val);
+	std::vector<CDirectoryTree::TDirPtr> search(std::string val);
 
 };
 typedef std::shared_ptr<CDirectoryTree> TDirTreePtr;
@@ -48,7 +49,7 @@ public:
 
 	CDirectoryTree::TDirList& getSubDirs() { return m_subDirs; }
 
-	CDirectoryTree::TDirPtr getSubDir(unsigned int index);
+	CDirectoryTree::TDirPtr getSubDir(std::string dirName);
 	void addDir(CDirectoryTree::TDirPtr pDir);
 	DirectoryReturnCode removeDir(CDirectoryTree::TDirPtr pDir);
 	CDirectoryTree::TDirPtr findSubDir(std::string name);

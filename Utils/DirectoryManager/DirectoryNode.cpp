@@ -14,44 +14,36 @@ CDirectoryTree::CDirectory::~CDirectory()
 {
 }
 
-CDirectoryTree::TDirPtr CDirectoryTree::CDirectory::getSubDir(unsigned int index)
+CDirectoryTree::TDirPtr CDirectoryTree::CDirectory::getSubDir(std::string dirName)
 {
-	if (index >= m_subDirs.size())
+	if (m_subDirs.find(dirName) == m_subDirs.end()) 
 	{
 		return nullptr;
 	}
-	return m_subDirs[index];
+	return m_subDirs[dirName];
 }
 
 void CDirectoryTree::CDirectory::addDir(CDirectoryTree::TDirPtr pDir)
 {
-	m_subDirs.push_back(pDir);
+	if (m_subDirs.find(pDir->getName()) != m_subDirs.end()) return;
+	m_subDirs.insert(TDirListData(pDir->getName(), pDir));
 }
 
 DirectoryReturnCode CDirectoryTree::CDirectory::removeDir(CDirectoryTree::TDirPtr pDir)
 {
 	auto status = DirectoryReturnCode::PathDoesNotExist;
-	for (auto iter = m_subDirs.begin(); iter != m_subDirs.end(); iter++)
-	{
-		if ((*iter)->getName() == pDir->getName())
-		{
-			m_subDirs.erase(iter);
-			return DirectoryReturnCode::OK;
-		}
-	}
+	auto removed = m_subDirs.erase(pDir->getName());
+	if (removed > 0) status = DirectoryReturnCode::OK;
 	return status;
 }
 
 CDirectoryTree::TDirPtr CDirectoryTree::CDirectory::findSubDir(std::string name)
 {
-	for (auto pDir : m_subDirs)
+	if (m_subDirs.find(name) != m_subDirs.end())
 	{
-		if (pDir->getName() == name)
-		{
-			return pDir;
-		}
+		return m_subDirs[name];
 	}
-	return nullptr;;
+	return nullptr;
 }
 
 DirectoryReturnCode CDirectoryTree::CDirectory::createPath(bool createRecursive)

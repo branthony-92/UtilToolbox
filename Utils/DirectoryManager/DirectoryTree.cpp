@@ -58,7 +58,7 @@ CDirectoryTree::TDirPtr CDirectoryTree::getDir(std::string dirName)
 }
 
 
-CDirectoryTree::TDirList CDirectoryTree::search(std::string val)
+std::vector<CDirectoryTree::TDirPtr> CDirectoryTree::search(std::string val)
 {
 	std::vector<TDirPtr> dirs;
 
@@ -72,11 +72,11 @@ CDirectoryTree::TDirList CDirectoryTree::search(std::string val)
 
 		for (auto pDir : pNext->getSubDirs())
 		{
-			if (pDir->getName() == val)
+			if (pDir.first == val)
 			{
-				dirs.push_back(pDir);
+				dirs.push_back(pDir.second);
 			}
-			queue.push_back(pDir);
+			queue.push_back(pDir.second);
 		}
 	}
 	return dirs;
