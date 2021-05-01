@@ -16,7 +16,6 @@ public:
 	void stopLog();
 
 	void enableLog(bool enabled) { m_writeEnabled.store(enabled); }
-	void setLogName(std::string name) { TLock lock(m_mutex); m_logName = name; }
 private:
 	std::ofstream	 m_logFile;
 	std::string		 m_logPath;
