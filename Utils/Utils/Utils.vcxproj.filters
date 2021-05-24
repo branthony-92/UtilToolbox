@@ -37,6 +37,12 @@
     <Filter Include="Source Files\Logger">
       <UniqueIdentifier>{2889caa9-37fc-45b6-ac1f-5c07d7d82e9a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\AsyncProccessor">
+      <UniqueIdentifier>{56b43733-b235-421b-8d1f-059dd7868db7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AsyncProcessor">
+      <UniqueIdentifier>{6db2e662-53a6-4cb6-8e7b-fd8a76278809}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RunTests.cpp">
@@ -105,6 +111,15 @@
     <ClCompile Include="LoggerTest.cpp">
       <Filter>Source Files\Logger</Filter>
     </ClCompile>
+    <ClCompile Include="AsyncProccessorTest.cpp">
+      <Filter>Source Files\AsyncProccessor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestActions.cpp">
+      <Filter>Source Files\AsyncProccessor</Filter>
+    </ClCompile>
+    <ClCompile Include="TestResults.cpp">
+      <Filter>Source Files\AsyncProccessor</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -131,11 +146,20 @@
     <ClInclude Include="SMTestMgr.h">
       <Filter>Header Files\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="TestSubSM.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LoggerTest.h">
       <Filter>Header Files\Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="AsyncProccessorTest.h">
+      <Filter>Header Files\AsyncProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="TestResults.h">
+      <Filter>Header Files\AsyncProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="TestActions.h">
+      <Filter>Header Files\AsyncProcessor</Filter>
+    </ClInclude>
+    <ClInclude Include="TestSubSM.h">
+      <Filter>Header Files\StateMachine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

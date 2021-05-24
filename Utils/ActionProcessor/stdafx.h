@@ -4,7 +4,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <fstream>
 
 // containers
 #include <list>
@@ -19,9 +18,12 @@
 // threading
 #include <thread>
 #include <atomic>
-#include <mutex>
-#include <future>
 
 // smart pointers
 #include <memory>
+#include <future>
 
+// functions and algos
+#include <functional>
+#include <algorithm>
+#include <optional>

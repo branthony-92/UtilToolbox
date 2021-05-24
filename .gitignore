@@ -55,3 +55,6 @@
 /Utils/DirectoryManager/x64
 /Utils/Logger/x64/Debug
 /Utils/Utils/Logger_Test/Logs
+/Utils/ActionProcessor/x64/Debug
+/Utils/ActionProcessor/Debug/ActionProcessor.tlog
+/Utils/ActionProcessor/.vs/ActionProcessor/v16
