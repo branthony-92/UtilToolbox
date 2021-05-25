@@ -14,6 +14,7 @@ protected:
 	std::shared_ptr<TestActionSimpleAction> m_pSimpleAction;
 	std::shared_ptr<TestActionTimeout>      m_pLongAction;
 	std::shared_ptr<TestActionError>        m_pErrorAction;
+	std::shared_ptr<TestActionComputeFib>   m_pComputeFibAction;
 };
 
 

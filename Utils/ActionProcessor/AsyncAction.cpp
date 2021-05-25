@@ -3,47 +3,58 @@
 
 using namespace std::chrono_literals;
 
-CAsyncAction::CAsyncAction(uint32_t id, uint32_t timeout, TResultPtr pResult)
+CAsyncAction::CAsyncAction(std::string name, TResultPtr pResult, uint32_t timeout)
 	: m_pResult(pResult)
-	, c_actionID(id)
+	, m_pPromise(nullptr)
 	, c_timeOut(timeout)
+	, c_name(name)
 {
+	if (!pResult) throw std::runtime_error("Result Not Initialized");
 }
 
 CAsyncAction::CAsyncAction(const CAsyncAction& other)
 	: m_pResult(other.m_pResult)
-	, c_actionID(other.c_actionID)
+	, m_pPromise(other.m_pPromise)
 	, c_timeOut(other.c_timeOut)
+	, c_name(other.c_name)
 {
 }
 
 CAsyncAction& CAsyncAction::operator=(const CAsyncAction& other)
 {
-	m_pResult = other.m_pResult;
+	m_pResult  = other.m_pResult;
+	m_pPromise = other.m_pPromise;
 	return *this;
 }
 
 CAsyncAction::~CAsyncAction()
 {
+	abort();
+	if (m_pPromise)
+	{
+		m_pPromise->release();
+		m_pPromise = nullptr;
+	}
 }
 
-CAsyncAction::TPromisePtr CAsyncAction::runActionAsync()
+CAsyncAction::TPromisePtr CAsyncAction::run()
 {
 	// create the promise to return 
 
 	// set the result status to executing and launch that thread
 	m_pResult->setStatus(CAsyncResult::Status::Executing);
 	auto future = std::async(std::launch::async, [&] {
-		return runActionUnthreaded();
+		return runInternal();
 	});
 
 	// return the promise containing the shared future
-	TPromisePtr p = std::make_shared<Promise>(c_timeOut);
-	p->m_future = future.share();
-	return p;
+	m_pPromise = std::make_shared<Promise>(c_timeOut, *this);
+	m_pPromise->m_future = future.share();
+
+	return m_pPromise;
 }
 
-CAsyncResult::Status CAsyncAction::runActionUnthreaded()
+CAsyncResult::Status CAsyncAction::runInternal()
 {
 	auto status = CAsyncResult::Status::Error;
 	try
@@ -60,15 +71,15 @@ CAsyncResult::Status CAsyncAction::runActionUnthreaded()
 }
 
 
-CAsyncAction::Promise::Promise(uint32_t timeout)
+CAsyncAction::Promise::Promise(uint32_t timeout, CAsyncAction& action)
 	: m_timeout(timeout)
 	, m_future()
+	, m_action(action)
 {
 }
 
 CAsyncAction::Promise::~Promise()
 {
-	release();
 }
 
 void CAsyncAction::Promise::release()
@@ -76,6 +87,7 @@ void CAsyncAction::Promise::release()
 	if (m_future.valid())
 	{
 		// release the future without caring about the return
+		m_action.abort();
 		m_future.wait_for(1ms);
 	}
 }
@@ -90,5 +102,6 @@ CAsyncResult::Status CAsyncAction::Promise::waitForResult()
 	{
 		return m_future.get();
 	}
+	m_action.abort();	
 	return CAsyncResult::Status::Timeout;
 }

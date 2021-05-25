@@ -5,15 +5,23 @@ typedef std::chrono::system_clock::time_point TimePoint;
 
 enum class Severity
 {
-	Null,
+	Null = -1,
+
+	// General logging
 	Info,
-	Debug,
 	Warning,
-	ErrorL1,
-	ErrorL2,
-	ErrorL3,
 	Fatal,
+	ErrorL1,
+
+	// Verbose logging
+	Debug,
+	ErrorL2,
+
+	// logging levels
+	Normal  = ErrorL1,
+	Verbose = ErrorL2, 
 };
+
 
 class CLogMessage
 {

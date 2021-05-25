@@ -4,10 +4,9 @@
 
 void LoggerTest::SetUp()
 {
-	auto pDir = std::make_shared< CDirectoryTree>(WorkingDirectory::CustomAbsolute, "TestDirectory");
-	std::vector<std::string> p = { "C:", "Users", "xs_br", "source", "repos", "branthony - 92", "UtilToolbox", "Utils", "Utils", "Logger_Test" };
+	auto pDir = std::make_shared< CDirectoryTree>(WorkingDirectory::Config, "TestDirectory");
 
-	auto pNode = pDir->getDir( p, "Logs", true);
+	auto pNode = pDir->getDir("Logs");
 
 	ASSERT_TRUE(pNode != nullptr);
 
@@ -15,17 +14,26 @@ void LoggerTest::SetUp()
 	ASSERT_TRUE(!path.empty());
 
 	m_pLogger = std::make_shared<CLogger>(path);
+	m_pLogger->setLogFileName("TestLog");
 }
 
 void LoggerTest::TearDown()
 {
-	m_pLogger->stopLog();
 }
 
 TEST_F(LoggerTest, CreateLog)
 {
-	m_pLogger->startLog();
-	m_pLogger->logMsg({ Severity::Info, "TestLog 1" });
-	m_pLogger->logMsg({ Severity::Info, "TestLog 2" });
-	m_pLogger->logMsg({ Severity::Info, "TestLog 3" });
+	for (auto i = 0; i < 10; i++)
+	{
+		m_pLogger->logMsg({ Severity::Info, "Test Log" });
+	}
+}
+
+TEST_F(LoggerTest, HighThroughputLogTest)
+{
+	m_pLogger->setLogFileName("TestLogHighThroughput");
+	for (auto i = 0; i < 1000; i++)
+	{
+		m_pLogger->logMsg({ Severity::Info, "Test Log" });
+	}
 }

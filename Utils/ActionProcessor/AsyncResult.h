@@ -16,7 +16,7 @@ public:
 		Timeout,
 	};
 
-	CAsyncResult(uint32_t id);
+	CAsyncResult(std::string name);
 	CAsyncResult(const CAsyncResult& other);
 	CAsyncResult& operator=(const CAsyncResult& other);
 	virtual ~CAsyncResult();
@@ -27,7 +27,7 @@ public:
 	std::string getError() const      { TLock lock(m_mutex); return m_error; }
 	void setError(std::string errMsg) { TLock lock(m_mutex); m_error = errMsg; }
 
-	const uint32_t c_resultID;
+	const std::string c_name;
 
 protected:
 	Status	    m_status;

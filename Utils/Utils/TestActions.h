@@ -4,24 +4,12 @@
 #include "AsyncResult.h"
 #include "AsyncAction.h"
 
-enum class ActionID
-{
-	ActionInvalid = -1,
-
-	ActionFirst = 0,
-	ActionEmpty = ActionFirst,
-	ActionSimple,
-	ActionLong,
-	ActionError,
-
-	NumActions,
-};
 
 class TestActionEmpty : public CAsyncAction
 {
 public:
 	TestActionEmpty(TResultPtr pResult)
-		: CAsyncAction(static_cast<uint32_t>(ActionID::ActionEmpty), 1000u, pResult)
+		: CAsyncAction("ActionEmpty", pResult)
 	{}
 	void execute() override;
 };
@@ -30,9 +18,28 @@ class TestActionSimpleAction : public CAsyncAction
 {
 public:
 	TestActionSimpleAction(TResultPtr pResult)
-		: CAsyncAction(static_cast<uint32_t>(ActionID::ActionSimple), 1000u, pResult)
+		: CAsyncAction("ActionSimple", pResult)
 	{}
 	void execute() override;
+};
+
+class TestActionComputeFib : public CAsyncAction
+{
+	std::atomic_bool m_abortFlag;
+public:
+	TestActionComputeFib(TResultPtr pResult)
+		: CAsyncAction("ActionComputeFib", pResult)
+		, m_abortFlag(false)
+	{}
+	void execute() override;
+	void abort() override { m_abortFlag.store(true); }
+
+	int computeFib(int nFib);
+
+	struct Params {
+		int nFib;
+		Params() : nFib(0) {}
+	} m_params;
 };
 
 class TestActionTimeout : public CAsyncAction
@@ -40,7 +47,7 @@ class TestActionTimeout : public CAsyncAction
 	std::atomic_bool m_abortFlag;
 public:
 	TestActionTimeout(TResultPtr pResult)
-		: CAsyncAction(static_cast<uint32_t>(ActionID::ActionLong), 1000u, pResult)
+		: CAsyncAction("ActionLong", pResult)
 		, m_abortFlag(false)
 	{}
 	void execute() override;
@@ -51,7 +58,7 @@ class TestActionError : public CAsyncAction
 {
 public:
 	TestActionError(TResultPtr pResult)
-		: CAsyncAction(static_cast<uint32_t>(ActionID::ActionError), 1000u, pResult)
+		: CAsyncAction("ActionError", pResult)
 	{}
 	void execute() override;
 };

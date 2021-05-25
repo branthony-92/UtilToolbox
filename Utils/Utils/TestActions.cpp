@@ -6,7 +6,7 @@ using namespace std::chrono_literals;
 
 void TestActionEmpty::execute()
 {
-	std::this_thread::sleep_for(10ms);
+	std::this_thread::sleep_for(5ms);
 }
 
 void TestActionSimpleAction::execute()
@@ -19,14 +19,27 @@ void TestActionSimpleAction::execute()
 	pResult->setBoolData(true);
 }
 
+void TestActionComputeFib::execute()
+{
+	auto pResult = CAsyncResult::convertTo<TestResultComputeFib>(m_pResult);
+	auto val = computeFib(m_params.nFib);
+	if (m_abortFlag.load()) val = -1;
+	pResult->setVal(val);
+}
+
+int TestActionComputeFib::computeFib(int nFib)
+{	
+	if (nFib <= 0 || m_abortFlag.load()) return 0;
+	if (nFib == 1) return 1;
+	if (nFib == 2) return 1;
+
+	return computeFib(nFib - 1) + computeFib(nFib - 2);
+}
+
 void TestActionTimeout::execute()
 {
 	m_abortFlag = false;
-	while (!m_abortFlag.load())
-	{
-		// loop until aborted
-		std::this_thread::sleep_for(5ms);
-	};
+	while (!m_abortFlag.load());
 }
 
 void TestActionError::execute()

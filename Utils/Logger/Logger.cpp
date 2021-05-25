@@ -10,124 +10,62 @@ namespace {
 		{ Severity::Warning,  " [WARN] "  },
 		{ Severity::ErrorL1,  " [ERR1] "  },
 		{ Severity::ErrorL2,  " [ERR2] "  },
-		{ Severity::ErrorL3,  " [ERR3] "  },
 		{ Severity::Fatal,    " [FATAL] " }
 	};
 }
 
 CLogger::CLogger(std::string logPath)
-	: m_logFile()
-	, m_logName("")
+	: m_logName("")
 	, m_logPath(logPath)
 	, m_logs()
-	, m_logDebugMessage(false)
+	, m_logLevel(Severity::Normal)
     , m_logThread()
     , m_writeEnabled(false)
     , m_mutex()
+	, m_pLogAction(nullptr)
 {
+	m_pLogAction = std::make_unique<CLogAction>();
 }
 
 CLogger::~CLogger()
 {
-	stopLog();
+	writeChunk();
+	auto pPromise = m_pLogAction->getPromise();
+	if (pPromise) pPromise->waitForResult();
 }
 
 void CLogger::logMsg(CLogMessage log)
 {
-	if (!m_logDebugMessage.load() && log.getSev() == Severity::Debug)
+	if (!m_writeEnabled.load() || log.getSev() > m_logLevel)
 	{
 		return;
 	}
 
-	queueMessage(log);
-}
+	auto logStr = constructMessageString(log);
+	log.setMsg(logStr);
+	m_logs.push_back(log);
 
-void CLogger::startLog()
-{
-	m_writeEnabled = true;
-	initLogFile();
-
-	m_logThread = std::thread([&]() {
-		while (m_writeEnabled.load())
-		{
-			std::this_thread::sleep_for(1000ms);
-			writeChunk(1000);
-		}
-		if (m_logFile.is_open())
-		{
-			m_logFile.close();
-		}
-	});
-}
-
-void CLogger::stopLog()
-{
-	m_writeEnabled = false;
-
-	if (m_logThread.joinable())
+	if (m_logs.size() >= 10)
 	{
-		m_logThread.join();
+		writeChunk();
 	}
-	writeChunk();
-	if (m_logFile.is_open())
-	{
-		m_logFile.close();
-	}
-}
-
-bool CLogger::initLogFile()
-{
-	if (m_logFile.is_open())
-	{
-		m_logFile.close();
-	}
-
-	std::ostringstream oss;
-	auto now = std::chrono::system_clock::now();
-	oss << m_logPath << getTimePointString(now) << ".txt";
-
-	m_logFile.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
-	return m_logFile.is_open();
 }
 
 void CLogger::writeChunk(int chunkSize)
 {
-	unsigned int maxWrite = chunkSize;
+	auto pPromise = m_pLogAction->getPromise();
+	if (pPromise) pPromise->waitForResult();
 
-	TLock lock(m_mutex);
-	bool init = true;
+	std::ostringstream oss;
+	auto now = std::chrono::system_clock::now();
+	oss << m_logPath << m_logName << ".txt";
 
-	if (!m_logFile.is_open())
-	{
-		init = initLogFile();
-	}
+	m_pLogAction->m_params.logPath = oss.str();
+	m_pLogAction->m_params.logQueue = m_logs;
 
-	if (!init) return;
+	auto promise = m_pLogAction->run();
 
-	for (auto i = 0u; i < m_logs.size(); i++)
-	{
-		auto log = popFrontMessage();
-		if (log.getSev() == Severity::Null) continue;
-		auto logStr = constructMessageString(log);
-
-		m_logFile << logStr;
-		if (i > maxWrite) break;
-	}
-}
-
-void CLogger::queueMessage(CLogMessage msg)
-{
-	TLock lock(m_mutex);
-	m_logs.push_back(msg);
-}
-
-CLogMessage CLogger::popFrontMessage()
-{
-	if (m_logs.empty()) return CLogMessage(Severity::Null, "");
-
-	auto log = m_logs.front();
-	m_logs.pop_front();
-	return log;
+	m_logs.clear();
 }
 
 void CLogger::purgeMessages()

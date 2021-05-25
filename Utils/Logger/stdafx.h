@@ -20,6 +20,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <future>
 
 // smart pointers
 #include <memory>

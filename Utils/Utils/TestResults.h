@@ -3,25 +3,24 @@
 
 #include "AsyncResult.h"
 
-enum class ResultID
-{
-	ResultInvalid = -1,
-
-	ResultFirst = 0, 
-	ResultEmpty = ResultFirst,
-
-	ResultSimple,
-
-	NumResults,
-};
-
-
 class TestResultEmpty : public CAsyncResult
 {
 public:
 	TestResultEmpty()
-		: CAsyncResult(static_cast<uint32_t>(ResultID::ResultEmpty))
+		: CAsyncResult("ResultEmpty")
 	{}
+};
+
+class TestResultComputeFib : public CAsyncResult
+{
+	int m_fibVal;
+public:
+	TestResultComputeFib()
+		: CAsyncResult("ResultComputeFib")
+	{}
+
+	int getVal() const { return m_fibVal; }
+	void setVal(int val) { m_fibVal = val; }
 };
 
 class TestResultSimple : public CAsyncResult
@@ -33,7 +32,7 @@ class TestResultSimple : public CAsyncResult
 
 public:
 	TestResultSimple()
-		: CAsyncResult(static_cast<uint32_t>(ResultID::ResultSimple))
+		: CAsyncResult("ResultSimple")
 		, m_intData(0)
 		, m_floatingData(0.0f)
 		, m_stringData("")
