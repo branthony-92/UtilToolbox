@@ -119,7 +119,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -145,11 +145,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ActionContext.h" />
     <ClInclude Include="AsyncAction.h" />
     <ClInclude Include="AsyncResult.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ActionContext.cpp" />
     <ClCompile Include="AsyncAction.cpp" />
     <ClCompile Include="AsyncResult.cpp" />
     <ClCompile Include="StdAfx.cpp" />

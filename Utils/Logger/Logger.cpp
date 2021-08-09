@@ -1,5 +1,7 @@
 #include "stdafx.h"
+
 #include "Logger.h"
+#include "LogAction.h"
 
 using namespace std::chrono_literals;
 
@@ -14,8 +16,13 @@ namespace {
 	};
 }
 
+namespace Constants {
+	const unsigned int c_logWriteChunkSize = 10;
+}
+
 CLogger::CLogger(std::string logPath)
-	: m_logName("")
+	: CActionContext("Logger")
+	, m_logName("")
 	, m_logPath(logPath)
 	, m_logs()
 	, m_logLevel(Severity::Normal)
@@ -23,6 +30,7 @@ CLogger::CLogger(std::string logPath)
     , m_writeEnabled(false)
     , m_mutex()
 	, m_pLogAction(nullptr)
+	, m_writeMode(WriteMode::NO_WRITE)
 {
 	m_pLogAction = std::make_unique<CLogAction>();
 }
@@ -34,38 +42,59 @@ CLogger::~CLogger()
 	if (pPromise) pPromise->waitForResult();
 }
 
-void CLogger::logMsg(CLogMessage log)
+std::string CLogger::logMsg(CLogMessage log)
 {
 	if (!m_writeEnabled.load() || log.getSev() > m_logLevel)
 	{
-		return;
+		return "";
 	}
 
 	auto logStr = constructMessageString(log);
 	log.setMsg(logStr);
-	m_logs.push_back(log);
-
-	if (m_logs.size() >= 10)
+	addLog(log);
+	auto nLogs = getLogSize();
+	
+	switch (getWriteMode())
 	{
+	case WriteMode::TRUNCATE:
 		writeChunk();
+		m_pLogAction->getPromise()->waitForResult();
+		break;
+	case WriteMode::APPEND:
+		if (nLogs >= Constants::c_logWriteChunkSize) writeChunk();
+		break;
+	case WriteMode::NO_WRITE:
+		break;
 	}
+
+	return logStr;
 }
 
-void CLogger::writeChunk(int chunkSize)
+void CLogger::writeChunk()
 {
+	if (m_logs.empty()) return;
+
 	auto pPromise = m_pLogAction->getPromise();
 	if (pPromise) pPromise->waitForResult();
+	m_pLogAction->run(this);
+}
+
+std::string CLogger::getFilePath()
+{
+	TLock lock(m_mutex);
 
 	std::ostringstream oss;
-	auto now = std::chrono::system_clock::now();
 	oss << m_logPath << m_logName << ".txt";
 
-	m_pLogAction->m_params.logPath = oss.str();
-	m_pLogAction->m_params.logQueue = m_logs;
+	return oss.str();
+}
 
-	auto promise = m_pLogAction->run();
-
+TLogQueue CLogger::getLogs()
+{
+	TLock lock(m_mutex); 
+	auto logs = m_logs;
 	m_logs.clear();
+	return logs; 
 }
 
 void CLogger::purgeMessages()
@@ -78,13 +107,11 @@ std::string CLogger::getTimePointString(TimePoint timePoint)
 {
 	// todo - determine local
 	std::time_t t = std::chrono::system_clock::to_time_t(timePoint);
-	std::string ts = std::ctime(&t);
-	ts.resize(ts.size() - 1);
-	for (auto& c : ts)
-	{
-		if (c == ' ') c = '_';
-	}
-	return ts;
+	std::tm now_tm = *std::gmtime(&t);
+
+	char buff[80];
+	strftime(buff, 80, "%F %T", &now_tm);
+	return buff;
 }
 
 std::string CLogger::constructMessageString(CLogMessage log)

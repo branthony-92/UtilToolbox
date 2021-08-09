@@ -4,12 +4,12 @@
 
 using namespace std::chrono_literals;
 
-void TestActionEmpty::execute()
+void TestActionEmpty::execute(CActionContext* pCtx)
 {
 	std::this_thread::sleep_for(5ms);
 }
 
-void TestActionSimpleAction::execute()
+void TestActionSimpleAction::execute(CActionContext* pCtx)
 {
 	auto pResult = CAsyncResult::convertTo<TestResultSimple>(m_pResult);
 
@@ -19,7 +19,7 @@ void TestActionSimpleAction::execute()
 	pResult->setBoolData(true);
 }
 
-void TestActionComputeFib::execute()
+void TestActionComputeFib::execute(CActionContext* pCtx)
 {
 	auto pResult = CAsyncResult::convertTo<TestResultComputeFib>(m_pResult);
 	auto val = computeFib(m_params.nFib);
@@ -36,13 +36,13 @@ int TestActionComputeFib::computeFib(int nFib)
 	return computeFib(nFib - 1) + computeFib(nFib - 2);
 }
 
-void TestActionTimeout::execute()
+void TestActionTimeout::execute(CActionContext* pCtx)
 {
 	m_abortFlag = false;
 	while (!m_abortFlag.load());
 }
 
-void TestActionError::execute()
+void TestActionError::execute(CActionContext* pCtx)
 {
 	throw std::exception("UH OH! ERROR!");
 }

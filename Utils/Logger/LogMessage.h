@@ -22,6 +22,7 @@ enum class Severity
 	Verbose = ErrorL2, 
 };
 
+enum class WriteMode { NO_WRITE = -1, APPEND, TRUNCATE };
 
 class CLogMessage
 {

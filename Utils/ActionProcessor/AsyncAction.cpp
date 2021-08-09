@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "AsyncAction.h"
-
+#include "ActionContext.h"
 using namespace std::chrono_literals;
 
 CAsyncAction::CAsyncAction(std::string name, TResultPtr pResult, uint32_t timeout)
@@ -37,14 +37,21 @@ CAsyncAction::~CAsyncAction()
 	}
 }
 
-CAsyncAction::TPromisePtr CAsyncAction::run()
+CAsyncAction::TPromisePtr CAsyncAction::run(CActionContext* pCtx)
 {
 	// create the promise to return 
+	if (!pCtx)
+	{
+		m_pResult->setError("Error: No action context provided");
+		m_pResult->setStatus(CAsyncResult::Status::Error);
+		m_pPromise = std::make_shared<Promise>(1u, *this);
+		return m_pPromise;
+	}
 
 	// set the result status to executing and launch that thread
 	m_pResult->setStatus(CAsyncResult::Status::Executing);
-	auto future = std::async(std::launch::async, [&] {
-		return runInternal();
+	auto future = std::async(std::launch::async, [&, pCtx] {
+		return runInternal(pCtx);
 	});
 
 	// return the promise containing the shared future
@@ -54,17 +61,20 @@ CAsyncAction::TPromisePtr CAsyncAction::run()
 	return m_pPromise;
 }
 
-CAsyncResult::Status CAsyncAction::runInternal()
+CAsyncResult::Status CAsyncAction::runInternal(CActionContext* pCtx)
 {
 	auto status = CAsyncResult::Status::Error;
 	try
 	{
-		execute();
+		execute(pCtx);
 		status = CAsyncResult::Status::Complete;
 	}
 	catch (std::exception& er)
 	{
-		m_pResult->setError(er.what());
+		std::ostringstream oss;
+		oss << "Context: " <<pCtx->getName() << ", Error: ";
+		oss << er.what();
+		m_pResult->setError(oss.str());
 	}
 	m_pResult->setStatus(status);
 	return status;

@@ -3,7 +3,7 @@
 
 #include "AsyncResult.h"
 #include "AsyncAction.h"
-
+#include "ActionContext.h"
 
 class TestActionEmpty : public CAsyncAction
 {
@@ -11,7 +11,7 @@ public:
 	TestActionEmpty(TResultPtr pResult)
 		: CAsyncAction("ActionEmpty", pResult)
 	{}
-	void execute() override;
+	void execute(CActionContext* pCtx) override;
 };
 
 class TestActionSimpleAction : public CAsyncAction
@@ -20,7 +20,7 @@ public:
 	TestActionSimpleAction(TResultPtr pResult)
 		: CAsyncAction("ActionSimple", pResult)
 	{}
-	void execute() override;
+	void execute(CActionContext* pCtx) override;
 };
 
 class TestActionComputeFib : public CAsyncAction
@@ -31,7 +31,7 @@ public:
 		: CAsyncAction("ActionComputeFib", pResult)
 		, m_abortFlag(false)
 	{}
-	void execute() override;
+	void execute(CActionContext* pCtx) override;
 	void abort() override { m_abortFlag.store(true); }
 
 	int computeFib(int nFib);
@@ -50,7 +50,7 @@ public:
 		: CAsyncAction("ActionLong", pResult)
 		, m_abortFlag(false)
 	{}
-	void execute() override;
+	void execute(CActionContext* pCtx) override;
 	void abort() override { m_abortFlag.store(true); }
 };
 
@@ -60,7 +60,7 @@ public:
 	TestActionError(TResultPtr pResult)
 		: CAsyncAction("ActionError", pResult)
 	{}
-	void execute() override;
+	void execute(CActionContext* pCtx) override;
 };
 
 #endif // !TESTACTION_H

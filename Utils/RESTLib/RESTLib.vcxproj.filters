@@ -15,30 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AsyncAction.h">
+    <ClInclude Include="RESTConnection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AsyncResult.h">
+    <ClInclude Include="RESTEndpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTEndpointContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ActionContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AsyncAction.cpp">
+    <ClCompile Include="RESTConnection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AsyncResult.cpp">
+    <ClCompile Include="RESTEndpoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StdAfx.cpp">
+    <ClCompile Include="RESTEndpointContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ActionContext.cpp">
+    <ClCompile Include="RESTServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

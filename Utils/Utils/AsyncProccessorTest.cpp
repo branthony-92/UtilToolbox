@@ -25,7 +25,7 @@ TEST_F(AsyncProccessorTest, SimpleEmptyActionTestThreaded)
 
 	EXPECT_EQ(status, CAsyncResult::Status::Idle);
 
-	auto pPromise = m_pEmptyAction->run();
+	auto pPromise = m_pEmptyAction->run(this);
 	status = pPromise->waitForResult();
 
 	EXPECT_EQ(status, CAsyncResult::Status::Complete);
@@ -38,7 +38,7 @@ TEST_F(AsyncProccessorTest, SimpleActionTestThreaded)
 
 	EXPECT_EQ(status, CAsyncResult::Status::Idle);
 
-	auto pPromise = m_pSimpleAction->run();
+	auto pPromise = m_pSimpleAction->run(this);
 	status = pPromise->waitForResult();
 	EXPECT_EQ(status, CAsyncResult::Status::Complete);
 
@@ -58,7 +58,7 @@ TEST_F(AsyncProccessorTest, ErrorEmptyActionTestThreaded)
 
 	EXPECT_EQ(status, CAsyncResult::Status::Idle);
 
-	auto pPromise = m_pErrorAction->run();
+	auto pPromise = m_pErrorAction->run(this);
 	status = pPromise->waitForResult();
 
 	EXPECT_EQ(status, CAsyncResult::Status::Error);
@@ -72,7 +72,7 @@ TEST_F(AsyncProccessorTest, TimeoutEmptyActionTestThreaded)
 
 	EXPECT_EQ(status, CAsyncResult::Status::Idle);
 
-	auto pPromise = m_pLongAction->run();
+	auto pPromise = m_pLongAction->run(this);
 	status = pPromise->waitForResult();
 
 	EXPECT_EQ(status, CAsyncResult::Status::Timeout);
@@ -86,7 +86,7 @@ TEST_F(AsyncProccessorTest, ResultStatusFibTimeoutTest)
 
 	m_pComputeFibAction->m_params.nFib = 50; // compute the 50th num of the fib sequence
 
-	auto pPromise = m_pComputeFibAction->run();
+	auto pPromise = m_pComputeFibAction->run(this);
 
 	status = pPromise->waitForResult();
 	
@@ -101,7 +101,7 @@ TEST_F(AsyncProccessorTest, ResultStatusMonitoringTest)
 
 	m_pComputeFibAction->m_params.nFib = 15; // compute the 15th num of the fib sequence
 
-	m_pComputeFibAction->run();
+	m_pComputeFibAction->run(this);
 
 	status = pResult->getStatus();
 	while (status == CAsyncResult::Status::Executing)

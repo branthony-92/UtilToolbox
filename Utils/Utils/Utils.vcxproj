@@ -78,6 +78,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <LibraryPath>$(SolutionDir)..\3rdParty\CPPREST\x64\Dynamic\$(Configuration)\lib;$(SolutionDir)..\3rdParty\cryptopp-CRYPTOPP_8_5_0\x64\Output\$(Configuration);$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -119,7 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\googletest\googletest;..\googletest\googletest\include;..\DirectoryManager;..\Persistor;..\StateMachine;..\json-develop\include;..\Logger;..\ActionProcessor</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\googletest\googletest;..\googletest\googletest\include;..\DirectoryManager;..\Persistor;..\StateMachine;..\json-develop\include;..\Logger;..\ActionProcessor;..\RESTLib;$(SolutionDir)..\3rdParty\CPPREST\include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -127,7 +128,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\googletest\build\googletest\$(Platform)\$(Configuration)\gtest.lib;..\StateMachine\$(Platform)\$(Configuration)\StateMachine.lib;..\Persistor\$(Platform)\$(Configuration)\Persistor.lib;..\DirectoryManager\$(Platform)\$(Configuration)\DirectoryManager.lib;..\Logger\$(Platform)\$(Configuration)\Logger.lib;..\ActionProcessor\$(Platform)\$(Configuration)\ActionProcessor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\googletest\build\googletest\$(Platform)\$(Configuration)\gtest.lib;..\StateMachine\$(Platform)\$(Configuration)\StateMachine.lib;..\Persistor\$(Platform)\$(Configuration)\Persistor.lib;..\DirectoryManager\$(Platform)\$(Configuration)\DirectoryManager.lib;..\Logger\$(Platform)\$(Configuration)\Logger.lib;..\ActionProcessor\$(Platform)\$(Configuration)\ActionProcessor.lib;..\RESTLib\$(Platform)\$(Configuration)\RESTLib.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;cpprest_2_10d.lib;zlibd.lib;cryptlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -156,6 +157,8 @@
     <ClCompile Include="LoggerTest.cpp" />
     <ClCompile Include="PersistorTest.cpp" />
     <ClCompile Include="RunTests.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="ServerTest.cpp" />
     <ClCompile Include="SMTestEventAbort.cpp" />
     <ClCompile Include="SMTestEventError.cpp" />
     <ClCompile Include="SMTestEventRecover.cpp" />
@@ -172,6 +175,7 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TestActions.cpp" />
     <ClCompile Include="TestContext.cpp" />
+    <ClCompile Include="TestEndpoints.cpp" />
     <ClCompile Include="TestResults.cpp" />
     <ClCompile Include="TestSM.cpp" />
     <ClCompile Include="TestSMEvent.cpp" />
@@ -182,11 +186,14 @@
     <ClInclude Include="AsyncProccessorTest.h" />
     <ClInclude Include="LoggerTest.h" />
     <ClInclude Include="PersistorTest.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerTest.h" />
     <ClInclude Include="SMTestMgr.h" />
     <ClInclude Include="StateMachineTest.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestActions.h" />
     <ClInclude Include="TestContext.h" />
+    <ClInclude Include="TestEndpoints.h" />
     <ClInclude Include="TestResults.h" />
     <ClInclude Include="TestSM.h" />
     <ClInclude Include="TestSMEvent.h" />

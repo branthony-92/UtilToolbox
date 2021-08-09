@@ -43,6 +43,12 @@
     <Filter Include="Header Files\AsyncProcessor">
       <UniqueIdentifier>{6db2e662-53a6-4cb6-8e7b-fd8a76278809}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\RestServer">
+      <UniqueIdentifier>{45554eb7-69b7-47bc-89a2-c8bc49f1a9dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\RESTServer">
+      <UniqueIdentifier>{09cf8a0d-3b0c-41e6-9d59-f1a0b6545e45}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RunTests.cpp">
@@ -120,6 +126,15 @@
     <ClCompile Include="TestResults.cpp">
       <Filter>Source Files\AsyncProccessor</Filter>
     </ClCompile>
+    <ClCompile Include="ServerTest.cpp">
+      <Filter>Source Files\RestServer</Filter>
+    </ClCompile>
+    <ClCompile Include="TestEndpoints.cpp">
+      <Filter>Source Files\RestServer</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Source Files\RestServer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -160,6 +175,15 @@
     </ClInclude>
     <ClInclude Include="TestSubSM.h">
       <Filter>Header Files\StateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerTest.h">
+      <Filter>Header Files\RESTServer</Filter>
+    </ClInclude>
+    <ClInclude Include="TestEndpoints.h">
+      <Filter>Header Files\RESTServer</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Header Files\RESTServer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

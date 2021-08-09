@@ -2,6 +2,7 @@
 #define ASYNCACTION_H
 
 #include "AsyncResult.h"
+class CActionContext;
 
 class CAsyncAction
 {
@@ -15,7 +16,7 @@ public:
 	CAsyncAction& operator=(const CAsyncAction& other);
 	virtual ~CAsyncAction();
 
-	TPromisePtr run();
+	TPromisePtr run(CActionContext* pCtx);
 
 	TResultPtr getResult() const { return m_pResult; }
 	TPromisePtr getPromise() const { return m_pPromise; }
@@ -25,16 +26,16 @@ public:
 	const std::string c_name;
 
 protected:
-	CAsyncResult::Status  runInternal();
+	CAsyncResult::Status  runInternal(CActionContext* pCtx);
 	
 	// override this to provide the core execution logic for the derived action
-	virtual void execute() = 0;
+	virtual void execute(CActionContext* pCtx) = 0;
 	
 	// override this to provide the option to abort potentially long or expensive derived action
 	virtual void abort() { /* do nothing by default*/ } 
 
-	TResultPtr  m_pResult;
-	TPromisePtr m_pPromise;
+	TResultPtr      m_pResult;
+	TPromisePtr     m_pPromise;
 };
 typedef std::shared_ptr<CAsyncAction> TActionPtr;
 

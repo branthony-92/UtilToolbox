@@ -15,6 +15,7 @@ void LoggerTest::SetUp()
 
 	m_pLogger = std::make_shared<CLogger>(path);
 	m_pLogger->setLogFileName("TestLog");
+	m_pLogger->enableLog(true);
 }
 
 void LoggerTest::TearDown()
@@ -23,17 +24,29 @@ void LoggerTest::TearDown()
 
 TEST_F(LoggerTest, CreateLog)
 {
+	m_pLogger->setWriteMode(WriteMode::TRUNCATE);
+	m_pLogger->logMsg({ Severity::Info, "Test Log Start" });
+
+	m_pLogger->setWriteMode(WriteMode::APPEND);
 	for (auto i = 0; i < 10; i++)
 	{
-		m_pLogger->logMsg({ Severity::Info, "Test Log" });
+		std::stringstream ss;
+		ss << "Test Log " << i + 1;
+		m_pLogger->logMsg({ Severity::Info, ss.str() });
 	}
 }
 
 TEST_F(LoggerTest, HighThroughputLogTest)
 {
 	m_pLogger->setLogFileName("TestLogHighThroughput");
+	m_pLogger->setWriteMode(WriteMode::TRUNCATE);
+	m_pLogger->logMsg({ Severity::Info, "Test Log Start" });
+
+	m_pLogger->setWriteMode(WriteMode::APPEND);
 	for (auto i = 0; i < 1000; i++)
 	{
-		m_pLogger->logMsg({ Severity::Info, "Test Log" });
+		std::stringstream ss;
+		ss << "Test Log " << i + 1;
+		m_pLogger->logMsg({ Severity::Info, ss.str() });
 	}
 }

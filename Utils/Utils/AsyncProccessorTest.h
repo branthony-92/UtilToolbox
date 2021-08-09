@@ -4,8 +4,13 @@
 #include <gtest\gtest.h>
 #include "AsyncAction.h"
 #include "TestActions.h"
-class AsyncProccessorTest : public ::testing::Test
+#include "ActionContext.h"
+class AsyncProccessorTest : public ::testing::Test, public CActionContext
 {
+public:
+	AsyncProccessorTest()
+		: CActionContext("TestContext")
+	{}
 protected:
 	void SetUp();
 	void TearDown();

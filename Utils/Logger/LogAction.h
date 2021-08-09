@@ -1,8 +1,10 @@
 #ifndef LOGACTION_H
 #define LOGACTION_H
 
-#include "AsyncAction.h"
 #include "LogMessage.h"
+#include "AsyncAction.h"
+
+class CActionContext;
 
 class CLogAction : public CAsyncAction
 {
@@ -11,18 +13,11 @@ class CLogAction : public CAsyncAction
 public:
 	CLogAction()
 		: CAsyncAction("LogAction", std::make_shared<CAsyncResult>("EmptyResult"))
-		, m_params()
 		, m_abort(false)
 	{}
 
-	struct Params {
-		std::string logPath;
-		TLogQueue   logQueue;
-		Params() : logPath(""), logQueue() {}
-	} m_params;
-
 protected:
-	void execute() override;
+	void execute(CActionContext* pCtx) override;
 	void abort() override { m_abort = true; };
 };
 typedef std::unique_ptr<CLogAction> TLogActionPtr;
