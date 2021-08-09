@@ -4,6 +4,8 @@
 #include <cpprest/json.h>
 #include <set>
 
+#include "RESTConnection.h"
+
 // JSON key mappings
 namespace JSONModelKeys
 {
@@ -105,6 +107,7 @@ protected:
 	std::atomic_bool m_resetFlag;
 
 	std::set<std::string> m_endpoints;
+	TConnectionMgrPtr     m_pConnectionMgr;
 
 public:
 	RESTEndpointContext(std::string name) 
@@ -112,6 +115,7 @@ public:
 		, m_stopFlag(false)
 		, m_resetFlag(false)
 		, m_serverInfo()
+		, m_pConnectionMgr(nullptr)
 	{}
 
 	ServerInfo& serverInfo() { return m_serverInfo; }
