@@ -43,7 +43,10 @@ protected:
 public:
 	void addEndpoint(std::string path, TEndpointPtr pEndpoint);
 
-	bool startServer();
+	bool startServer(utility::string_t URL);
+
+	bool startServer_s(utility::string_t URL, const std::function<void(boost::asio::ssl::context&)>& ssl_context_callback);
+
 	void stopServer();
 
 	TEndpointPtr retrieveEndpoint(const std::string name) const;
@@ -62,6 +65,7 @@ public:
 
 	void updateURI(const ServerURI& meta);
 private:
+	bool startServerInternal();
 
 };
 typedef std::shared_ptr<RESTServer> TRESTServerPtr;

@@ -116,15 +116,15 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;CPPREST_FORCE_HTTP_LISTENER_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\3rdParty\CPPREST\include;..\ActionProcessor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\3rdParty\CPPREST\include;..\3rdParty\CPPREST\include\openssl;..\ActionProcessor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>cpprest_2_10d.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;zlibd.lib;ActionProcessor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>boost_atomic-vc140-mt-gd.lib;boost_chrono-vc140-mt-gd.lib;boost_container-vc140-mt-gd.lib;boost_context-vc140-mt-gd.lib;boost_coroutine-vc140-mt-gd.lib;boost_date_time-vc140-mt-gd.lib;boost_exception-vc140-mt-gd.lib;boost_math_c99-vc140-mt-gd.lib;boost_math_c99f-vc140-mt-gd.lib;boost_math_c99l-vc140-mt-gd.lib;boost_math_tr1-vc140-mt-gd.lib;boost_math_tr1f-vc140-mt-gd.lib;boost_math_tr1l-vc140-mt-gd.lib;boost_regex-vc140-mt-gd.lib;boost_system-vc140-mt-gd.lib;boost_thread-vc140-mt-gd.lib;brotlicommon-static.lib;brotlidec-static.lib;brotlienc-static.lib;cpprest_2_10d.lib;libcrypto.lib;libssl.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

@@ -6,6 +6,10 @@ using namespace web;
 using namespace web::http;
 using namespace web::http::experimental::listener;
 using namespace web::json;
+using namespace web;
+
+namespace net = boost::asio;
+namespace ssl = net::ssl;
 
 
 RESTServer::RESTServer(TRESTCtxPtr pCtx)
@@ -48,33 +52,56 @@ void RESTServer::addEndpoint(std::string path, TEndpointPtr pEndpoint)
 	m_pCtx->addEndpoint(path);
 }
 
-bool RESTServer::startServer()
+bool RESTServer::startServer(utility::string_t URL)
+{
+	auto uri = m_pCtx->serverInfo().URI;
+
+	stopServer();
+	TListenerPtr pListener = nullptr;
+
+	if (uri.schema != "http") return false;
+
+	// create and open the listener (No SSL)
+	pListener = std::make_shared<http_listener>(URL);
+
+	setListener(pListener);
+
+	return startServerInternal();
+}
+bool RESTServer::startServer_s(utility::string_t URL, const std::function<void(boost::asio::ssl::context&)>& ssl_context_callback)
+{
+	auto uri = m_pCtx->serverInfo().URI;
+
+	stopServer();
+	TListenerPtr pListener = nullptr;
+
+	if (uri.schema != "https") return false;
+
+	http_listener_config listen_config;
+	listen_config.set_ssl_context_callback(ssl_context_callback);
+	listen_config.set_timeout(utility::seconds(10));
+
+	// create and open the listener (With SSL)
+	pListener = std::make_shared<http_listener>(URL, listen_config);
+
+	// update the listener pointer
+	setListener(pListener);
+
+	return startServerInternal();
+}
+
+bool RESTServer::startServerInternal()
 {
 	try
 	{
-		auto info = m_pCtx->serverInfo();
-		if (info.URLString.empty())
-		{
-			// we can't start the server without a URL
-			return false;
-		}
-		
-		// kill the current listener if there is one
-		stopServer();
-		 
-		auto URL = utility::conversions::to_string_t(getURL());
+		auto pListener = getListener();
+		if (!pListener) return false;
 
-		// create and open the listener
-		auto pListener = std::make_shared<http_listener>(URL);
-		
 		pListener->support([&](http_request req) {
 			handleRequest(req);
 		});
 		pListener->open().wait();
-		
-		// update the listener pointer
-		setListener(pListener);
-		
+
 		// update the server status and metadata
 		setStatus(ServerInfo::ServerStatus::Listening);
 		m_pCtx->ping();

@@ -61,3 +61,6 @@
 /Utils/RESTLib/x64/Debug
 /Utils/ServerTestApp/x64/Debug
 /Utils/Trees/x64/Debug
+*.pem
+*.csr
+*.crt

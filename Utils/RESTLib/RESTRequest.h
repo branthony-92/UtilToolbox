@@ -2,85 +2,75 @@
 #define RESTREQUEST_H
 
 #include <cpprest\uri.h>
+#include <cpprest\http_client.h>
 #include <map>
 #include "AsyncAction.h"
+#include "AsyncResult.h"
 #include "HTTPUtils.h"
 
-class RESTResponse : public CAsyncResult
-{
-public:
-	RESTResponse();
-
-};
-typedef std::shared_ptr<RESTResponse> TRESTResponsePtr;
-
-
-class RESTRequestBase : public CAsyncAction
-{
+class RequestData {
 public:
 	typedef std::map<utility::string_t, utility::string_t> TQueryMap;
-
-	RESTRequestBase(Utl::RequestMethodID method, TRESTResponsePtr pResponse, unsigned int timeout)
-		: CAsyncAction(Utl::c_methodIDReflections.at(method), pResponse, timeout)
-		, m_method(method)
-		, m_path()
+	RequestData()
+		: m_method()
+		, m_rootPath()
+		, m_endpointPath()
 		, m_body()
 		, m_queries()
 	{}
 
-	utility::string_t  getPath()    const { return m_path;    }
-	web::json::value   getBody()    const { return m_body;	  }
-	TQueryMap		   getQueries() const { return m_queries; }
-	Utl::RequestMethodID getMethod() const { return m_method; }
+	utility::string_t  getRootPath()      const { return m_rootPath;     }
+	utility::string_t  getEndpointPath()  const { return m_endpointPath; }
+	web::json::value   getBody()          const { return m_body;	     }
+	TQueryMap		   getQueries()       const { return m_queries;      }
+	Utl::RequestMethodID getMethod()      const { return m_method;	     }
 
-	void setPath(utility::string_t path) { m_path = path; }
-	void setBody(web::json::value body ) { m_body = body; }
+	void setRootPath(utility::string_t path)     { m_rootPath = path;     }
+	void setEndpointPath(utility::string_t path) { m_endpointPath = path; }
+	void setBody(web::json::value body )		 { m_body = body;		  }
 
 	void addQuery(utility::string_t key, utility::string_t value) {
 		m_queries.insert_or_assign(key, value);
 	}
 
-protected:
-						       
-	utility::string_t          m_path;
-	web::json::value           m_body;
-	TQueryMap		           m_queries;
+private:
+	utility::string_t m_rootPath;
+	utility::string_t m_endpointPath;
+	web::json::value  m_body;
+	TQueryMap		  m_queries;
 
 	const Utl::RequestMethodID m_method;
 };
 
-class RESTRequestGet : public RESTRequestBase
+class RESTResponse : public CAsyncResult
 {
+	web::http::http_response m_response;
 public:
-	RESTRequestGet(TRESTResponsePtr pResponse, unsigned int timeout)
-		: RESTRequestBase(Utl::RequestMethodID::GET, pResponse, timeout)
+	RESTResponse(std::string name) 
+		: CAsyncResult(name) 
+		, m_response() 
 	{}
 
-	virtual void execute(CActionContext* pCtx) override;
+	web::http::http_response getResponse() const     { return m_response; }
+	void setResponse(web::http::http_response resp)  { m_response = resp; }
 };
+typedef std::shared_ptr<RESTResponse> TRESTRespPtr;
 
-class RESTRequestPut : public RESTRequestBase
+
+class RESTRequest : public CAsyncAction
 {
+	RequestData m_reqData;
 public:
-	RESTRequestPut(TRESTResponsePtr pResponse, unsigned int timeout)
-		: RESTRequestBase(Utl::RequestMethodID::PUT, pResponse, timeout)
-	{}
-	virtual void execute(CActionContext* pCtx) override;
-};
 
-class RESTRequestPost : public RESTRequestBase
-{
-	RESTRequestPost(TRESTResponsePtr pResponse, unsigned int timeout)
-		: RESTRequestBase(Utl::RequestMethodID::POST, pResponse, timeout)
+	RESTRequest(RequestData data, TRESTRespPtr pResponse, unsigned int timeout)
+		: CAsyncAction(Utl::c_methodIDReflections.at(data.getMethod()), pResponse, timeout)
+		, m_reqData()
 	{}
-	virtual void execute(CActionContext* pCtx) override;
-};
 
-class RESTRequestDelete : public RESTRequestBase
-{
-	RESTRequestDelete(TRESTResponsePtr pResponse, unsigned int timeout)
-		: RESTRequestBase(Utl::RequestMethodID::DEL, pResponse, timeout)
-	{}
-	virtual void execute(CActionContext* pCtx) override;
+	RequestData getData() const { return m_reqData;  }
+protected:
+	void execute(CActionContext* pCtx) override;
 };
+typedef std::shared_ptr<RESTRequest> TRESTReqPtr;
+typedef std::list<TRESTReqPtr> TReqQueue;
 #endif // !RESTREQUEST_H

@@ -2,6 +2,7 @@
 #define HTTPUtils_H
 
 #include <cpprest\json.h>
+#include <cpprest\http_client.h>
 #include <map>
 
 namespace Utl

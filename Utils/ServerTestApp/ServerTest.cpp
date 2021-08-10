@@ -2,7 +2,12 @@
 #include "ServerTest.h"
 #include "TestEndpoints.h"
 
+namespace net = boost::asio;
+namespace ssl = net::ssl;
+
 using namespace std::chrono_literals;
+
+constexpr bool c_HTTPS = true;
 
 TestApp::TestApp()
 	: m_pServer(nullptr)
@@ -24,7 +29,7 @@ void TestApp::init()
 
 	// define the URI and pass it to the server
 	ServerURI uri;
-	uri.schema = "http";
+	uri.schema = c_HTTPS ? "https" : "http";
 	uri.host   = "localhost";
 	uri.port   = 8080;
 	uri.root   = "api";
@@ -57,7 +62,40 @@ void TestApp::init()
 	m_pServer->addEndpoint(endpointName_3,   pEndpoint3);
 
 	// spin it up
-	m_pServer->startServer();
+	if (c_HTTPS)
+	{
+		auto ssl_callback = [](ssl::context& ctx) {
+			try {
+				printf("SSL Context Callback entered\n");
+				ctx.set_options(
+					ssl::context::default_workarounds |
+					ssl::context::no_sslv2 | 
+					ssl::context::no_tlsv1 |
+					ssl::context::no_tlsv1_1 |
+					ssl::context::single_dh_use
+				);
+
+				ctx.set_password_callback(
+					[](std::size_t /*max_length*/,
+						ssl::context::password_purpose /*purpose*/) {
+					return "test";
+				});
+
+				ctx.use_certificate_chain_file("server.crt");
+				ctx.use_private_key_file("serverKey.pem", ssl::context::pem);
+				ctx.use_tmp_dh_file("dhparam1024.pem");
+			}
+			catch (std::exception const& e) {
+				std::clog << "ERROR: " << e.what() << "\n";
+			}
+		};
+		m_pServer->startServer_s(utility::conversions::to_string_t(info.URLString), ssl_callback);
+	}
+	else
+	{
+		m_pServer->startServer(utility::conversions::to_string_t(info.URLString));
+	}
+	std::cout << "Server Listening at: " << URL() << "\n";
 }
 
 void TestApp::run()

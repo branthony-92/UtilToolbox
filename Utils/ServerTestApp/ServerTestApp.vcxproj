@@ -80,6 +80,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <LibraryPath>..\3rdParty\CPPREST\x64\Dynamic\$(Configuration)\lib;$(LibraryPath)</LibraryPath>
+    <ExecutablePath>..\3rdParty\CPPREST\x64\Dynamic\$(Configuration)\bin;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -116,9 +117,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;CPPREST_FORCE_HTTP_LISTENER_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\RESTLib;..\3rdParty\CPPREST\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\RESTLib;..\3rdParty\CPPREST\include;..\3rdParty\CPPREST\include\openssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
@@ -126,7 +127,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\RESTLib\$(Platform)\$(Configuration)\RESTLib.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;cpprest_2_10d.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>..\RESTLib\$(Platform)\$(Configuration)\RESTLib.lib;boost_atomic-vc140-mt-gd.lib;boost_chrono-vc140-mt-gd.lib;boost_container-vc140-mt-gd.lib;boost_context-vc140-mt-gd.lib;boost_coroutine-vc140-mt-gd.lib;boost_date_time-vc140-mt-gd.lib;boost_exception-vc140-mt-gd.lib;boost_math_c99-vc140-mt-gd.lib;boost_math_c99f-vc140-mt-gd.lib;boost_math_c99l-vc140-mt-gd.lib;boost_math_tr1-vc140-mt-gd.lib;boost_math_tr1f-vc140-mt-gd.lib;boost_math_tr1l-vc140-mt-gd.lib;boost_regex-vc140-mt-gd.lib;boost_system-vc140-mt-gd.lib;boost_thread-vc140-mt-gd.lib;brotlicommon.lib;brotlidec.lib;brotlienc.lib;cpprest_2_10d.lib;libcrypto.lib;libssl.lib;zlibd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

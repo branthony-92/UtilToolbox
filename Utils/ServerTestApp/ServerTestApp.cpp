@@ -2,17 +2,19 @@
 //
 #include "stdafx.h"
 #include <iostream>
+#include <cpprest/http_listener.h>
+#include <cpprest/json.h>
 
 #include "ServerTest.h"
 #include "TestEndpoints.h"
 #include "RESTServer.h"
+
 
 int main()
 {
 	TestApp test;
 
 	test.init();
-	std::cout << "Server Listening at: " << test.URL() << "\n";
 	test.run();
 	std::cout << "Server timed out";
 }
