@@ -1,29 +1,12 @@
 #include "StdAfx.h"
 #include "RESTServer.h"
+#include "HTTPUtils.h"
 
 using namespace web;
 using namespace web::http;
 using namespace web::http::experimental::listener;
 using namespace web::json;
 
-namespace
-{
-	enum class RequestMethodID
-	{
-		GET,
-		POST,
-		PUT,
-		DEL,
-	};
-
-	const std::map<const utility::string_t, const RequestMethodID> c_methodMap =
-	{
-		{ L"GET",  RequestMethodID::GET  },
-		{ L"POST", RequestMethodID::POST },
-		{ L"PUT",  RequestMethodID::PUT  },
-		{ L"DEL",  RequestMethodID::DEL  }
-	};
-}
 
 RESTServer::RESTServer(TRESTCtxPtr pCtx)
 	: m_pListener(nullptr)
@@ -144,26 +127,26 @@ void RESTServer::handleRequest(http_request req)
 
 		// retrieve the method from the request and grab its ID reflection
 		auto mthd = req.method();
-		if (c_methodMap.find(mthd) == c_methodMap.end())
+		if (Utl::c_methodMap.find(mthd) == Utl::c_methodMap.end())
 		{
 			throw RESTServerException("Method reflection not found", ServerErrorCode::MethodNotSupported);
 		}
 	
 		// call the appropriate method handler for that endpoint
 		web::json::value response;
-		auto m = c_methodMap.at(mthd);
+		auto m = Utl::c_methodMap.at(mthd);
 		switch (m)
 		{
-		case RequestMethodID::GET:
+		case Utl::RequestMethodID::GET:
 			response = pEndpoint->handleGet(req, m_pCtx);
 			break;
-		case RequestMethodID::POST:
+		case Utl::RequestMethodID::POST:
 			response = pEndpoint->handlePost(req, m_pCtx);
 			break;
-		case RequestMethodID::PUT:
+		case Utl::RequestMethodID::PUT:
 			response = pEndpoint->handlePut(req, m_pCtx);
 			break;
-		case RequestMethodID::DEL:
+		case Utl::RequestMethodID::DEL:
 			response = pEndpoint->handleDelete(req, m_pCtx);
 			break;
 		default:

@@ -36,6 +36,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerTestApp", "..\ServerT
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RESTLib", "..\RESTLib\RESTLib.vcxproj", "{444899F3-F3EE-478A-9177-6E31CF42D18D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3F4B7C50-BAC8-40EF-B9EF-9616CE4E5557} = {3F4B7C50-BAC8-40EF-B9EF-9616CE4E5557}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

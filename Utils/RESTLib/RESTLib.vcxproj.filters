@@ -54,6 +54,12 @@
     <ClInclude Include="RESTClient.h">
       <Filter>Header Files\ClientSide</Filter>
     </ClInclude>
+    <ClInclude Include="RESTRequest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTTPUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RESTServer.cpp">
@@ -76,6 +82,9 @@
     </ClCompile>
     <ClCompile Include="RESTClient.cpp">
       <Filter>Source Files\ClientSide</Filter>
+    </ClCompile>
+    <ClCompile Include="RESTRequest.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
