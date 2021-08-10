@@ -46,8 +46,10 @@ public:
 	virtual ~ConnectionManager();
 
 	// connection management
-	TConnectionPtr openNewConnection(Token token);
+	TConnectionPtr openNewConnection(ConnectionManager::TokenType type, unsigned int timeout);
 	TConnectionPtr getConnection(unsigned int id);
+
+	TConnectionMap getConnections() const { return m_connections; }
 
 	void closeConnection(const unsigned int id);
 	ConnectionStatus validateConnection(const unsigned int id, const std::string& token);
@@ -62,7 +64,7 @@ private:
 private:
 	TConnectionMap m_connections;
 };
-typedef std::shared_ptr<ConnectionManager> TConnectionMgrPtr;
+typedef std::unique_ptr<ConnectionManager> TConnectionMgrPtr;
 
 class ConnectionManager::Connection
 {

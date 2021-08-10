@@ -5,7 +5,7 @@
 #include <cpprest/json.h>
 
 #include "RESTEndpoint.h"
-#include "RESTEndpointContext.h"
+#include "RESTServerContext.h"
 
 using namespace web;
 using namespace web::http;
@@ -36,7 +36,7 @@ protected:
 	TListenerPtr m_pListener;
 	TRESTCtxPtr  m_pCtx;
 
-	unsigned long	m_transactionCounter;
+	unsigned int m_transactionCounter;
 
 	mutable std::mutex m_mutex;
 
@@ -48,7 +48,7 @@ public:
 
 	TEndpointPtr retrieveEndpoint(const std::string name) const;
 
-	unsigned long getTransactionID() const { TLock lock(m_mutex); return m_transactionCounter; }
+	unsigned int getTransactionID() const { TLock lock(m_mutex); return m_transactionCounter; }
 
 	ServerInfo::ServerStatus getStatus() const      { TLock lock(m_mutex); return m_pCtx->serverInfo().serverState; }
 	void setStatus(ServerInfo::ServerStatus status) { TLock lock(m_mutex); m_pCtx->serverInfo().serverState = status; }

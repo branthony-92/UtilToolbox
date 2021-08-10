@@ -13,36 +13,69 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\ServerSide">
+      <UniqueIdentifier>{b4818385-14a1-4663-a606-80b50a5f5d4d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ServerSide">
+      <UniqueIdentifier>{a4be8dcc-e145-485a-a712-48b49e5c39b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ClientSide">
+      <UniqueIdentifier>{39af94b2-9619-4cd7-87a8-af575aadeffb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ClientSide">
+      <UniqueIdentifier>{b0667303-dfad-4cdd-9224-2f89653311be}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RESTConnection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RESTEndpoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RESTEndpointContext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RESTServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RESTServer.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTConnection.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTEndpoint.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTServerContext.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTServerException.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="Models.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JSONModelKeys.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTClient.h">
+      <Filter>Header Files\ClientSide</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="RESTServer.cpp">
+      <Filter>Source Files\ServerSide</Filter>
+    </ClCompile>
     <ClCompile Include="RESTConnection.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ServerSide</Filter>
     </ClCompile>
     <ClCompile Include="RESTEndpoint.cpp">
+      <Filter>Source Files\ServerSide</Filter>
+    </ClCompile>
+    <ClCompile Include="RESTServerContext.cpp">
+      <Filter>Source Files\ServerSide</Filter>
+    </ClCompile>
+    <ClCompile Include="RESTServerException.cpp">
+      <Filter>Source Files\ServerSide</Filter>
+    </ClCompile>
+    <ClCompile Include="Models.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RESTEndpointContext.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RESTServer.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="RESTClient.cpp">
+      <Filter>Source Files\ClientSide</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

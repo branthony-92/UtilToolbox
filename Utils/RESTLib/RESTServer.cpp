@@ -94,7 +94,7 @@ bool RESTServer::startServer()
 		
 		// update the server status and metadata
 		setStatus(ServerInfo::ServerStatus::Listening);
-
+		m_pCtx->ping();
 		return true;
 	}
 	catch(std::exception & err)
@@ -120,53 +120,77 @@ void RESTServer::stopServer()
 
 void RESTServer::handleRequest(http_request req)
 {
+	using namespace JSONModelKeys::ResponseKeys;
+
+	unsigned int transactionID = 0;
 	{
 		// increment the transaction counter
 		TLock lock(m_mutex);
-		m_transactionCounter++;
-	}
-	
-	// determine which endpoint we want and retrieve a pointer to it
-	utility::string_t endpointName = req.relative_uri().path();
-	auto pEndpoint = retrieveEndpoint(utility::conversions::to_utf8string(endpointName));
- 
-	if (!pEndpoint)
-	{
-		auto errBody = RESTEndpoint::createErrorJsonBody("Endpoint not found");
-		req.reply(status_codes::BadRequest, errBody);
-		return;
-	}
+		transactionID = m_transactionCounter++;
 
-	// retrieve the method from the request and grab its ID reflection
-	auto mthd = req.method();
-	if (c_methodMap.find(mthd) == c_methodMap.end())
-	{
-		auto errBody = RESTEndpoint::createErrorJsonBody("Method reflection not found");
-		req.reply(status_codes::InternalError, errBody);
-		return;
+		// update the last transaction timestamp
+		m_pCtx->ping();
 	}
-	
-	// call the appropriate method handler for that endpoint
-	auto m = c_methodMap.at(mthd);
-	switch (m)
+	try
 	{
-	case RequestMethodID::GET:
-		pEndpoint->handleGet(req, m_pCtx);
-		break;
-	case RequestMethodID::POST:
-		pEndpoint->handlePost(req, m_pCtx);
-		break;
-	case RequestMethodID::PUT:
-		pEndpoint->handlePut(req, m_pCtx);
-		break;
-	case RequestMethodID::DEL:
-		pEndpoint->handleDelete(req, m_pCtx);
-		break;
-	default:
-		auto errBody = RESTEndpoint::createErrorJsonBody("Method not recognized");
-		req.reply(status_codes::BadRequest, errBody);
-		break;
+		// determine which endpoint we want and retrieve a pointer to it
+		utility::string_t endpointName = req.relative_uri().path();
+		auto pEndpoint = retrieveEndpoint(utility::conversions::to_utf8string(endpointName));
+ 
+		if (!pEndpoint)
+		{
+			throw RESTServerException("Endpoint not found", ServerErrorCode::BadEndpoint);
+		}
+
+		// retrieve the method from the request and grab its ID reflection
+		auto mthd = req.method();
+		if (c_methodMap.find(mthd) == c_methodMap.end())
+		{
+			throw RESTServerException("Method reflection not found", ServerErrorCode::MethodNotSupported);
+		}
+	
+		// call the appropriate method handler for that endpoint
+		web::json::value response;
+		auto m = c_methodMap.at(mthd);
+		switch (m)
+		{
+		case RequestMethodID::GET:
+			response = pEndpoint->handleGet(req, m_pCtx);
+			break;
+		case RequestMethodID::POST:
+			response = pEndpoint->handlePost(req, m_pCtx);
+			break;
+		case RequestMethodID::PUT:
+			response = pEndpoint->handlePut(req, m_pCtx);
+			break;
+		case RequestMethodID::DEL:
+			response = pEndpoint->handleDelete(req, m_pCtx);
+			break;
+		default:
+			throw RESTServerException("Method Not Recognized", ServerErrorCode::MethodNotSupported);
+			break;
+		}
+
+		// append the server's transactionID
+		response[c_serverXactionID] = web::json::value::number(transactionID);
+		req.reply(web::http::status_codes::OK, response);
 	}	
+	catch (RESTServerException& err)
+	{
+		// this is mainly to handle bad requests
+		ResponseBody resp(-1, err);
+		auto errBody = resp.toJson();
+		errBody[c_serverXactionID] = web::json::value::number(transactionID);
+		req.reply(status_codes::BadRequest, errBody);
+	}
+	catch (std::exception& err)
+	{
+		// This is mainly to handle internal errors
+		ResponseBody resp(-1, RESTServerException(err));
+		auto errBody = resp.toJson();
+		errBody[c_serverXactionID] = web::json::value::number(transactionID);
+		req.reply(status_codes::InternalError, errBody);
+	}
 }
 
 TEndpointPtr RESTServer::retrieveEndpoint(const std::string name) const
@@ -180,7 +204,6 @@ TEndpointPtr RESTServer::retrieveEndpoint(const std::string name) const
 	{
 		pEndpoint = endpointData->second;
 	}
-
 	return pEndpoint;
 }
 

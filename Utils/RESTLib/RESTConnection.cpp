@@ -1,7 +1,21 @@
 #include "StdAfx.h"
 #include "RESTConnection.h"
 
+#include <iostream>
+#include <vector>
 #include <random>
+#include <functional> //for std::function
+#include <algorithm>  //for std::generate_n
+
+typedef std::vector<char> char_array;
+const char_array c_tokenChars = {	
+	'0','1','2','3','4','5','6','7','8','9',
+	'A','B','C','D','E','F','G','H','I','J','K','L','M',
+	'N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+	'a','b','c','d','e','f','g','h','i','j','k','l','m',
+	'n','o','p','q','r','s','t','u','v','w','x','y','z'		
+};
+const auto c_tokenLength = 64u;
 
 ConnectionManager::ConnectionManager()
 	: m_connections()
@@ -48,8 +62,23 @@ unsigned int ConnectionManager::generateID()
 
 std::string ConnectionManager::generateTokenValue()
 {
-	std::string tokenString = "";
-	return tokenString;
+	//1) create a non-deterministic random number generator      
+	std::default_random_engine rng(std::random_device{}());
+
+	//2) create a random number "shaper" that will give
+	//   us uniformly distributed indices into the character set
+	std::uniform_int_distribution<> dist(0, c_tokenChars.size() - 1);
+
+	//3) create a function that ties them together, to get:
+	//   a non-deterministic uniform distribution from the 
+	//   character set of your choice.
+	auto randchar = [&]() {return c_tokenChars[dist(rng)]; };
+
+	//4) set the length of the string you want and profit!        
+	std::string str(c_tokenLength, 0);
+
+	std::generate_n(str.begin(), c_tokenLength, randchar);
+	return str;
 }
 
 ConnectionManager::ConnectionStatus ConnectionManager::validateConnection(const unsigned int id, const std::string& token)
@@ -60,21 +89,21 @@ ConnectionManager::ConnectionStatus ConnectionManager::validateConnection(const 
 	// check the ID
 	if (pConnection->getID() != id)
 	{
-		pConnection->setStatus(ConnectionStatus::Invalid);
 		m_connections.erase(m_connections.find(id));
 		return ConnectionStatus::Invalid;
+	}
+
+	// check the token
+	if (!pConnection->getToken().compare(token))
+	{
+		m_connections.erase(m_connections.find(id));
+		return ConnectionStatus::BadToken;
 	}
 
 	// check the age
 	if (pConnection->isTimedOut())
 	{
 		pConnection->setStatus(ConnectionStatus::StaleToken);
-	}
-
-	// check the token
-	if (!pConnection->getToken().compare(token))
-	{
-		pConnection->setStatus(ConnectionStatus::BadToken);
 	}
 
 	return pConnection->getStatus();
@@ -89,9 +118,10 @@ void ConnectionManager::closeConnection(const unsigned int id)
 	pConnection->setStatus(ConnectionStatus::Closed);
 }
 
-ConnectionManager::TConnectionPtr ConnectionManager::openNewConnection(Token token)
+ConnectionManager::TConnectionPtr ConnectionManager::openNewConnection(ConnectionManager::TokenType type, unsigned int timeout)
 {
 	auto connectionID = generateID();
+
 
 	// check if this ID is already in use
 	TConnectionPtr pConnection = getConnection(connectionID);
@@ -104,9 +134,14 @@ ConnectionManager::TConnectionPtr ConnectionManager::openNewConnection(Token tok
 
 	pConnection = std::make_shared<Connection>(connectionID);
 
-	// generate the token value
-	token.val = generateTokenValue();
+	// generate the token
+	Token token;
+	token.type    = type;
+	token.timeout = timeout;
+	token.val	  = generateTokenValue();
+
 	pConnection->setToken(token);
+	pConnection->setStatus(ConnectionStatus::Open);
 
 	m_connections.insert_or_assign(connectionID, pConnection);
 	return pConnection;

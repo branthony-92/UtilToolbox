@@ -144,17 +144,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="JSONModelKeys.h" />
+    <ClInclude Include="Models.h" />
+    <ClInclude Include="RESTClient.h" />
     <ClInclude Include="RESTConnection.h" />
     <ClInclude Include="RESTEndpoint.h" />
-    <ClInclude Include="RESTEndpointContext.h" />
+    <ClInclude Include="RESTServerContext.h" />
     <ClInclude Include="RESTServer.h" />
+    <ClInclude Include="RESTServerException.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Models.cpp" />
+    <ClCompile Include="RESTClient.cpp" />
     <ClCompile Include="RESTConnection.cpp" />
     <ClCompile Include="RESTEndpoint.cpp" />
-    <ClCompile Include="RESTEndpointContext.cpp" />
+    <ClCompile Include="RESTServerContext.cpp" />
     <ClCompile Include="RESTServer.cpp" />
+    <ClCompile Include="RESTServerException.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

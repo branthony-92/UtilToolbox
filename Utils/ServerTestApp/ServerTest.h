@@ -3,7 +3,7 @@
 
 #include "RESTServer.h"
 
-class ServerTest : public RESTEndpointContext
+class ServerTest : public RESTServerContext
 {
 public:
 	struct TestModel {
@@ -15,7 +15,7 @@ public:
 		{}
 	};
 	ServerTest()
-		: RESTEndpointContext("Test Context")
+		: RESTServerContext("Test Context")
 		, m_testModel_1()
 		, m_testModel_2()
 	{
@@ -36,10 +36,13 @@ class TestApp {
 	TServerTestCtxPtr m_pTestContext;
 	TRESTServerPtr    m_pServer;
 
+
 public:
 	TestApp();
 	~TestApp();
 	void init();
 	void run();
+
+	std::string URL();
 };
 #endif // !SERVERTEST_H

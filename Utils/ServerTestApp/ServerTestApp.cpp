@@ -12,8 +12,7 @@ int main()
 	TestApp test;
 
 	test.init();
-
-	std::cout << "Server Listening at http://127.0.0.1:8080/api\n";
+	std::cout << "Server Listening at: " << test.URL() << "\n";
 	test.run();
 	std::cout << "Server timed out";
 }
