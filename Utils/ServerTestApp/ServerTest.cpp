@@ -32,7 +32,7 @@ void TestApp::init()
 	uri.schema = c_HTTPS ? "https" : "http";
 	uri.host   = "localhost";
 	uri.port   = 8080;
-	uri.root   = "api";
+	uri.root   = "/api";
 	m_pServer->updateURI(uri);
 
 	// store the server's metadata in the context
@@ -76,14 +76,13 @@ void TestApp::init()
 				);
 
 				ctx.set_password_callback(
-					[](std::size_t /*max_length*/,
-						ssl::context::password_purpose /*purpose*/) {
-					return "test";
-				});
+					[](std::size_t /*max_length*/, ssl::context::password_purpose /*purpose*/) 
+						{ return "test"; }
+				);
 
-				ctx.use_certificate_chain_file("server.crt");
-				ctx.use_private_key_file("serverKey.pem", ssl::context::pem);
-				ctx.use_tmp_dh_file("dhparam1024.pem");
+				ctx.use_certificate_chain_file("C:\\Windows\\SysWOW64\\RootTrustedCA.cer");
+				//ctx.use_private_key_file("C:\\Users\\xs_br\\source\\repos\\openssl-1.1\\x64\\bin\\serverKey.pem", ssl::context::pem);
+				ctx.use_tmp_dh_file("C:\\Users\\xs_br\\source\\repos\\openssl-1.1\\x64\\bin\\dhparam1024.pem");
 			}
 			catch (std::exception const& e) {
 				std::clog << "ERROR: " << e.what() << "\n";

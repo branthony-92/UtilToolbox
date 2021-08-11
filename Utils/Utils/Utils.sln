@@ -37,8 +37,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerTestApp", "..\ServerT
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RESTLib", "..\RESTLib\RESTLib.vcxproj", "{444899F3-F3EE-478A-9177-6E31CF42D18D}"
 	ProjectSection(ProjectDependencies) = postProject
+		{22937430-83D1-3194-B074-57F47B21774A} = {22937430-83D1-3194-B074-57F47B21774A}
 		{3F4B7C50-BAC8-40EF-B9EF-9616CE4E5557} = {3F4B7C50-BAC8-40EF-B9EF-9616CE4E5557}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cpprest", "..\3rdParty\cpprestsdk-master\build.x64v142\src\cpprest.vcxproj", "{22937430-83D1-3194-B074-57F47B21774A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -208,6 +211,18 @@ Global
 		{444899F3-F3EE-478A-9177-6E31CF42D18D}.RelWithDebInfo|x64.Build.0 = Release|x64
 		{444899F3-F3EE-478A-9177-6E31CF42D18D}.RelWithDebInfo|x86.ActiveCfg = Release|Win32
 		{444899F3-F3EE-478A-9177-6E31CF42D18D}.RelWithDebInfo|x86.Build.0 = Release|Win32
+		{22937430-83D1-3194-B074-57F47B21774A}.Debug|x64.ActiveCfg = Debug|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.Debug|x64.Build.0 = Debug|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.Debug|x86.ActiveCfg = Debug|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.MinSizeRel|x64.ActiveCfg = MinSizeRel|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.MinSizeRel|x64.Build.0 = MinSizeRel|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.MinSizeRel|x86.ActiveCfg = MinSizeRel|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.Release|x64.ActiveCfg = Release|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.Release|x64.Build.0 = Release|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.Release|x86.ActiveCfg = Release|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
+		{22937430-83D1-3194-B074-57F47B21774A}.RelWithDebInfo|x86.ActiveCfg = RelWithDebInfo|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
