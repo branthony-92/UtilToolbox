@@ -97,10 +97,12 @@ bool RESTServer::startServerInternal()
 		auto pListener = getListener();
 		if (!pListener) return false;
 
-		pListener->support([&](http_request req) {
-			handleRequest(req);
-		});
-		pListener->open().wait();
+		// general request handler
+		pListener->support( [&] (http_request req) { handleRequest(req); });
+
+		auto status = pListener->open().wait();
+
+		if (status != concurrency::completed) return false;
 
 		// update the server status and metadata
 		setStatus(ServerInfo::ServerStatus::Listening);
@@ -229,7 +231,7 @@ void RESTServer::updateURI(const ServerURI& meta)
 
 	// construct the URL fromthe metadata
 	std::ostringstream oss;
-	oss << meta.schema << "://" << meta.host << ":" << meta.port << "/" << meta.root;
+	oss << meta.schema << "://" << meta.host << ":" << meta.port << meta.root;
 	serverInfo.URLString = oss.str();
 }
 
