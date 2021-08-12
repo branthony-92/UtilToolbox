@@ -25,6 +25,6 @@ void ConnectionInfoBody::loadJSON(value info)
 {
 	m_id = info[U("Connection_ID")].as_integer();
 
-	m_pToken = createBody(JSONInfoBody::BodyType::Body_TokenInfo);
+	m_pToken = std::make_shared<TokenInfoBody>();
 	m_pToken->loadJSON(info[m_pToken->c_name]);
 }

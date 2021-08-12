@@ -37,7 +37,7 @@ std::shared_ptr<TokenInfoBody> ConnectionManager::refreshConnection(const unsign
 	std::chrono::seconds duration(pToken->getTimeout());
 	pToken->setExpirationTime(std::chrono::system_clock::now() + duration);
 
-	pToken->setVal( generateTokenValue());
+	pToken->setVal(generateTokenValue());
 	pConnection->setStatus(ConnectionStatus::Open);
 
 	return pToken;

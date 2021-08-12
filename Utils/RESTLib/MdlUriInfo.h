@@ -1,7 +1,6 @@
 #ifndef MDLURIINFO_H
 #define MDLURIINFO_H
 
-
 #include "RESTModels.h"
 
 class URIInfoBody : public JSONInfoBody

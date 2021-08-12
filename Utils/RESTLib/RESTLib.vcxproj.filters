@@ -63,9 +63,6 @@
     <ClInclude Include="HTTPUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RESTModels.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MdlResponseInfo.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
@@ -82,6 +79,9 @@
       <Filter>Header Files\Models</Filter>
     </ClInclude>
     <ClInclude Include="MdlServerInfo.h">
+      <Filter>Header Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="RESTModels.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
   </ItemGroup>

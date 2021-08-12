@@ -1,6 +1,7 @@
 #ifndef RESTCONNECTION_H
 #define RESTCONNECTION_H
 
+#include "MdlConnectionInfo.h"
 #include "MdlTokenInfo.h"
 
 class ConnectionManager {

@@ -5,9 +5,6 @@
 #include <map>
 #include <cpprest/json.h>
 
-#include "RESTServerException.h"
-#include "RESTConnection.h"
-
 using namespace utility;
 using namespace utility::conversions;
 using namespace web::json;
@@ -42,11 +39,7 @@ public:
 	static std::shared_ptr<JSONInfoBody> createBody(BodyType ID);
 	static std::shared_ptr<JSONInfoBody> createBody(string_t name);
 
-	template <typename T>
-	static std::shared_ptr<T> getBody(std::shared_ptr<T> pBody) {
-		return std::dynamic_pointer_cast<T>(pBody);
-	}
 };
-typedef std::map<string_t,std::shared_ptr< JSONInfoBody>> BodyMap;
+typedef std::map<string_t,std::shared_ptr<JSONInfoBody>> BodyMap;
 
 #endif // !RESTMODELS_H

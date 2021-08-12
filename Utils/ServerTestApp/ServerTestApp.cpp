@@ -64,13 +64,19 @@ int main(int argc, char* argv[])
 	auto portStr = args.getFlagValue("-port");
 	auto root    = args.getFlagValue("-root");
 
-	ServerURI uri;
-	uri.schema = schema.empty() ? "http" : schema;
-	uri.host   = host.empty() ? "192.168.2.16" : host;
-	uri.port   = portStr.empty() ? 8080 : std::stoi(portStr);
-	uri.root   = root;
+	auto pURI = std::make_shared<URIInfoBody>();
 
-	test.init(uri);
+	auto schemaVal = schema.empty() ? "http" : schema;
+	auto hostVal   = host.empty() ? "192.168.2.16" : host;
+	auto portVal   = portStr.empty() ? 8080 : std::stoi(portStr);
+	auto rootVal   = root;
+
+	pURI->setSchema(schemaVal);
+	pURI->setHost(hostVal);
+	pURI->setPort(portVal);
+	pURI->setRoot(rootVal);
+
+	test.init(pURI);
 	test.run();
 	std::cout << "Server timed out";
 }

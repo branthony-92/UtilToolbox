@@ -17,7 +17,7 @@ TestApp::~TestApp()
 {
 }
 
-void TestApp::init(ServerURI uri)
+void TestApp::init(std::shared_ptr<URIInfoBody> pUri)
 {
 	// create the context object and inject it into the server object via it's contructor
 
@@ -25,17 +25,24 @@ void TestApp::init(ServerURI uri)
 	m_pTestContext = std::make_shared<ServerTest>();
 	m_pServer      = std::make_shared<RESTServer>(m_pTestContext);
 
-	bool secure = uri.schema == "https";
+	bool secure = pUri->getSchema() == "https";
 
 	// define the URI and pass it to the server
-	m_pServer->updateURI(uri);
 
 	// store the server's metadata in the context
-	auto& info = m_pTestContext->serverInfo();
+	auto pInfo = std::make_shared<ServerInfoBody>();
+	pInfo->setURI(pUri);
 
-	info.serverName = "Brian Test Server";
-	info.APIVersion = 1.0;
-	info.serverIdleTimoutSec = 300u; // 5 min timeout
+	std::ostringstream oss;
+
+	oss << pUri->getSchema() << "://" << pUri->getHost() << ":" << pUri->getPort() << pUri->getRoot();
+	pInfo->setURLString(oss.str());
+
+	pInfo->setServerName("Brian Test Server");
+	pInfo->setAPIVer(1.0);
+	pInfo->setIdleTimeout(300u); // 5 min timeout
+	m_pTestContext->setServerInfo(pInfo);
+	m_pServer->updateURI(pInfo);
 	
 	// create our endpoint strings and and objects to be injected into the server
 	auto endpointNameRoot = "/";
@@ -83,11 +90,11 @@ void TestApp::init(ServerURI uri)
 				std::clog << "ERROR: " << e.what() << "\n";
 			}
 		};
-		m_pServer->startServer_s(utility::conversions::to_string_t(info.URLString), ssl_callback);
+		m_pServer->startServer_s(utility::conversions::to_string_t(oss.str()), ssl_callback);
 	}
 	else
 	{
-		m_pServer->startServer(utility::conversions::to_string_t(info.URLString));
+		m_pServer->startServer(utility::conversions::to_string_t(oss.str()));
 	}
 	std::cout << "Server Listening at: " << URL() << "\n";
 }

@@ -2,6 +2,7 @@
 #define MDLERRORINFO_H
 
 #include "RESTModels.h"
+#include "RESTServerException.h"
 
 class ErrorInfoBody : public JSONInfoBody
 {

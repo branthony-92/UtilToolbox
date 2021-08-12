@@ -2,6 +2,7 @@
 #include "TestEndpoints.h"
 #include "ServerTest.h"
 
+
 web::json::value TestEndpoint_1::handleGet(web::http::http_request& req, TRESTCtxPtr pCtx)
 {
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
@@ -13,13 +14,13 @@ web::json::value TestEndpoint_1::handleGet(web::http::http_request& req, TRESTCt
 	auto model = pTestCtx->m_testModel_1;
 	auto transactionID = static_cast<unsigned long>(m_currTransactionID++);
 
-	ResponseBody resp(transactionID);
+	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
 
-	auto result = resp.toJson();
+	auto result = pResp->toJSON();
 	auto name = utility::conversions::to_string_t(model.name);
 
 	result[U("Name")] = web::json::value::string(name);
-	result[U("Val")] = web::json::value::number(model.val);
+	result[U("Val")]  = web::json::value::number(model.val);
 
 	return result;
 }
@@ -42,8 +43,8 @@ web::json::value TestEndpoint_1::handlePut(web::http::http_request& req, TRESTCt
 	model.name = utility::conversions::to_utf8string(name);
 	model.val = val;
 
-	ResponseBody resp(transactionID);
-	auto result = resp.toJson();
+	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
+	auto result = pResp->toJSON();
 	return result;
 }
 
@@ -59,9 +60,9 @@ web::json::value TestEndpoint_2::handleGet(web::http::http_request& req, TRESTCt
 	auto model = pTestCtx->m_testModel_2;
 	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
 
-	ResponseBody resp(transactionID);
+	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
+	auto result = pResp->toJSON();
 
-	auto result = resp.toJson();
 	auto name = utility::conversions::to_string_t(model.name);
 
 	result[U("Name")] = web::json::value::string(name);
@@ -89,8 +90,9 @@ web::json::value TestEndpoint_2::handlePut(web::http::http_request& req, TRESTCt
 	model.name = utility::conversions::to_utf8string(name);
 	model.val = val;
 
-	ResponseBody resp(transactionID);
-	auto result = resp.toJson();
+	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
+	auto result = pResp->toJSON();
+
 	return result;
 }
 
@@ -104,9 +106,9 @@ web::json::value TestEndpoint_Add::handleGet(web::http::http_request& req, TREST
 	}
 	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
 
-	ResponseBody resp(transactionID);
+	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
 
-	auto result = resp.toJson();
+	auto result = pResp->toJSON();
 	auto val = pTestCtx->addValues();
 
 	result[U("Val")] = web::json::value::number(val);
@@ -122,14 +124,14 @@ web::json::value TestEndpoint_Root::handleGet(web::http::http_request& req, TRES
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
 
+	auto pResp = std::shared_ptr<ResponseInfoBody>();
 	auto info = pTestCtx->serverInfo();
+
+	pResp->addBody(info);
 	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
 
-	ResponseBody resp(transactionID);
-
-	auto result = resp.toJson();
-	result[JSONModelKeys::ServerInfoKeys::c_headerKey] = info.toJSON();
-
+	auto result = pResp->toJSON();
+	
 	return result;
 }
 
@@ -143,15 +145,14 @@ web::json::value TestEndpoint_Auth::handleGet(web::http::http_request& req, TRES
 
 	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
 
-	ResponseBody resp(transactionID);
-	auto result = resp.toJson();
+	auto pResp = std::make_shared<ResponseInfoBody>();
 
 	auto queryString = req.request_uri().query();
 
 	auto queries = req.request_uri().split_query(queryString);
 
-	auto idData    = queries.find(JSONModelKeys::ConnectionInfoKeys::c_connectionIDKey);
-	auto tokenData = queries.find(JSONModelKeys::ConnectionInfoKeys::c_connectionTokenKey);
+	auto idData    = queries.find(U("Connection_ID"));
+	auto tokenData = queries.find(U("Token"));
 
 	if (idData == queries.end())
 	{
@@ -173,7 +174,8 @@ web::json::value TestEndpoint_Auth::handleGet(web::http::http_request& req, TRES
 	auto info = pTestCtx->getConnectionInfo(id);
 		
 	// return the id and token
-	result[JSONModelKeys::ConnectionInfoKeys::c_headerKey] = info.toJSON();
+	pResp->addBody(info);
+	auto result = pResp->toJSON();
 
 	return result;
 }
@@ -188,13 +190,12 @@ web::json::value TestEndpoint_Auth::handlePost(web::http::http_request& req, TRE
 	}
 
 	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
-	ResponseBody resp(transactionID);
-	auto result = resp.toJson();
 
-	auto info = pTestCtx->handleConnectionRequest(ConnectionManager::TokenType::Transient, 600);
+	auto pResp = std::make_shared<ResponseInfoBody>();
 
-	// return the id and token
-	result[JSONModelKeys::ConnectionInfoKeys::c_headerKey] = info.toJSON();
+	auto info = pTestCtx->handleConnectionRequest(TokenInfoBody::Lifetime::Transient, 600);
+	pResp->addBody(info);
 
+	auto result = pResp->toJSON();
 	return result;
 }

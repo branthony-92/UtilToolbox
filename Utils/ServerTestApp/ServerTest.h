@@ -40,7 +40,7 @@ class TestApp {
 public:
 	TestApp();
 	~TestApp();
-	void init(ServerURI uri);
+	void init(std::shared_ptr<URIInfoBody> pUri);
 	void run();
 
 	std::string URL();

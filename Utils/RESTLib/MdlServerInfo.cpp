@@ -73,6 +73,6 @@ void ServerInfoBody::loadJSON(value info)
 		auto name = to_utf8string(e.as_string());
 		m_endpointNames.insert(name);
 	}
-	m_pURI = createBody(JSONInfoBody::BodyType::Body_URIInfo);
+	m_pURI = std::make_shared<URIInfoBody>();
 	m_pURI->loadJSON(info[m_pURI->c_name]);
 }

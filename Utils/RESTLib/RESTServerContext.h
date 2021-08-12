@@ -3,7 +3,7 @@
 
 #include "MdlServerInfo.h"
 #include "MdlConnectionInfo.h"
-
+#include "RESTConnection.h"
 class RESTServerContext
 {
 protected:
