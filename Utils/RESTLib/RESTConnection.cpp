@@ -27,18 +27,20 @@ ConnectionManager::~ConnectionManager()
 }
 
 
-ConnectionManager::Token ConnectionManager::refreshConnection(const unsigned int id)
+std::shared_ptr<TokenInfoBody> ConnectionManager::refreshConnection(const unsigned int id)
 {
 	auto pConnection = getConnection(id);
-	if (!pConnection) return Token();
+	if (!pConnection) return nullptr;
 	
-	auto& token = pConnection->tokenRef();
+	auto pToken = pConnection->getToken();
 
-	token.startTime = std::chrono::system_clock::now();
-	token.val = generateTokenValue();
+	std::chrono::seconds duration(pToken->getTimeout());
+	pToken->setExpirationTime(std::chrono::system_clock::now() + duration);
+
+	pToken->setVal( generateTokenValue());
 	pConnection->setStatus(ConnectionStatus::Open);
 
-	return token;
+	return pToken;
 }
 
 void ConnectionManager::removeClosedConnections()
@@ -94,7 +96,7 @@ ConnectionManager::ConnectionStatus ConnectionManager::validateConnection(const 
 	}
 
 	// check the token
-	if (!pConnection->getToken().compare(token))
+	if (!pConnection->getToken()->compare(token))
 	{
 		m_connections.erase(m_connections.find(id));
 		return ConnectionStatus::BadToken;
@@ -118,7 +120,7 @@ void ConnectionManager::closeConnection(const unsigned int id)
 	pConnection->setStatus(ConnectionStatus::Closed);
 }
 
-ConnectionManager::TConnectionPtr ConnectionManager::openNewConnection(ConnectionManager::TokenType type, unsigned int timeout)
+ConnectionManager::TConnectionPtr ConnectionManager::openNewConnection(TokenInfoBody::Lifetime type, unsigned int timeout)
 {
 	auto connectionID = generateID();
 
@@ -135,12 +137,15 @@ ConnectionManager::TConnectionPtr ConnectionManager::openNewConnection(Connectio
 	pConnection = std::make_shared<Connection>(connectionID);
 
 	// generate the token
-	Token token;
-	token.type    = type;
-	token.timeout = timeout;
-	token.val	  = generateTokenValue();
+	auto pToken = std::make_shared<TokenInfoBody>();
+	pToken->setType(type);
+	pToken->setTimeout(timeout);
+	pToken->setVal(generateTokenValue());
 
-	pConnection->setToken(token);
+	std::chrono::seconds duration(timeout);
+	pToken->setExpirationTime(std::chrono::system_clock::now() + duration);
+
+	pConnection->setToken(pToken);
 	pConnection->setStatus(ConnectionStatus::Open);
 
 	m_connections.insert_or_assign(connectionID, pConnection);
@@ -162,6 +167,5 @@ ConnectionManager::TConnectionPtr ConnectionManager::getConnection(unsigned int 
 bool ConnectionManager::Connection::isTimedOut() const
 {
 	auto now = std::chrono::system_clock::now();
-	auto dt = std::chrono::duration_cast<std::chrono::seconds>(now - m_connectionToken.startTime).count();
-	return dt > m_connectionToken.timeout;	
+	return (now > m_pConnectionToken->getExpirationTime());
 }

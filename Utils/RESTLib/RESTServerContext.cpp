@@ -1,58 +1,76 @@
 #include "StdAfx.h"
 #include "RESTServerContext.h"
 
+RESTServerContext::RESTServerContext(std::string name)
+	: m_name(name)
+	, m_lastTransaction()
+	, m_stopFlag(false)
+	, m_resetFlag(false)
+	, m_pServerInfo(nullptr)
+	, m_pConnectionMgr(std::make_unique<ConnectionManager>())
+{
+}
+
 bool RESTServerContext::addEndpoint(std::string name)
 {
-	if (m_serverInfo.endpoints.count(name) > 0) return false;
+	if (!m_pServerInfo) return false;
 
-	m_serverInfo.endpoints.insert(name);
+	auto endpoints = m_pServerInfo->getEndpointNames();
+
+	if (endpoints.count(name) > 0) return false;
+
+	endpoints.insert(name);
+	m_pServerInfo->setEndpointNames(endpoints);
 	return true;
 }
 
-ConnectionInfo RESTServerContext::handleConnectionRequest(ConnectionManager::TokenType type, unsigned int timeout)
+std::shared_ptr<ConnectionInfoBody> RESTServerContext::handleConnectionRequest(TokenInfoBody::Lifetime type, unsigned int timeout)
 {
-	ConnectionInfo info;
 	auto pConnection = m_pConnectionMgr->openNewConnection(type, timeout);
 
 	if (!pConnection)
 	{
-		return info;
+		return nullptr;
 	}
+	auto pInfo = std::make_shared<ConnectionInfoBody>();
 
 	// The client will get these values in return  and will need them 
 	// for all future requests
-	info.id    = pConnection->getID();
-	info.token = pConnection->getToken();
+	pInfo->setConnectionID(pConnection->getID());
+	pInfo->setToken(pConnection->getToken());
 
-	return info;
+	return pInfo;
 }
 
-ConnectionInfo RESTServerContext::handleConnectionRefreshRequest(unsigned int id)
+std::shared_ptr<ConnectionInfoBody> RESTServerContext::handleConnectionRefreshRequest(unsigned int id)
 {
-	auto token = m_pConnectionMgr->refreshConnection(id);
+	auto pToken = m_pConnectionMgr->refreshConnection(id);
 
-	ConnectionInfo info;
-	info.id    = id;
-	info.token = token;
+	if (!pToken) return nullptr;
 
-	return info;
+	auto pInfo = std::make_shared<ConnectionInfoBody>();
+	pInfo->setConnectionID(id);
+	pInfo->setToken(pToken);
+
+	return pInfo;
 }
 
-ConnectionInfo RESTServerContext::getConnectionInfo(unsigned int id)
+std::shared_ptr<ConnectionInfoBody> RESTServerContext::getConnectionInfo(unsigned int id)
 {
 	auto pConnection = m_pConnectionMgr->getConnection(id);
 
 	if (!pConnection)
 	{
-		return ConnectionInfo();
+		return nullptr;
 	}
-	auto token = pConnection->getToken();
+	auto pToken = pConnection->getToken();
+	if (!pToken) return nullptr;
 
-	ConnectionInfo info;
-	info.id = id;
-	info.token = token;
+	auto pInfo = std::make_shared<ConnectionInfoBody>();
+	pInfo->setConnectionID(id);
+	pInfo->setToken(pToken);
 
-	return info;
+	return pInfo;
 }
 
 bool RESTServerContext::checkConnection(unsigned int id, std::string token)
@@ -101,7 +119,7 @@ void RESTServerContext::checkTimeout()
 	auto now = std::chrono::system_clock::now();
 	auto dt = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastTransaction).count();
 
-	if (dt > m_serverInfo.serverIdleTimoutSec)
+	if (dt > m_pServerInfo->getIdleTimeout())
 	{
 		// server has been idle too long, signal a stop
 		stop();

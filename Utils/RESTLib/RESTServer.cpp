@@ -17,9 +17,6 @@ RESTServer::RESTServer(TRESTCtxPtr pCtx)
 	, m_pCtx(pCtx)
 	, m_transactionCounter(0)
 {
-	// initialize the URL to some defaults
-	ServerURI URI{ "http", "localhost", 8080, "api" };
-	updateURI(URI);
 }
 
 RESTServer::RESTServer(const RESTServer& other)
@@ -54,12 +51,12 @@ void RESTServer::addEndpoint(std::string path, TEndpointPtr pEndpoint)
 
 bool RESTServer::startServer(utility::string_t URL)
 {
-	auto uri = m_pCtx->serverInfo().URI;
+	auto uri = m_pCtx->serverInfo()->getURI();
 
 	stopServer();
 	TListenerPtr pListener = nullptr;
 
-	if (uri.schema != "http") return false;
+	if (uri->getSchema() != "http") return false;
 
 	// create and open the listener (No SSL)
 	pListener = std::make_shared<http_listener>(URL);
@@ -70,12 +67,12 @@ bool RESTServer::startServer(utility::string_t URL)
 }
 bool RESTServer::startServer_s(utility::string_t URL, const std::function<void(boost::asio::ssl::context&)>& ssl_context_callback)
 {
-	auto uri = m_pCtx->serverInfo().URI;
+	auto uri = m_pCtx->serverInfo()->getURI();
 
 	stopServer();
 	TListenerPtr pListener = nullptr;
 
-	if (uri.schema != "https") return false;
+	if (uri->getSchema() != "https") return false;
 
 	http_listener_config listen_config;
 	listen_config.set_ssl_context_callback(ssl_context_callback);
@@ -106,7 +103,7 @@ bool RESTServer::startServerInternal()
 		if (status != concurrency::completed) return false;
 
 		// update the server status and metadata
-		setStatus(ServerInfo::ServerStatus::Listening);
+		m_pCtx->serverInfo()->setState(ServerInfoBody::ServerStatus::Listening);
 		m_pCtx->ping();
 		return true;
 	}
@@ -127,8 +124,7 @@ void RESTServer::stopServer()
 		m_pListener->close().wait();
 		m_pListener = nullptr;
 	}
-	auto& info = m_pCtx->serverInfo(); 
-	info.serverState = ServerInfo::ServerStatus::Uninitialized;
+	m_pCtx->serverInfo()->setState(ServerInfoBody::ServerStatus::Uninitialized);
 }
 
 void RESTServer::logRequest(const http_request& req) const
@@ -143,7 +139,6 @@ void RESTServer::logRequest(const http_request& req) const
 
 void RESTServer::handleRequest(http_request req)
 {
-	using namespace JSONModelKeys::ResponseKeys;
 	logRequest(req);
 	unsigned int transactionID = 0;
 	{
@@ -194,24 +189,34 @@ void RESTServer::handleRequest(http_request req)
 			break;
 		}
 
-		// append the server's transactionID
-		response[c_serverXactionID] = web::json::value::number(transactionID);
 		req.reply(web::http::status_codes::OK, response);
 	}	
 	catch (RESTServerException& err)
 	{
 		// this is mainly to handle bad requests
-		ResponseBody resp(-1, err);
-		auto errBody = resp.toJson();
-		errBody[c_serverXactionID] = web::json::value::number(transactionID);
+		auto pResponse = std::make_shared<ResponseInfoBody>();
+		auto pError    = std::make_shared<ErrorInfoBody>();
+
+		pError->fromException(err);
+		pResponse->addBody(pError);
+
+		auto errBody = pResponse->toJSON();
 		req.reply(status_codes::BadRequest, errBody);
 	}
 	catch (std::exception& err)
 	{
+		// this is mainly to handle bad requests
+		auto pResponse = std::make_shared<ResponseInfoBody>();
+		auto pError    = std::make_shared<ErrorInfoBody>();
+
+		auto restEx = RESTServerException(err);
+
+		pError->fromException(restEx);
+		pResponse->addBody(pError);
+
+		auto errBody = pResponse->toJSON();
+
 		// This is mainly to handle internal errors
-		ResponseBody resp(-1, RESTServerException(err));
-		auto errBody = resp.toJson();
-		errBody[c_serverXactionID] = web::json::value::number(transactionID);
 		req.reply(status_codes::InternalError, errBody);
 	}
 }
@@ -230,20 +235,10 @@ TEndpointPtr RESTServer::retrieveEndpoint(const std::string name) const
 	return pEndpoint;
 }
 
-void RESTServer::updateURI(const ServerURI& meta)
+void RESTServer::updateURI(std::shared_ptr<ServerInfoBody> pInfo)
 {
 	TLock lock(m_mutex);
-	auto& serverInfo = m_pCtx->serverInfo();
-
-	serverInfo.URI.schema = meta.schema;
-	serverInfo.URI.host = meta.host;
-	serverInfo.URI.port = meta.port;
-	serverInfo.URI.root = meta.root;
-
-	// construct the URL fromthe metadata
-	std::ostringstream oss;
-	oss << meta.schema << "://" << meta.host << ":" << meta.port << meta.root;
-	serverInfo.URLString = oss.str();
+	m_pCtx->setServerInfo(pInfo);
 }
 
 

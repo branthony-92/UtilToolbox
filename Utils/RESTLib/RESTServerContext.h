@@ -1,7 +1,8 @@
 #ifndef RESTENDPOINTCONTEXT_H
 #define RESTENDPOINTCONTEXT_H
 
-#include "Models.h"
+#include "MdlServerInfo.h"
+#include "MdlConnectionInfo.h"
 
 class RESTServerContext
 {
@@ -9,7 +10,7 @@ protected:
 
 	std::string m_name;
 
-	ServerInfo m_serverInfo;
+	std::shared_ptr<ServerInfoBody> m_pServerInfo;
 
 	std::chrono::system_clock::time_point m_lastTransaction;
 
@@ -18,27 +19,21 @@ protected:
 	TConnectionMgrPtr     m_pConnectionMgr;
 
 public:
-	RESTServerContext(std::string name) 
-		: m_name(name)
-		, m_lastTransaction()
-		, m_stopFlag(false)
-		, m_resetFlag(false)
-		, m_serverInfo()
-		, m_pConnectionMgr(std::make_unique<ConnectionManager>())
-	{}
+	RESTServerContext(std::string name);
 
-	ServerInfo& serverInfo() { return m_serverInfo; }
+	std::shared_ptr<ServerInfoBody> serverInfo() { return m_pServerInfo; }
+	void setServerInfo(std::shared_ptr<ServerInfoBody> pInfo) { m_pServerInfo = pInfo; }
 
 	virtual ~RESTServerContext() {}
 
 	// endpoint management
 	bool addEndpoint(std::string name);
-	std::set<std::string> getEndpoints() const { return m_serverInfo.endpoints; }
+	std::set<std::string> getEndpoints() const { return m_pServerInfo->getEndpointNames(); }
 	
 	// connection management
-	ConnectionInfo handleConnectionRequest(ConnectionManager::TokenType type, unsigned int timeout);
-	ConnectionInfo handleConnectionRefreshRequest(unsigned int id);
-	ConnectionInfo getConnectionInfo(unsigned int id);
+	std::shared_ptr<ConnectionInfoBody> handleConnectionRequest(TokenInfoBody::Lifetime type, unsigned int timeout);
+	std::shared_ptr<ConnectionInfoBody> handleConnectionRefreshRequest(unsigned int id);
+	std::shared_ptr<ConnectionInfoBody> getConnectionInfo(unsigned int id);
 
 	bool checkConnection(unsigned int id, std::string token);
 

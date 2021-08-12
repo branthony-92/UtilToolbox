@@ -1,6 +1,7 @@
 #ifndef RESTCONNECTION_H
 #define RESTCONNECTION_H
 
+#include "MdlTokenInfo.h"
 
 class ConnectionManager {
 public:
@@ -14,29 +15,6 @@ public:
 		Invalid = -1,
 	};
 
-	enum class TokenType {
-		Transient,
-		Persistent,
-		Invalid = -1,
-	};
-
-	typedef std::chrono::system_clock::time_point TimeStamp;
-	class Token {
-	public:
-		std::string  val;
-		TimeStamp	 startTime;
-		unsigned int timeout;
-		TokenType	 type;
-
-		Token() 
-			: val("")
-			, startTime(std::chrono::system_clock::now())
-			, timeout(0)
-			, type(TokenType::Invalid)
-		{}
-		bool compare(const std::string& other) { return val.compare(other) == 0; }
-	};
-
 	class Connection;
 	typedef std::shared_ptr<ConnectionManager::Connection>  TConnectionPtr;
 	typedef std::map<unsigned int, TConnectionPtr>          TConnectionMap;
@@ -46,14 +24,14 @@ public:
 	virtual ~ConnectionManager();
 
 	// connection management
-	TConnectionPtr openNewConnection(ConnectionManager::TokenType type, unsigned int timeout);
+	TConnectionPtr openNewConnection(TokenInfoBody::Lifetime type, unsigned int timeout);
 	TConnectionPtr getConnection(unsigned int id);
 
 	TConnectionMap getConnections() const { return m_connections; }
 
 	void closeConnection(const unsigned int id);
 	ConnectionStatus validateConnection(const unsigned int id, const std::string& token);
-	Token refreshConnection(const unsigned int id);
+	std::shared_ptr<TokenInfoBody> refreshConnection(const unsigned int id);
 
 	void removeClosedConnections();
 	
@@ -72,13 +50,13 @@ class ConnectionManager::Connection
 public:
 	Connection(unsigned int id = -1)
 		: m_connectionID(id)
-		, m_connectionToken()
+		, m_pConnectionToken(nullptr)
 		, m_connectionStatus(ConnectionStatus::Uninitialized)
 	{
 	}
 	Connection(const ConnectionManager::Connection& other)
 		: m_connectionID(other.getID())
-		, m_connectionToken(other.getToken())
+		, m_pConnectionToken(other.getToken())
 		, m_connectionStatus(other.getStatus())
 	{
 	}
@@ -86,7 +64,7 @@ public:
 	Connection& operator=(const ConnectionManager::Connection& other)
 	{
 		m_connectionID = other.getID();
-		m_connectionToken = other.getToken();
+		m_pConnectionToken = other.getToken();
 		m_connectionStatus = other.getStatus();
 
 		return *this;
@@ -94,20 +72,20 @@ public:
 	virtual ~Connection() {}
 
 public:
-	unsigned int getID()		 const { return m_connectionID; }
-	Token  getToken()			 const { return m_connectionToken; }
-	ConnectionStatus getStatus() const { return m_connectionStatus; }
+	unsigned int getID()						const { return m_connectionID; }
+	std::shared_ptr<TokenInfoBody> getToken()	const { return m_pConnectionToken; }
+	ConnectionStatus getStatus()				const { return m_connectionStatus; }
 
-	void setID(unsigned int id)				{ m_connectionID = id; }
-	void setToken(Token token)				{ m_connectionToken = token; }
-	void setStatus(ConnectionStatus state)  { m_connectionStatus = state; }
+	void setID(unsigned int id)				             { m_connectionID = id; }
+	void setToken(std::shared_ptr<TokenInfoBody> token)	 { m_pConnectionToken = token; }
+	void setStatus(ConnectionStatus state)				 { m_connectionStatus = state; }
 
 	bool isTimedOut() const;
-	Token& tokenRef() { return m_connectionToken; }
+
 
 private:
-	unsigned int      m_connectionID;
-	Token			  m_connectionToken;
-	ConnectionStatus  m_connectionStatus;
+	unsigned int                    m_connectionID;
+	std::shared_ptr<TokenInfoBody>  m_pConnectionToken;
+	ConnectionStatus				m_connectionStatus;
 };
 #endif // !RESTCONNECTION_H

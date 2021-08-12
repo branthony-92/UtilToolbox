@@ -149,7 +149,13 @@
   <ItemGroup>
     <ClInclude Include="HTTPUtils.h" />
     <ClInclude Include="JSONModelKeys.h" />
-    <ClInclude Include="Models.h" />
+    <ClInclude Include="MdlConnectionInfo.h" />
+    <ClInclude Include="MdlErrorInfo.h" />
+    <ClInclude Include="MdlResponseInfo.h" />
+    <ClInclude Include="MdlServerInfo.h" />
+    <ClInclude Include="MdlTokenInfo.h" />
+    <ClInclude Include="MdlUriInfo.h" />
+    <ClInclude Include="RESTModels.h" />
     <ClInclude Include="RESTClient.h" />
     <ClInclude Include="RESTConnection.h" />
     <ClInclude Include="RESTEndpoint.h" />
@@ -160,7 +166,13 @@
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Models.cpp" />
+    <ClCompile Include="MdlConnectionInfo.cpp" />
+    <ClCompile Include="MdlErrorInfo.cpp" />
+    <ClCompile Include="MdlResponseInfo.cpp" />
+    <ClCompile Include="MdlServerInfo.cpp" />
+    <ClCompile Include="MdlTokenInfo.cpp" />
+    <ClCompile Include="MdlUriInfo.cpp" />
+    <ClCompile Include="RESTModels.cpp" />
     <ClCompile Include="RESTClient.cpp" />
     <ClCompile Include="RESTConnection.cpp" />
     <ClCompile Include="RESTEndpoint.cpp" />

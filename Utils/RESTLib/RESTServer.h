@@ -4,6 +4,11 @@
 #include <cpprest/http_listener.h>
 #include <cpprest/json.h>
 
+#include "MdlUriInfo.h"
+#include "MdlServerInfo.h"
+#include "MdlResponseInfo.h"
+#include "MdlErrorInfo.h"
+
 #include "RESTEndpoint.h"
 #include "RESTServerContext.h"
 
@@ -53,17 +58,17 @@ public:
 
 	unsigned int getTransactionID() const { TLock lock(m_mutex); return m_transactionCounter; }
 
-	ServerInfo::ServerStatus getStatus() const      { TLock lock(m_mutex); return m_pCtx->serverInfo().serverState; }
-	void setStatus(ServerInfo::ServerStatus status) { TLock lock(m_mutex); m_pCtx->serverInfo().serverState = status; }
+	ServerInfoBody::ServerStatus getStatus() const      { TLock lock(m_mutex); return m_pCtx->serverInfo()->getState(); }
+	void setStatus(ServerInfoBody::ServerStatus status) { TLock lock(m_mutex); m_pCtx->serverInfo()->setState(status); }
 
-	std::string getURL() const { TLock lock(m_mutex); return m_pCtx->serverInfo().URLString; }
+	std::string getURL() const { TLock lock(m_mutex); return m_pCtx->serverInfo()->getURLString(); }
 
 	TListenerPtr getListener() const         { TLock lock(m_mutex); return m_pListener; }
 	void setListener(TListenerPtr pListener) { TLock lock(m_mutex);  m_pListener = pListener; }
 
-	bool getServerListening() const { TLock lock(m_mutex); return m_pCtx->serverInfo().serverState == ServerInfo::ServerStatus::Listening; }
+	bool getServerListening() const { TLock lock(m_mutex); return m_pCtx->serverInfo()->getState() == ServerInfoBody::ServerStatus::Listening; }
 
-	void updateURI(const ServerURI& meta);
+	void updateURI(std::shared_ptr<ServerInfoBody> pInfo);
 private:
 	bool startServerInternal();
 	void logRequest(const http_request& req) const;
