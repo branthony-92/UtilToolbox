@@ -100,7 +100,8 @@ bool RESTServer::startServerInternal()
 		// general request handler
 		pListener->support( [&] (http_request req) { handleRequest(req); });
 
-		auto status = pListener->open().wait();
+		auto task = pListener->open();
+		auto status = task.wait();
 
 		if (status != concurrency::completed) return false;
 
@@ -130,10 +131,20 @@ void RESTServer::stopServer()
 	info.serverState = ServerInfo::ServerStatus::Uninitialized;
 }
 
+void RESTServer::logRequest(const http_request& req) const
+{
+	auto uri = req.absolute_uri();
+	auto method = utility::conversions::to_utf8string(req.method());
+	auto path  = utility::conversions::to_utf8string(uri.path());
+	auto query = utility::conversions::to_utf8string(uri.query());
+
+	std::cout << "Request Recieved - Method: " << method << " Endpoint: " << path << " Queries: " << query << "\n";
+}
+
 void RESTServer::handleRequest(http_request req)
 {
 	using namespace JSONModelKeys::ResponseKeys;
-
+	logRequest(req);
 	unsigned int transactionID = 0;
 	{
 		// increment the transaction counter

@@ -3,9 +3,9 @@
 
 bool RESTServerContext::addEndpoint(std::string name)
 {
-	if (m_endpoints.count(name) > 0) return false;
+	if (m_serverInfo.endpoints.count(name) > 0) return false;
 
-	m_endpoints.insert(name);
+	m_serverInfo.endpoints.insert(name);
 	return true;
 }
 

@@ -26,6 +26,7 @@ namespace JSONModelKeys
 		const string_t c_apiVerKey        = U("APIVersion");       // number
 		const string_t c_URLKey		      = U("URL");              // string
 		const string_t c_ServerTimeoutKey = U("IdleTimeoutSec");   // string
+		const string_t c_ServerEndpointsKey = U("Endpoints");      // array<string>
 
 		namespace ServerURIKeys {
 			const string_t c_headerKey = U("URIComponents");  // Object

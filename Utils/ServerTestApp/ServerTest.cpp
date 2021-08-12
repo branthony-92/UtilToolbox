@@ -7,8 +7,6 @@ namespace ssl = net::ssl;
 
 using namespace std::chrono_literals;
 
-constexpr bool c_HTTPS = true;
-
 TestApp::TestApp()
 	: m_pServer(nullptr)
 	, m_pTestContext(nullptr)
@@ -19,7 +17,7 @@ TestApp::~TestApp()
 {
 }
 
-void TestApp::init()
+void TestApp::init(ServerURI uri)
 {
 	// create the context object and inject it into the server object via it's contructor
 
@@ -27,12 +25,9 @@ void TestApp::init()
 	m_pTestContext = std::make_shared<ServerTest>();
 	m_pServer      = std::make_shared<RESTServer>(m_pTestContext);
 
+	bool secure = uri.schema == "https";
+
 	// define the URI and pass it to the server
-	ServerURI uri;
-	uri.schema = c_HTTPS ? "https" : "http";
-	uri.host   = "localhost";
-	uri.port   = 8080;
-	uri.root   = "/api";
 	m_pServer->updateURI(uri);
 
 	// store the server's metadata in the context
@@ -62,7 +57,7 @@ void TestApp::init()
 	m_pServer->addEndpoint(endpointName_3,   pEndpoint3);
 
 	// spin it up
-	if (c_HTTPS)
+	if (secure)
 	{
 		auto ssl_callback = [](ssl::context& ctx) {
 			try {

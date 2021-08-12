@@ -15,8 +15,6 @@ protected:
 
 	std::atomic_bool m_stopFlag;
 	std::atomic_bool m_resetFlag;
-
-	std::set<std::string> m_endpoints;
 	TConnectionMgrPtr     m_pConnectionMgr;
 
 public:
@@ -35,7 +33,7 @@ public:
 
 	// endpoint management
 	bool addEndpoint(std::string name);
-	std::set<std::string> getEndpoints() const { return m_endpoints; }
+	std::set<std::string> getEndpoints() const { return m_serverInfo.endpoints; }
 	
 	// connection management
 	ConnectionInfo handleConnectionRequest(ConnectionManager::TokenType type, unsigned int timeout);

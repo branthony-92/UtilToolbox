@@ -51,6 +51,7 @@ public:
 		, URI()
 		, serverIdleTimoutSec(UINT_MAX) // basically forever
 		, serverState(ServerStatus::Uninitialized)
+		, endpoints()
 	{}
 
 	std::string     serverName;
@@ -59,6 +60,7 @@ public:
 	ServerURI       URI;
 	unsigned int    serverIdleTimoutSec;
 	ServerStatus	serverState;
+	std::set<std::string> endpoints;
 
 	std::string stringFromState(ServerStatus state)
 	{
@@ -88,6 +90,16 @@ public:
 		info[c_apiVerKey]        = web::json::value::number(APIVersion);
 		info[c_URLKey]           = web::json::value::string(url);
 		info[c_ServerTimeoutKey] = web::json::value::number(serverIdleTimoutSec);
+
+		web::json::value ar = web::json::value::array(endpoints.size());
+
+		auto index = 0u;
+		for (auto& e : endpoints)
+		{
+			auto ep = utility::conversions::to_string_t(e);
+			ar[index++] = web::json::value::string(ep);
+		}
+		info[c_ServerEndpointsKey] = ar;
 
 		auto schema = utility::conversions::to_string_t(URI.schema);
 		auto host = utility::conversions::to_string_t(URI.host);

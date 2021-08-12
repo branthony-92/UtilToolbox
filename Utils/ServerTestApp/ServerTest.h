@@ -40,7 +40,7 @@ class TestApp {
 public:
 	TestApp();
 	~TestApp();
-	void init();
+	void init(ServerURI uri);
 	void run();
 
 	std::string URL();

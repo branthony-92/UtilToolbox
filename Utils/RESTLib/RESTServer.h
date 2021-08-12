@@ -66,6 +66,7 @@ public:
 	void updateURI(const ServerURI& meta);
 private:
 	bool startServerInternal();
+	void logRequest(const http_request& req) const;
 
 };
 typedef std::shared_ptr<RESTServer> TRESTServerPtr;
