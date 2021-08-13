@@ -5,29 +5,28 @@
 #include <cpprest/json.h>
 
 #include "RESTServerContext.h"
+#include "MdlResponseInfo.h"
 
 class RESTEndpoint
 {
 public:
 	RESTEndpoint(std::string name) 
 		: m_endpointName(name)
-		, m_currTransactionID(0) {}
+	{}
 
 	virtual ~RESTEndpoint() {};
 
 	// virtual HTTP method handlers
-	virtual web::json::value handleGet(web::http::http_request& req, TRESTCtxPtr pCtx);
-	virtual web::json::value handlePost(web::http::http_request& req, TRESTCtxPtr pCtx);
-	virtual web::json::value handlePut(web::http::http_request& req, TRESTCtxPtr pCtx);
-	virtual web::json::value handleDelete(web::http::http_request& req, TRESTCtxPtr pCtx);
+	virtual void handleGet(web::http::http_request& req,    ReponseBodyPtr pResonse, TRESTCtxPtr pCtx);
+	virtual void handlePost(web::http::http_request& req,   ReponseBodyPtr pResonse, TRESTCtxPtr pCtx);
+	virtual void handlePut(web::http::http_request& req,    ReponseBodyPtr pResonse, TRESTCtxPtr pCtx);
+	virtual void handleDelete(web::http::http_request& req, ReponseBodyPtr pResonse, TRESTCtxPtr pCtx);
 
 	// base property accessors
 	std::string getName() const { return m_endpointName; }
-	unsigned long getCurrTransactionID() const { return m_currTransactionID; }
 
 protected:
 	std::string   m_endpointName;
-	unsigned long m_currTransactionID;
 };
 typedef std::shared_ptr<RESTEndpoint> TEndpointPtr;
 

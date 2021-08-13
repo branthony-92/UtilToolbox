@@ -149,6 +149,11 @@ void RESTServer::handleRequest(http_request req)
 		// update the last transaction timestamp
 		m_pCtx->ping();
 	}
+	auto pResponse = std::make_shared<ResponseInfoBody>();
+	auto pError = std::make_shared<ErrorInfoBody>();
+	pResponse->addBody(pError);
+	pResponse->setTransactionID(transactionID);
+
 	try
 	{
 		// determine which endpoint we want and retrieve a pointer to it
@@ -168,35 +173,34 @@ void RESTServer::handleRequest(http_request req)
 		}
 	
 		// call the appropriate method handler for that endpoint
-		web::json::value response;
 		auto m = Utl::c_methodMap.at(mthd);
 		switch (m)
 		{
 		case Utl::RequestMethodID::GET:
-			response = pEndpoint->handleGet(req, m_pCtx);
+			pEndpoint->handleGet(req, pResponse, m_pCtx);
 			break;
 		case Utl::RequestMethodID::POST:
-			response = pEndpoint->handlePost(req, m_pCtx);
+			pEndpoint->handlePost(req, pResponse, m_pCtx);
 			break;
 		case Utl::RequestMethodID::PUT:
-			response = pEndpoint->handlePut(req, m_pCtx);
+			pEndpoint->handlePut(req, pResponse, m_pCtx);
 			break;
 		case Utl::RequestMethodID::DEL:
-			response = pEndpoint->handleDelete(req, m_pCtx);
+			pEndpoint->handleDelete(req, pResponse, m_pCtx);
 			break;
 		default:
 			throw RESTServerException("Method Not Recognized", ServerErrorCode::MethodNotSupported);
 			break;
 		}
 
+		auto response = pResponse->toJSON();
 		req.reply(web::http::status_codes::OK, response);
 	}	
 	catch (RESTServerException& err)
 	{
-		// this is mainly to handle bad requests
-		auto pResponse = std::make_shared<ResponseInfoBody>();
-		auto pError    = std::make_shared<ErrorInfoBody>();
+		pResponse->reset();
 
+		// this is mainly to handle bad requests
 		pError->fromException(err);
 		pResponse->addBody(pError);
 
@@ -206,16 +210,15 @@ void RESTServer::handleRequest(http_request req)
 	catch (std::exception& err)
 	{
 		// this is mainly to handle bad requests
-		auto pResponse = std::make_shared<ResponseInfoBody>();
-		auto pError    = std::make_shared<ErrorInfoBody>();
-
 		auto restEx = RESTServerException(err);
 
+		pResponse->reset();
+
+		// this is mainly to handle bad requests
 		pError->fromException(restEx);
 		pResponse->addBody(pError);
-
+		
 		auto errBody = pResponse->toJSON();
-
 		// This is mainly to handle internal errors
 		req.reply(status_codes::InternalError, errBody);
 	}

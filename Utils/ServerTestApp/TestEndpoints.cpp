@@ -2,8 +2,7 @@
 #include "TestEndpoints.h"
 #include "ServerTest.h"
 
-
-web::json::value TestEndpoint_1::handleGet(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_1::handleGet(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
 	if (!pTestCtx)
@@ -11,21 +10,16 @@ web::json::value TestEndpoint_1::handleGet(web::http::http_request& req, TRESTCt
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
 
-	auto model = pTestCtx->m_testModel_1;
-	auto transactionID = static_cast<unsigned long>(m_currTransactionID++);
-
-	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
+	auto model = pTestCtx->m_pTestModel_1;
 
 	auto result = pResp->toJSON();
-	auto name = utility::conversions::to_string_t(model.name);
+	auto name = utility::conversions::to_string_t(model->getName());
 
 	result[U("Name")] = web::json::value::string(name);
-	result[U("Val")]  = web::json::value::number(model.val);
-
-	return result;
+	result[U("Val")]  = web::json::value::number(model->getVal());
 }
 
-web::json::value TestEndpoint_1::handlePut(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_1::handlePut(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
 	if (!pTestCtx)
@@ -33,23 +27,24 @@ web::json::value TestEndpoint_1::handlePut(web::http::http_request& req, TRESTCt
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
 
-	auto& model = pTestCtx->m_testModel_1;
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
+	auto& model = pTestCtx->m_pTestModel_1;
 	auto json = req.extract_json().get();
 
-	auto name = json[U("Name")].as_string();
-	auto val = json[U("Val")].as_integer();
-
-	model.name = utility::conversions::to_utf8string(name);
-	model.val = val;
-
-	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
-	auto result = pResp->toJSON();
-	return result;
+	pTestCtx->m_pTestModel_1->loadJSON(json);
 }
 
 
-web::json::value TestEndpoint_2::handleGet(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_2::handleGet(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
+{
+	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
+	if (!pTestCtx)
+	{
+		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
+	}
+	pResp->addBody(pTestCtx->m_pTestModel_2);
+}
+
+void TestEndpoint_2::handlePut(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
 	if (!pTestCtx)
@@ -57,65 +52,27 @@ web::json::value TestEndpoint_2::handleGet(web::http::http_request& req, TRESTCt
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
 
-	auto model = pTestCtx->m_testModel_2;
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
-
-	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
-	auto result = pResp->toJSON();
-
-	auto name = utility::conversions::to_string_t(model.name);
-
-	result[U("Name")] = web::json::value::string(name);
-	result[U("Val")]  = web::json::value::number(model.val);
-
-	return result;
-}
-
-web::json::value TestEndpoint_2::handlePut(web::http::http_request& req, TRESTCtxPtr pCtx)
-{
-	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
-	if (!pTestCtx)
-	{
-		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
-	}
-
-	auto& model = pTestCtx->m_testModel_2;
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
 
 	auto json = req.extract_json().get();
-
-	auto name = json[U("Name")].as_string();
-	auto val  = json[U("Val")].as_integer();
-
-	model.name = utility::conversions::to_utf8string(name);
-	model.val = val;
-
-	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
-	auto result = pResp->toJSON();
-
-	return result;
+	pTestCtx->m_pTestModel_2->loadJSON(json);
 }
 
 
-web::json::value TestEndpoint_Add::handleGet(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_Add::handleGet(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
 	if (!pTestCtx)
 	{
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
-
-	auto pResp = JSONInfoBody::createBody(JSONInfoBody::BodyType::Body_ReponseInfo);
 
 	auto result = pResp->toJSON();
 	auto val = pTestCtx->addValues();
 
 	result[U("Val")] = web::json::value::number(val);
-	return result;
 }
 
-web::json::value TestEndpoint_Root::handleGet(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_Root::handleGet(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
 
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
@@ -124,28 +81,19 @@ web::json::value TestEndpoint_Root::handleGet(web::http::http_request& req, TRES
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
 
-	auto pResp = std::shared_ptr<ResponseInfoBody>();
 	auto info = pTestCtx->serverInfo();
 
 	pResp->addBody(info);
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
-
 	auto result = pResp->toJSON();
-	
-	return result;
 }
 
-web::json::value TestEndpoint_Auth::handleGet(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_Auth::handleGet(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
 	if (!pTestCtx)
 	{
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
-
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
-
-	auto pResp = std::make_shared<ResponseInfoBody>();
 
 	auto queryString = req.request_uri().query();
 
@@ -175,27 +123,16 @@ web::json::value TestEndpoint_Auth::handleGet(web::http::http_request& req, TRES
 		
 	// return the id and token
 	pResp->addBody(info);
-	auto result = pResp->toJSON();
-
-	return result;
 }
 
-web::json::value TestEndpoint_Auth::handlePost(web::http::http_request& req, TRESTCtxPtr pCtx)
+void TestEndpoint_Auth::handlePost(web::http::http_request& req, ReponseBodyPtr pResp, TRESTCtxPtr pCtx)
 {
-	
 	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
 	if (!pTestCtx)
 	{
 		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
 	}
 
-	auto transactionID = static_cast<unsigned int>(m_currTransactionID++);
-
-	auto pResp = std::make_shared<ResponseInfoBody>();
-
 	auto info = pTestCtx->handleConnectionRequest(TokenInfoBody::Lifetime::Transient, 600);
 	pResp->addBody(info);
-
-	auto result = pResp->toJSON();
-	return result;
 }

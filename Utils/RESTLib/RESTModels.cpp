@@ -12,27 +12,32 @@ namespace
 {
 	const std::map<JSONInfoBody::BodyType, string_t> c_bodyIDToString =
 	{
-		{ JSONInfoBody::BodyType::Body_URIInfo,        U("Body_URI")            },
-		{ JSONInfoBody::BodyType::Body_ErrorInfo,		 U("Body_ErrorInfo")      },
-		{ JSONInfoBody::BodyType::Body_ReponseInfo,	 U("Body_ReponseInfo")    },
-		{ JSONInfoBody::BodyType::Body_ServerInfo,	 U("Body_ServerInfo")     },
-		{ JSONInfoBody::BodyType::Body_ConnectionInfo, U("Body_ConnectionInfo") },
-		{ JSONInfoBody::BodyType::Body_TokenInfo,		 U("Body_TokenInfo")      }
+		{ JSONInfoBody::BodyType::Body_URIInfo,        U("URI_Info")         },
+		{ JSONInfoBody::BodyType::Body_ErrorInfo,	   U("Error_Info")       },
+		{ JSONInfoBody::BodyType::Body_ReponseInfo,	   U("Reponse_Info")     },
+		{ JSONInfoBody::BodyType::Body_ServerInfo,	   U("Server_Info")      },
+		{ JSONInfoBody::BodyType::Body_ConnectionInfo, U("BConnection_Info") },
+		{ JSONInfoBody::BodyType::Body_TokenInfo,	   U("BToken_Info")      }
 	};
 
 	const std::map<string_t, JSONInfoBody::BodyType> c_bodyNameToID =
 	{
-		{ U("Body_URI"),            JSONInfoBody::BodyType::Body_URIInfo           },
-		{ U("Body_ErrorInfo"),      JSONInfoBody::BodyType::Body_ErrorInfo         },
-		{ U("Body_ReponseInfo"),    JSONInfoBody::BodyType::Body_ReponseInfo	     },
-		{ U("Body_ServerInfo"),     JSONInfoBody::BodyType::Body_ServerInfo	     },
-		{ U("Body_ConnectionInfo"), JSONInfoBody::BodyType::Body_ConnectionInfo    },
-		{ U("Body_TokenInfo"),      JSONInfoBody::BodyType::Body_TokenInfo		 }
+		{ U("URI_Info"),        JSONInfoBody::BodyType::Body_URIInfo         },
+		{ U("Error_Info"),      JSONInfoBody::BodyType::Body_ErrorInfo       },
+		{ U("Reponse_Info"),    JSONInfoBody::BodyType::Body_ReponseInfo	 },
+		{ U("Server_Info"),     JSONInfoBody::BodyType::Body_ServerInfo	     },
+		{ U("Connection_Info"), JSONInfoBody::BodyType::Body_ConnectionInfo  },
+		{ U("Token_Info"),      JSONInfoBody::BodyType::Body_TokenInfo		 }
 	};
 }
 
 JSONInfoBody::JSONInfoBody(BodyType ID)
 	: c_name(c_bodyIDToString.at(ID))
+{
+}
+
+JSONInfoBody::JSONInfoBody(string_t name)
+	: c_name(name)
 {
 }
 

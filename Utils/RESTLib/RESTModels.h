@@ -29,6 +29,7 @@ public:
 	};
 
 	JSONInfoBody(BodyType ID = BodyType::Body_Invalid);
+	JSONInfoBody(string_t name);
 	virtual ~JSONInfoBody() {}
 
 	virtual value toJSON() const = 0;

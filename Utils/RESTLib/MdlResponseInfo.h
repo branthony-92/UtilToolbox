@@ -19,9 +19,13 @@ public:
 	unsigned int getTransactionID() const { return m_transactionID; }
 	void setTransactionID(unsigned int id) { m_transactionID = id; }
 
+	void reset() {
+		m_bodies.clear();
+	}
+
 private:
 	unsigned int m_transactionID;
 	BodyMap      m_bodies;
 };
-
+typedef std::shared_ptr<ResponseInfoBody> ReponseBodyPtr;
 #endif // !MDLRESPONSEINFO_H
