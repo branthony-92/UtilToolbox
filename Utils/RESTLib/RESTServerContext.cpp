@@ -1,14 +1,34 @@
 #include "StdAfx.h"
 #include "RESTServerContext.h"
+#include "Listener.h"
 
 RESTServerContext::RESTServerContext(std::string name)
 	: m_name(name)
 	, m_lastTransaction()
 	, m_stopFlag(false)
 	, m_resetFlag(false)
-	, m_pServerInfo(nullptr)
+	, m_pServerInfo(std::make_shared<ServerInfoBody>())
 	, m_pConnectionMgr(std::make_unique<ConnectionManager>())
 {
+}
+
+void RESTServerContext::registerHandler(std::string path, ReqHandlerPtr pEndpoint)
+{
+	if (!pEndpoint) return;
+	m_requestHandlers.insert_or_assign(path, pEndpoint);
+	addEndpoint(path);
+}
+
+std::shared_ptr<HTTPRequestHandler> RESTServerContext::retrieveHandler(std::string name)
+{
+	auto handler = m_requestHandlers.find(name);
+	if (handler == m_requestHandlers.end()) return nullptr;
+	return handler->second;
+}
+
+bool RESTServerContext::hasHandlers() const
+{
+	return !m_requestHandlers.empty();
 }
 
 bool RESTServerContext::addEndpoint(std::string name)

@@ -69,7 +69,7 @@ std::string ConnectionManager::generateTokenValue()
 
 	//2) create a random number "shaper" that will give
 	//   us uniformly distributed indices into the character set
-	std::uniform_int_distribution<> dist(0, c_tokenChars.size() - 1);
+	std::uniform_int_distribution<> dist(0u, c_tokenChars.size() - 1u);
 
 	//3) create a function that ties them together, to get:
 	//   a non-deterministic uniform distribution from the 

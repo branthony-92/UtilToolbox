@@ -9,8 +9,8 @@ class ConnectionInfoBody : public JSONInfoBody
 public:
 	ConnectionInfoBody();
 
-	web::json::value toJSON() const override;
-	void loadJSON(value info) override;
+	JSON toJSON() const override;
+	void loadJSON(JSON info) override;
 
 	std::shared_ptr<TokenInfoBody> getToken()        const { return m_pToken; }
 	unsigned int				   getConnectionID() const { return m_id;     }

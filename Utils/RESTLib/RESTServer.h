@@ -1,9 +1,6 @@
 #ifndef RESTSERVER_H
 #define RESTSERVER_H
 
-#include <cpprest/http_listener.h>
-#include <cpprest/json.h>
-
 #include "MdlUriInfo.h"
 #include "MdlServerInfo.h"
 #include "MdlResponseInfo.h"
@@ -11,68 +8,44 @@
 
 #include "RESTEndpoint.h"
 #include "RESTServerContext.h"
-
-using namespace web;
-using namespace web::http;
-using namespace web::http::experimental::listener;
-using namespace web::json;
+#include "Listener.h"
 
 typedef std::lock_guard<std::mutex> TLock;
 
-class RESTServer
+/*
+	This is the actual server class that will create and own the listener
+*/
+class Server
 {
 public:
-	RESTServer(TRESTCtxPtr pCtx);
-	RESTServer(const RESTServer& other);
-	RESTServer& operator=(const RESTServer& other);
+	using SSLCtxInitHandler = std::function<void(boost::asio::ssl::context&)>;
+	using TEndpointMap = std::map<std::string, ReqHandlerPtr>;
+	using TEndpointMapData = std::pair<std::string, ReqHandlerPtr>;
 
-	virtual ~RESTServer();
+	Server(TRESTCtxPtr pCtx, unsigned int threads = 1);
+	virtual ~Server() {}
 
-	virtual void handleRequest(http_request req);
+	virtual void startServer(std::string address, unsigned short port, SessionPtr pSessionPrototype, const SSLCtxInitHandler& sslInitHandler);
+	virtual bool reset();
+	void shutdown();
+
+	void addEndpoint(std::string path, ReqHandlerPtr pEndpoint);
+	ServerInfoBody::ServerStatus getStatus() const      { TLock lock(m_mutex); return m_pCtx->getServerInfo()->getState(); }
+	void setStatus(ServerInfoBody::ServerStatus status) { TLock lock(m_mutex); m_pCtx->getServerInfo()->setState(status); }
+	std::string getURL() const { TLock lock(m_mutex); return m_pCtx->getServerInfo()->getURLString(); }
+	std::shared_ptr<ServerInfoBody> getServerInfo() const { TLock lock(m_mutex); return m_pCtx->getServerInfo(); }
 
 protected:
-	// Typedefs
-	typedef std::shared_ptr<http_listener> TListenerPtr;
-	typedef std::map<std::string, TEndpointPtr>  TEndpointMap;
-	typedef std::pair<std::string, TEndpointPtr> TEndpointMapData;
-
+	ListenerPtr    m_pListener;
 	TEndpointMap m_endpoints;
 
-	TListenerPtr m_pListener;
 	TRESTCtxPtr  m_pCtx;
-
-	unsigned int m_transactionCounter;
-
+	IOCtxPtr     m_pIOContext;
+	SSLCtxPtr    m_pSSLContext;
+	unsigned int m_threadCount;
+	std::vector<std::thread> m_ioCtxThreads;
 	mutable std::mutex m_mutex;
-
-public:
-	void addEndpoint(std::string path, TEndpointPtr pEndpoint);
-
-	bool startServer(utility::string_t URL);
-
-	bool startServer_s(utility::string_t URL, const std::function<void(boost::asio::ssl::context&)>& ssl_context_callback);
-
-	void stopServer();
-
-	TEndpointPtr retrieveEndpoint(const std::string name) const;
-
-	unsigned int getTransactionID() const { TLock lock(m_mutex); return m_transactionCounter; }
-
-	ServerInfoBody::ServerStatus getStatus() const      { TLock lock(m_mutex); return m_pCtx->serverInfo()->getState(); }
-	void setStatus(ServerInfoBody::ServerStatus status) { TLock lock(m_mutex); m_pCtx->serverInfo()->setState(status); }
-
-	std::string getURL() const { TLock lock(m_mutex); return m_pCtx->serverInfo()->getURLString(); }
-
-	TListenerPtr getListener() const         { TLock lock(m_mutex); return m_pListener; }
-	void setListener(TListenerPtr pListener) { TLock lock(m_mutex);  m_pListener = pListener; }
-
-	bool getServerListening() const { TLock lock(m_mutex); return m_pCtx->serverInfo()->getState() == ServerInfoBody::ServerStatus::Listening; }
-
-	void updateURI(std::shared_ptr<ServerInfoBody> pInfo);
-private:
-	bool startServerInternal();
-	void logRequest(const http_request& req) const;
-
 };
-typedef std::shared_ptr<RESTServer> TRESTServerPtr;
+typedef std::shared_ptr<Server> ServerPtr;
+
 #endif // !RESTSERVER_H

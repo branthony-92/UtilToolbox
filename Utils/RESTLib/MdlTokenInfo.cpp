@@ -9,36 +9,33 @@ TokenInfoBody::TokenInfoBody()
 	, m_type(Lifetime::Invalid)
 {}
 
-value TokenInfoBody::toJSON() const 
+JSON TokenInfoBody::toJSON() const 
 {
-	auto info = value::object();
+	auto info = JSON::object();
 
 	// send the timeout as a string cause it's so big
 	auto expirationTimepoint = std::chrono::duration_cast<std::chrono::milliseconds>(m_expirationTime.time_since_epoch()).count();
 	std::ostringstream oss;
 	oss << expirationTimepoint;
 
-	info[U("Token_Value")] = value::string(to_string_t(m_val));
-	info[U("Expiration_Timepoint")] = value::string(to_string_t(oss.str()));
-	info[U("Lifetime")] = value::number(m_timeout);
-	info[U("Lifetime_Type")] = value::number(static_cast<unsigned int>(m_type));
+	info["Token_Value"] = m_val;
+	info["Expiration_Timepoint"] = oss.str();
+	info["Lifetime"] = m_timeout;
+	info["Lifetime_Type"] = static_cast<unsigned int>(m_type);
 
 	return info;
 }
 
-void TokenInfoBody::loadJSON(value info) 
+void TokenInfoBody::loadJSON(JSON info)
 {
-	auto val = info[U("Token_Value")].as_string();
-	auto exp = info[U("Expiration_Timepoint")].as_string();
-	auto timeout = info[U("Lifetime")].as_integer();
-	auto type = info[U("Lifetime_Type")].as_integer();
+	auto exp     = info["Expiration_Timepoint"].get<std::string>();
+	auto type    = info["Lifetime_Type"].get<unsigned int>();
 
-
-	auto durSinceEpoc = std::stoll(to_utf8string(exp));
+	auto durSinceEpoc = std::stoll(exp);
 	std::chrono::milliseconds t(durSinceEpoc);
 
-	m_val = to_utf8string(val);
+	m_val            = info["Token_Value"].get<std::string>();
+	m_timeout        = info["Lifetime"].get<unsigned int>();
 	m_expirationTime = TimeStamp(t);
-	m_timeout = timeout;
-	m_type = static_cast<Lifetime>(type);
+	m_type			 = static_cast<Lifetime>(type);
 }

@@ -118,8 +118,11 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;CPPREST_FORCE_HTTP_LISTENER_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\3rdParty\CPPREST\include;..\3rdParty\CPPREST\include\openssl;..\ActionProcessor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\ActionProcessor;$(ProjectDir)..\3rdParty\Boost\Include;$(ProjectDir)..\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -149,6 +152,7 @@
   <ItemGroup>
     <ClInclude Include="HTTPUtils.h" />
     <ClInclude Include="JSONModelKeys.h" />
+    <ClInclude Include="Listener.h" />
     <ClInclude Include="MdlConnectionInfo.h" />
     <ClInclude Include="MdlErrorInfo.h" />
     <ClInclude Include="MdlResponseInfo.h" />
@@ -156,16 +160,15 @@
     <ClInclude Include="MdlTokenInfo.h" />
     <ClInclude Include="MdlUriInfo.h" />
     <ClInclude Include="RESTModels.h" />
-    <ClInclude Include="RESTClient.h" />
     <ClInclude Include="RESTConnection.h" />
     <ClInclude Include="RESTEndpoint.h" />
-    <ClInclude Include="RESTRequest.h" />
     <ClInclude Include="RESTServerContext.h" />
     <ClInclude Include="RESTServer.h" />
     <ClInclude Include="RESTServerException.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Listener.cpp" />
     <ClCompile Include="MdlConnectionInfo.cpp" />
     <ClCompile Include="MdlErrorInfo.cpp" />
     <ClCompile Include="MdlResponseInfo.cpp" />
@@ -173,10 +176,8 @@
     <ClCompile Include="MdlTokenInfo.cpp" />
     <ClCompile Include="MdlUriInfo.cpp" />
     <ClCompile Include="RESTModels.cpp" />
-    <ClCompile Include="RESTClient.cpp" />
     <ClCompile Include="RESTConnection.cpp" />
     <ClCompile Include="RESTEndpoint.cpp" />
-    <ClCompile Include="RESTRequest.cpp" />
     <ClCompile Include="RESTServerContext.cpp" />
     <ClCompile Include="RESTServer.cpp" />
     <ClCompile Include="RESTServerException.cpp" />

@@ -2,45 +2,74 @@
 #include "RESTServer.h"
 #include "HTTPUtils.h"
 
-using namespace web;
-using namespace web::http;
-using namespace web::http::experimental::listener;
-using namespace web::json;
-using namespace web;
 
-namespace net = boost::asio;
-namespace ssl = net::ssl;
-
-
-RESTServer::RESTServer(TRESTCtxPtr pCtx)
+Server::Server(TRESTCtxPtr pCtx, unsigned int threads)
 	: m_pListener(nullptr)
+	, m_pIOContext(nullptr)
+	, m_pSSLContext(nullptr)
+	, m_threadCount(threads)
+	, m_ioCtxThreads()
 	, m_pCtx(pCtx)
-	, m_transactionCounter(0)
 {
+	// make sure we have at least 1 thread
+	m_threadCount = std::max(1u, m_threadCount);
+	m_ioCtxThreads.reserve(m_threadCount);
 }
 
-RESTServer::RESTServer(const RESTServer& other)
-	: m_pListener(other.m_pListener)
-	, m_pCtx(other.m_pCtx)
-	, m_transactionCounter(other.m_transactionCounter)
+void Server::startServer(std::string address, unsigned short port, SessionPtr pSessionPrototype, const SSLCtxInitHandler& sslInitHandler)
 {
+	reset();
+	m_pIOContext = std::make_shared<net::io_context>(m_threadCount);
+	m_pSSLContext = std::make_shared<ssl::context>(ssl::context::tlsv12_server);
+
+	// server-owner defined SSL certificate initialization
+	sslInitHandler(*m_pSSLContext);
+
+	m_pListener = std::make_shared<Listener>(
+		*m_pIOContext,
+		*m_pSSLContext,
+		tcp::endpoint{ net::ip::make_address(address), port },
+		pSessionPrototype);
+
+	auto pServerInfo = m_pCtx->getServerInfo();
+	pServerInfo->getURI()->setAddress(address);
+	pServerInfo->getURI()->setPort(port);
+	pServerInfo->setAPIVer(1.0);
+	pServerInfo->setIdleTimeout(600);
+
+	m_pListener->run();
+
+	for (auto i = 0u; i < m_threadCount; i++)
+	{
+		// run our IO context threads
+		m_ioCtxThreads.emplace_back([&] { m_pIOContext->run(); });
+	}
+	std::cout << "Server Listening: https://" << address << ":" << port <<"\n";
 }
 
-RESTServer& RESTServer::operator=(const RESTServer& other)
+bool Server::reset()
 {
-	m_pListener  = other.m_pListener;
-	m_pCtx       = other.m_pCtx;
-	m_transactionCounter = other.m_transactionCounter;
-
-	return *this;
+	try
+	{
+		m_pListener = nullptr;
+		m_pIOContext = nullptr;
+		m_pSSLContext = nullptr;
+		m_ioCtxThreads.clear();
+		return true;
+	}
+	catch (std::exception& err)
+	{
+		return false;
+	}
 }
 
-RESTServer::~RESTServer()
+void Server::shutdown()
 {
-	stopServer();
+	// shutdown handling logic goes here
 }
 
-void RESTServer::addEndpoint(std::string path, TEndpointPtr pEndpoint)
+
+void Server::addEndpoint(std::string path, ReqHandlerPtr pEndpoint)
 {
 	if (!pEndpoint) return;
 
@@ -48,200 +77,3 @@ void RESTServer::addEndpoint(std::string path, TEndpointPtr pEndpoint)
 	m_endpoints.insert_or_assign(path, pEndpoint);
 	m_pCtx->addEndpoint(path);
 }
-
-bool RESTServer::startServer(utility::string_t URL)
-{
-	auto uri = m_pCtx->serverInfo()->getURI();
-
-	stopServer();
-	TListenerPtr pListener = nullptr;
-
-	if (uri->getSchema() != "http") return false;
-
-	// create and open the listener (No SSL)
-	pListener = std::make_shared<http_listener>(URL);
-
-	setListener(pListener);
-
-	return startServerInternal();
-}
-bool RESTServer::startServer_s(utility::string_t URL, const std::function<void(boost::asio::ssl::context&)>& ssl_context_callback)
-{
-	auto uri = m_pCtx->serverInfo()->getURI();
-
-	stopServer();
-	TListenerPtr pListener = nullptr;
-
-	if (uri->getSchema() != "https") return false;
-
-	http_listener_config listen_config;
-	listen_config.set_ssl_context_callback(ssl_context_callback);
-	listen_config.set_timeout(utility::seconds(10));
-
-	// create and open the listener (With SSL)
-	pListener = std::make_shared<http_listener>(URL, listen_config);
-
-	// update the listener pointer
-	setListener(pListener);
-
-	return startServerInternal();
-}
-
-bool RESTServer::startServerInternal()
-{
-	try
-	{
-		auto pListener = getListener();
-		if (!pListener) return false;
-
-		// general request handler
-		pListener->support( [&] (http_request req) { handleRequest(req); });
-
-		auto task = pListener->open();
-		auto status = task.wait();
-
-		if (status != concurrency::completed) return false;
-
-		// update the server status and metadata
-		m_pCtx->serverInfo()->setState(ServerInfoBody::ServerStatus::Listening);
-		m_pCtx->ping();
-		return true;
-	}
-	catch(std::exception & err)
-	{
-		std::string reason = "Failed to start server: ";
-		reason.append(err.what());
-		throw std::runtime_error(reason);
-	}
-}
-
-void RESTServer::stopServer()
-{
-	TLock lock(m_mutex);
-	if (m_pListener)
-	{
-		// kill the current listener if there is one
-		m_pListener->close().wait();
-		m_pListener = nullptr;
-	}
-	m_pCtx->serverInfo()->setState(ServerInfoBody::ServerStatus::Uninitialized);
-}
-
-void RESTServer::logRequest(const http_request& req) const
-{
-	auto uri = req.absolute_uri();
-	auto method = utility::conversions::to_utf8string(req.method());
-	auto path  = utility::conversions::to_utf8string(uri.path());
-	auto query = utility::conversions::to_utf8string(uri.query());
-
-	std::cout << "Request Recieved - Method: " << method << " Endpoint: " << path << " Queries: " << query << "\n";
-}
-
-void RESTServer::handleRequest(http_request req)
-{
-	logRequest(req);
-	unsigned int transactionID = 0;
-	{
-		// increment the transaction counter
-		TLock lock(m_mutex);
-		transactionID = m_transactionCounter++;
-
-		// update the last transaction timestamp
-		m_pCtx->ping();
-	}
-	auto pResponse = std::make_shared<ResponseInfoBody>();
-	auto pError = std::make_shared<ErrorInfoBody>();
-	pResponse->addBody(pError);
-	pResponse->setTransactionID(transactionID);
-
-	try
-	{
-		// determine which endpoint we want and retrieve a pointer to it
-		utility::string_t endpointName = req.relative_uri().path();
-		auto pEndpoint = retrieveEndpoint(utility::conversions::to_utf8string(endpointName));
- 
-		if (!pEndpoint)
-		{
-			throw RESTServerException("Endpoint not found", ServerErrorCode::BadEndpoint);
-		}
-
-		// retrieve the method from the request and grab its ID reflection
-		auto mthd = req.method();
-		if (Utl::c_methodMap.find(mthd) == Utl::c_methodMap.end())
-		{
-			throw RESTServerException("Method reflection not found", ServerErrorCode::MethodNotSupported);
-		}
-	
-		// call the appropriate method handler for that endpoint
-		auto m = Utl::c_methodMap.at(mthd);
-		switch (m)
-		{
-		case Utl::RequestMethodID::GET:
-			pEndpoint->handleGet(req, pResponse, m_pCtx);
-			break;
-		case Utl::RequestMethodID::POST:
-			pEndpoint->handlePost(req, pResponse, m_pCtx);
-			break;
-		case Utl::RequestMethodID::PUT:
-			pEndpoint->handlePut(req, pResponse, m_pCtx);
-			break;
-		case Utl::RequestMethodID::DEL:
-			pEndpoint->handleDelete(req, pResponse, m_pCtx);
-			break;
-		default:
-			throw RESTServerException("Method Not Recognized", ServerErrorCode::MethodNotSupported);
-			break;
-		}
-
-		auto response = pResponse->toJSON();
-		req.reply(web::http::status_codes::OK, response);
-	}	
-	catch (RESTServerException& err)
-	{
-		pResponse->reset();
-
-		// this is mainly to handle bad requests
-		pError->fromException(err);
-		pResponse->addBody(pError);
-
-		auto errBody = pResponse->toJSON();
-		req.reply(status_codes::BadRequest, errBody);
-	}
-	catch (std::exception& err)
-	{
-		// this is mainly to handle bad requests
-		auto restEx = RESTServerException(err);
-
-		pResponse->reset();
-
-		// this is mainly to handle bad requests
-		pError->fromException(restEx);
-		pResponse->addBody(pError);
-		
-		auto errBody = pResponse->toJSON();
-		// This is mainly to handle internal errors
-		req.reply(status_codes::InternalError, errBody);
-	}
-}
-
-TEndpointPtr RESTServer::retrieveEndpoint(const std::string name) const
-{
-	TLock lock(m_mutex);
-	// look up our endpoint in the map using the string from the request
-	TEndpointPtr pEndpoint = nullptr;
-	auto endpointData = m_endpoints.find(name);
-
-	if (endpointData != m_endpoints.end())
-	{
-		pEndpoint = endpointData->second;
-	}
-	return pEndpoint;
-}
-
-void RESTServer::updateURI(std::shared_ptr<ServerInfoBody> pInfo)
-{
-	TLock lock(m_mutex);
-	m_pCtx->setServerInfo(pInfo);
-}
-
-

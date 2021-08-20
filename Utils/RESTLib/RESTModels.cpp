@@ -10,24 +10,24 @@
 
 namespace
 {
-	const std::map<JSONInfoBody::BodyType, string_t> c_bodyIDToString =
+	const std::map<JSONInfoBody::BodyType, std::string> c_bodyIDToString =
 	{
-		{ JSONInfoBody::BodyType::Body_URIInfo,        U("URI_Info")         },
-		{ JSONInfoBody::BodyType::Body_ErrorInfo,	   U("Error_Info")       },
-		{ JSONInfoBody::BodyType::Body_ReponseInfo,	   U("Reponse_Info")     },
-		{ JSONInfoBody::BodyType::Body_ServerInfo,	   U("Server_Info")      },
-		{ JSONInfoBody::BodyType::Body_ConnectionInfo, U("BConnection_Info") },
-		{ JSONInfoBody::BodyType::Body_TokenInfo,	   U("BToken_Info")      }
+		{ JSONInfoBody::BodyType::Body_URIInfo,        "URI_Info"         },
+		{ JSONInfoBody::BodyType::Body_ErrorInfo,	   "Error_Info"       },
+		{ JSONInfoBody::BodyType::Body_ReponseInfo,	   "Reponse_Info"     },
+		{ JSONInfoBody::BodyType::Body_ServerInfo,	   "Server_Info"      },
+		{ JSONInfoBody::BodyType::Body_ConnectionInfo, "BConnection_Info" },
+		{ JSONInfoBody::BodyType::Body_TokenInfo,	   "BToken_Info"      }
 	};
 
-	const std::map<string_t, JSONInfoBody::BodyType> c_bodyNameToID =
+	const std::map<std::string, JSONInfoBody::BodyType> c_bodyNameToID =
 	{
-		{ U("URI_Info"),        JSONInfoBody::BodyType::Body_URIInfo         },
-		{ U("Error_Info"),      JSONInfoBody::BodyType::Body_ErrorInfo       },
-		{ U("Reponse_Info"),    JSONInfoBody::BodyType::Body_ReponseInfo	 },
-		{ U("Server_Info"),     JSONInfoBody::BodyType::Body_ServerInfo	     },
-		{ U("Connection_Info"), JSONInfoBody::BodyType::Body_ConnectionInfo  },
-		{ U("Token_Info"),      JSONInfoBody::BodyType::Body_TokenInfo		 }
+		{ "URI_Info",        JSONInfoBody::BodyType::Body_URIInfo         },
+		{ "Error_Info",      JSONInfoBody::BodyType::Body_ErrorInfo       },
+		{ "Reponse_Info",    JSONInfoBody::BodyType::Body_ReponseInfo	 },
+		{ "Server_Info",     JSONInfoBody::BodyType::Body_ServerInfo	     },
+		{ "Connection_Info", JSONInfoBody::BodyType::Body_ConnectionInfo  },
+		{ "Token_Info",      JSONInfoBody::BodyType::Body_TokenInfo		 }
 	};
 }
 
@@ -36,12 +36,12 @@ JSONInfoBody::JSONInfoBody(BodyType ID)
 {
 }
 
-JSONInfoBody::JSONInfoBody(string_t name)
+JSONInfoBody::JSONInfoBody(std::string name)
 	: c_name(name)
 {
 }
 
-std::shared_ptr<JSONInfoBody> JSONInfoBody::createBody(string_t name)
+std::shared_ptr<JSONInfoBody> JSONInfoBody::createBody(std::string name)
 {
 	// look for the bodies we may want and add it to the response body list
 	auto bodyNameID = c_bodyNameToID.find(name);

@@ -119,15 +119,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;CPPREST_FORCE_HTTP_LISTENER_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>..\RESTLib;..\3rdParty\CPPREST\include;..\3rdParty\CPPREST\include\openssl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\RESTLib;$(ProjectDir)..\3rdParty\Boost\Include;$(ProjectDir)..\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\RESTLib\$(Platform)\$(Configuration)\RESTLib.lib;..\3rdParty\cpprestsdk-master\build.x64v142\src\x64\$(Configuration)\cpprest142_2_10d.lib;Winhttp.lib;httpapi.lib;bcrypt.lib;crypt32.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\boost_system-vc140-mt-gd.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\boost_date_time-vc140-mt-gd.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\boost_regex-vc140-mt-gd.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\libssl.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\libcrypto.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\RESTLib\$(Platform)\$(Configuration)\RESTLib.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_system-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_date_time-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_regex-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\libssl.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\libcrypto.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;Winhttp.lib;httpapi.lib;bcrypt.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,11 +150,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ResultInfoBody.cpp" />
     <ClCompile Include="ServerTest.cpp" />
     <ClCompile Include="ServerTestApp.cpp" />
     <ClCompile Include="TestEndpoints.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ResultInfoBody.h" />
     <ClInclude Include="ServerTest.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TestEndpoints.h" />

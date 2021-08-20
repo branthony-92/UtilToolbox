@@ -1,13 +1,11 @@
 #ifndef RESTMODELS_H
 #define RESTMODELS_H
-
+#include "nlohmann/json.hpp"
 #include <set>
 #include <map>
-#include <cpprest/json.h>
 
-using namespace utility;
-using namespace utility::conversions;
-using namespace web::json;
+using JSON = nlohmann::json;
+
 
 class JSONInfoBody {
 public:
@@ -29,18 +27,18 @@ public:
 	};
 
 	JSONInfoBody(BodyType ID = BodyType::Body_Invalid);
-	JSONInfoBody(string_t name);
+	JSONInfoBody(std::string name);
 	virtual ~JSONInfoBody() {}
 
-	virtual value toJSON() const = 0;
-	virtual void  loadJSON(value) = 0;
+	virtual JSON toJSON() const = 0;
+	virtual void  loadJSON(JSON) = 0;
 	
-	const string_t c_name;
+	const std::string c_name;
 
 	static std::shared_ptr<JSONInfoBody> createBody(BodyType ID);
-	static std::shared_ptr<JSONInfoBody> createBody(string_t name);
+	static std::shared_ptr<JSONInfoBody> createBody(std::string name);
 
 };
-typedef std::map<string_t,std::shared_ptr<JSONInfoBody>> BodyMap;
+typedef std::map<std::string,std::shared_ptr<JSONInfoBody>> BodyMap;
 
 #endif // !RESTMODELS_H

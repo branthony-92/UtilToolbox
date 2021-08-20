@@ -7,6 +7,8 @@ enum class ServerErrorCode
 	BadContext,
 	BadEndpoint,
 	BadMethod,
+	BadBody,
+	BadQuery,
 	MethodNotSupported,
 	AccessDenied,
 	Generic,

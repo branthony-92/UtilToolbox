@@ -2,8 +2,6 @@
 //
 #include "stdafx.h"
 #include <iostream>
-#include <cpprest/http_listener.h>
-#include <cpprest/json.h>
 
 #include "ServerTest.h"
 #include "TestEndpoints.h"
@@ -59,24 +57,16 @@ int main(int argc, char* argv[])
 	TestApp test;
 
 	ParseArgs args(argc, argv);
-	auto schema  = args.getFlagValue("-schema");
 	auto host    = args.getFlagValue("-host");
 	auto portStr = args.getFlagValue("-port");
-	auto root    = args.getFlagValue("-root");
 
 	auto pURI = std::make_shared<URIInfoBody>();
 
-	auto schemaVal = schema.empty() ? "http" : schema;
-	auto hostVal   = host.empty() ? "192.168.2.16" : host;
-	auto portVal   = portStr.empty() ? 8080 : std::stoi(portStr);
-	auto rootVal   = root;
+	std::string hostVal   = host.empty() ? "192.168.2.16" : host;
+	unsigned short portVal   = portStr.empty() ? 8080 : std::stoi(portStr);
 
-	pURI->setSchema(schemaVal);
-	pURI->setHost(hostVal);
-	pURI->setPort(portVal);
-	pURI->setRoot(rootVal);
 
-	test.init(pURI);
-	test.run();
+	test.init(hostVal, portVal);
+	while (true);
 	std::cout << "Server timed out";
 }

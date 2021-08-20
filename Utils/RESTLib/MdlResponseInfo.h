@@ -9,12 +9,12 @@ public:
 	ResponseInfoBody();
 	virtual ~ResponseInfoBody() {}
 
-	virtual value toJSON() const override;
-	virtual void loadJSON(value info) override;
+	virtual JSON toJSON() const override;
+	virtual void loadJSON(JSON info) override;
 
 	void addBody(std::shared_ptr<JSONInfoBody> pBody);
 
-	std::shared_ptr<JSONInfoBody> findBody(string_t name) const;
+	std::shared_ptr<JSONInfoBody> findBody(std::string name) const;
 
 	unsigned int getTransactionID() const { return m_transactionID; }
 	void setTransactionID(unsigned int id) { m_transactionID = id; }

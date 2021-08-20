@@ -7,7 +7,7 @@ ServerInfoBody::ServerInfoBody()
 	, m_serverName("")
 	, m_APIVersion(1.0)
 	, m_URLString("")
-	, m_pURI(nullptr)
+	, m_pURI(std::make_shared<URIInfoBody>())
 	, m_serverIdleTimoutSec(UINT_MAX) // basically forever
 	, m_serverState(ServerStatus::Uninitialized)
 	, m_endpointNames()
@@ -27,29 +27,24 @@ std::string ServerInfoBody::stringFromState(ServerStatus state)
 	return name;
 }
 
-web::json::value ServerInfoBody::toJSON() const
+JSON ServerInfoBody::toJSON() const
 {
-	web::json::value info = web::json::value::object();
+	JSON info = JSON::object();
 
-	web::json::value uriInfo = web::json::value::object();
+	JSON uriInfo = JSON::object();
 
-	auto name = utility::conversions::to_string_t(m_serverName);
-	auto url = utility::conversions::to_string_t(m_URLString);
 
-	info[U("Server_Name")] = web::json::value::string(name);
-	info[U("API_Version")] = web::json::value::number(m_APIVersion);
-	info[U("API_Root_URL")] = web::json::value::string(url);
-	info[U("Idle_Timout_Sec")] = web::json::value::number(m_serverIdleTimoutSec);
+	info["Server_Name"]     = m_serverName;
+	info["API_Version"]     = m_APIVersion;
+	info["API_Root_URL"]    = m_URLString;
+	info["Idle_Timout_Sec"] = m_serverIdleTimoutSec;
 
-	web::json::value ar = web::json::value::array(m_endpointNames.size());
-
-	auto index = 0u;
+	JSON ar = JSON::array();
 	for (auto& e : m_endpointNames)
 	{
-		auto ep = utility::conversions::to_string_t(e);
-		ar[index++] = web::json::value::string(ep);
+		ar.push_back(e);
 	}
-	info[U("API_Endpoints")] = ar;
+	info["API_Endpoints"] = ar;
 
 	if (m_pURI)
 	{
@@ -58,20 +53,19 @@ web::json::value ServerInfoBody::toJSON() const
 	return info;
 }
 
-void ServerInfoBody::loadJSON(value info)
+void ServerInfoBody::loadJSON(JSON info)
 {
-	auto name = info[U("Server_Name")].as_string();
-	auto apiVer = info[U("API_Version")].as_number();
-	auto url = info[U("API_Root_URL")].as_string();
-	auto timeout = info[U("Idle_Timout_Sec")].as_number();
+	m_serverName = info["Server_Name"].get<std::string>();
+	m_APIVersion = info["API_Version"].get<double>();
+	m_serverIdleTimoutSec = info["Idle_Timout_Sec"].get<unsigned int>();
+	m_URLString = info["API_Root_URL"].get<std::string>();
 
-	auto endpoints = info[U("API_Endpoints")].as_array();
+	auto endpoints = info["API_Endpoints"];
 
 	m_endpointNames.clear();
 	for (auto& e : endpoints)
 	{
-		auto name = to_utf8string(e.as_string());
-		m_endpointNames.insert(name);
+		m_endpointNames.insert(e.get<std::string>());
 	}
 	m_pURI = std::make_shared<URIInfoBody>();
 	m_pURI->loadJSON(info[m_pURI->c_name]);

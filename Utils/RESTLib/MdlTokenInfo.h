@@ -15,8 +15,8 @@ public:
 
 	TokenInfoBody();
 
-	value toJSON() const override;
-	void loadJSON(value info) override;
+	JSON toJSON() const override;
+	void loadJSON(JSON info) override;
 
 	std::string  getVal()            const { return m_val;			  }
 	TimeStamp	 getExpirationTime() const { return m_expirationTime; }

@@ -9,8 +9,8 @@ class ErrorInfoBody : public JSONInfoBody
 public:
 	ErrorInfoBody();
 
-	virtual value toJSON() const override;
-	virtual void loadJSON(value info) override;
+	virtual JSON toJSON() const override;
+	virtual void loadJSON(JSON info) override;
 
 	void fromException(RESTServerException& err);
 

@@ -54,12 +54,6 @@
     <ClInclude Include="JSONModelKeys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RESTClient.h">
-      <Filter>Header Files\ClientSide</Filter>
-    </ClInclude>
-    <ClInclude Include="RESTRequest.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HTTPUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -84,6 +78,9 @@
     <ClInclude Include="RESTModels.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RESTServer.cpp">
@@ -104,12 +101,6 @@
     <ClCompile Include="RESTModels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RESTClient.cpp">
-      <Filter>Source Files\ClientSide</Filter>
-    </ClCompile>
-    <ClCompile Include="RESTRequest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MdlUriInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -127,6 +118,9 @@
     </ClCompile>
     <ClCompile Include="MdlServerInfo.cpp">
       <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Listener.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

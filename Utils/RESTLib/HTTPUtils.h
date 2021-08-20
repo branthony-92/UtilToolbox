@@ -1,6 +1,7 @@
 #ifndef HTTPUtils_H
 #define HTTPUtils_H
 
+/*
 #include <cpprest\json.h>
 #include <cpprest\http_client.h>
 #include <map>
@@ -30,5 +31,6 @@ namespace Utl
 		{ RequestMethodID::DEL,  "DEL",  }
 	};
 }
+*/
 
 #endif // !HTTPUtils_H

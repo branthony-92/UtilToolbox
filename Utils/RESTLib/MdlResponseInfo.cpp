@@ -9,10 +9,10 @@ ResponseInfoBody::ResponseInfoBody()
 {
 }
 
-value ResponseInfoBody::toJSON() const
+JSON ResponseInfoBody::toJSON() const
 {
-	auto info = web::json::value::object();
-	info[U("Transaction_ID")] = web::json::value::number(m_transactionID);
+	auto info = JSON::object();
+	info["Transaction_ID"] = m_transactionID;
 
 	for (auto b : m_bodies)
 	{
@@ -23,19 +23,19 @@ value ResponseInfoBody::toJSON() const
 	return info;
 }
 
-void ResponseInfoBody::loadJSON(value info)
+void ResponseInfoBody::loadJSON(JSON info)
 {
-	m_transactionID = info[U("Transaction_ID")].as_integer();
+	m_transactionID = info["Transaction_ID"].get<unsigned int>();
 
-	auto JSONObj = info.as_object();
 
-	for (auto& j : JSONObj)
+	for (JSON::iterator iter = info.begin(); iter != info.end(); iter++ )
 	{
 		// look for the bodies we may want and add it to the response body list	
-		auto pBody = JSONInfoBody::createBody(j.first);
+		iter.key();
+		auto pBody = JSONInfoBody::createBody(iter.key());
 		if (pBody)
 		{
-			pBody->loadJSON(j.second);
+			pBody->loadJSON(iter.value());
 			m_bodies.insert_or_assign(pBody->c_name, pBody);
 		}
 	}
@@ -46,7 +46,7 @@ void ResponseInfoBody::addBody(std::shared_ptr<JSONInfoBody> pBody)
 	m_bodies.insert_or_assign(pBody->c_name, pBody);
 }
 
-std::shared_ptr<JSONInfoBody> ResponseInfoBody::findBody(string_t name) const
+std::shared_ptr<JSONInfoBody> ResponseInfoBody::findBody(std::string name) const
 {
 	auto bodyIter = m_bodies.find(name);
 	if (bodyIter != m_bodies.end())

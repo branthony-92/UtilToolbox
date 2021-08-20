@@ -8,11 +8,11 @@ ConnectionInfoBody::ConnectionInfoBody()
 	, m_id(0)
 {}
 
-web::json::value ConnectionInfoBody::toJSON() const
+JSON ConnectionInfoBody::toJSON() const
 {
-	web::json::value info = web::json::value::object();
+	JSON info = JSON::object();
 
-	info[U("Connection_ID")] = web::json::value::number(m_id);
+	info["Connection_ID"] = m_id;
 
 	if (m_pToken)
 	{
@@ -21,9 +21,9 @@ web::json::value ConnectionInfoBody::toJSON() const
 	return info;
 }
 
-void ConnectionInfoBody::loadJSON(value info)
+void ConnectionInfoBody::loadJSON(JSON info)
 {
-	m_id = info[U("Connection_ID")].as_integer();
+	m_id = info["Connection_ID"].get<unsigned int>();
 
 	m_pToken = std::make_shared<TokenInfoBody>();
 	m_pToken->loadJSON(info[m_pToken->c_name]);

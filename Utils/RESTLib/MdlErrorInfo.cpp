@@ -7,22 +7,21 @@ ErrorInfoBody::ErrorInfoBody()
 	, m_errorCode(ServerErrorCode::NoError)
 {}
 
-value ErrorInfoBody::toJSON() const
+JSON ErrorInfoBody::toJSON() const
 {
-	auto info = value::object();
+	auto info = JSON::object();
 	auto code = static_cast<unsigned int>(m_errorCode);
-	info[U("Error_Code")] = value::number(code);
-	info[U("Error_Message")] = value::string(utility::conversions::to_string_t(m_errorMessage));
+	info["Error_Code"] = code;
+	info["Error_Message"] = m_errorMessage;
 	return info;
 }
 
-void ErrorInfoBody::loadJSON(value info)
+void ErrorInfoBody::loadJSON(JSON info)
 {
-	auto code = info[U("Error_Code")].as_integer();
-	auto msg = info[U("Error_Message")].as_string();
+	auto code = info["Error_Code"].get<unsigned int>();
+	m_errorMessage = info["Error_Message"].get<std::string>();
 
 	m_errorCode = static_cast<ServerErrorCode>(code);
-	m_errorMessage = utility::conversions::to_utf8string(msg);
 }
 
 void ErrorInfoBody::fromException(RESTServerException& err)
