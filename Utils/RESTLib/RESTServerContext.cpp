@@ -48,6 +48,7 @@ std::string RESTServerContext::findResource(std::string target)
 {
 	if (target == "/")          return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\index.html";
 	else if (target == "/test") return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\Test\\test.html";
+	else if (target == "/img")  return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\Test\\omni.jpg";
 	return "";
 }
 
