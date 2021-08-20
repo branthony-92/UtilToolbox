@@ -214,108 +214,11 @@ public:
         return oss.str();
     }
     template< class Body, class Allocator>
-    void handleRequest(http::request<Body, http::basic_fields<Allocator>>&& req)
-    {
-        // Returns a server error response
-
-        auto const method_error = [&](beast::string_view what)
-        {
-            http::response<http::string_body> res{ http::status::method_not_allowed, req.version() };
-            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-            res.set(http::field::content_type, "text/html");
-            res.keep_alive(req.keep_alive());
-            res.body() = "Method not supported" + std::string(what) + "'";
-            res.prepare_payload();
-            http::write(*m_pStream, res);
-        }; 
-
-        auto const server_error = [&](beast::string_view what)
-        {
-            http::response<http::string_body> res{ http::status::internal_server_error, req.version() };
-            res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
-            res.set(http::field::content_type, "text/html");
-            res.keep_alive(req.keep_alive());
-            res.body() = "An error occurred: '" + std::string(what) + "'";
-            res.prepare_payload();
-            http::write(*m_pStream, res);
-        };
-        
-        if (!m_pServerCtx->hasHandlers())
-        {
-            throw std::exception("No Handlers registerd");
-        }
-
-        std::shared_ptr<JSONInfoBody> pResponse = nullptr;
-        try
-        {
-            beast::string_view target = req.target();
-
-            // find the endpoint
-      
-            ReqHandlerPtr pHandler = m_pServerCtx->retrieveHandler(getEndpoint(target));
-
-            if (!pHandler) throw std::exception("Failed to retrieve request handler");
-           
-            // extract the queries
-            SplitQueries queries = getQueries(target);
-
-            // extract the body
-            auto body = parseBody(req);
-
-            // find the method
-            http::verb method = req.method();
-            switch (method)
-            {
-            case boost::beast::http::verb::delete_:
-                pResponse = pHandler->handleRequest_Delete(queries, body, m_pServerCtx);
-                break;
-            case boost::beast::http::verb::get:
-                pResponse = pHandler->handleRequest_Get(queries, body, m_pServerCtx);
-                break;
-            case boost::beast::http::verb::head:
-                pResponse = pHandler->handleRequest_Head(queries, body, m_pServerCtx);
-                break;
-            case boost::beast::http::verb::post:
-                pResponse = pHandler->handleRequest_Post(queries, body, m_pServerCtx);
-                break;
-            case boost::beast::http::verb::put:
-                pResponse = pHandler->handleRequest_Put(queries, body, m_pServerCtx);
-                break;
-            default:
-                break;
-            }
-            if (!pResponse) throw std::exception("Failed to retrieve response");
-            
-
-            auto jsonBody = pResponse->toJSON();
-            auto pResp = std::make_shared<http::response<http::string_body>>( http::status::ok, req.version() );
-            
-            pResp->set(http::field::server, BOOST_BEAST_VERSION_STRING);
-            pResp->set(http::field::content_type, "text/html");
-            pResp->keep_alive(req.keep_alive());
-            pResp->body() = jsonBody.dump();
-            pResp->prepare_payload();
-
-            m_pResponse = pResp;
-
-            // Write the response
-            http::async_write(
-                *m_pStream,
-                *pResp,
-                beast::bind_front_handler(
-                    &GenericSession::onWrite,
-                    shared_from_this(),
-                    pResp->need_eof()));
-        }
-        catch (std::exception& err)
-        {
-            server_error(err.what());
-        }
-
-    }
+    void handleRequest(http::request<Body, http::basic_fields<Allocator>>&& req);
     void onWrite(bool close, beast::error_code ec, std::size_t bytesTransferred)
     {
         boost::ignore_unused(bytesTransferred);
+        return doClose();
 
         if (ec)
             return;
@@ -324,7 +227,6 @@ public:
         {
             // This means we should close the connection, usually because
             // the response indicated the "Connection: close" semantic.
-            return doClose();
         }
 
         // We're done with the response so delete it
@@ -394,5 +296,174 @@ private:
     void handleClosedSessions();
 };
 typedef std::shared_ptr<Listener> ListenerPtr;
+
+template< class Body, class Allocator>
+void GenericSession::handleRequest(http::request<Body, http::basic_fields<Allocator>>&& req)
+{
+    // Returns a server error response
+    // Returns a not found response
+    auto const not_found = [&](beast::string_view target)
+    {
+        http::response<http::string_body> res{ http::status::not_found, req.version() };
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, "text/html");
+        res.keep_alive(req.keep_alive());
+        res.body() = "The resource '" + std::string(target) + "' was not found.";
+        res.prepare_payload();
+        http::write(*m_pStream, res);
+    };
+
+    auto const method_error = [&](beast::string_view what)
+    {
+        http::response<http::string_body> res{ http::status::method_not_allowed, req.version() };
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, "text/html");
+        res.keep_alive(req.keep_alive());
+        res.body() = "Method not supported" + std::string(what) + "'";
+        res.prepare_payload();
+        http::write(*m_pStream, res);
+    };
+
+    auto const server_error = [&](beast::string_view what)
+    {
+        http::response<http::string_body> res{ http::status::internal_server_error, req.version() };
+        res.set(http::field::server, BOOST_BEAST_VERSION_STRING);
+        res.set(http::field::content_type, "text/html");
+        res.keep_alive(req.keep_alive());
+        res.body() = "An error occurred: '" + std::string(what) + "'";
+        res.prepare_payload();
+        http::write(*m_pStream, res);
+    };
+
+    if (!m_pServerCtx->hasHandlers())
+    {
+        throw std::exception("No Handlers registerd");
+    }
+    std::string body;
+    std::shared_ptr<JSONInfoBody> pResponse = nullptr;
+    try
+    {
+        beast::string_view target = req.target();
+        ReqHandlerPtr pHandler = nullptr;
+        // find the endpoint
+        auto epString = getEndpoint(target);
+
+        if (epString.find("/api/") != std::string::npos)
+        {
+            pHandler = m_pServerCtx->retrieveHandler(getEndpoint(target));
+            body = parseBody(req);
+        }
+        else
+        {
+            pHandler = std::make_shared<WebPageRequestHandler>();
+            body = epString;
+        }
+
+        if (!pHandler) throw std::exception("Failed to retrieve request handler");
+
+        // extract the queries
+        SplitQueries queries = getQueries(target);
+
+        // extract the body
+
+        beast::string_view methodStr = req.method_string();
+
+        std::cout << "Request received: " << methodStr << "\n";
+
+        // find the method
+        http::verb method = req.method();
+        switch (method)
+        {
+        case boost::beast::http::verb::delete_:
+            pResponse = pHandler->handleRequest_Delete(queries, body, m_pServerCtx);
+            break;
+        case boost::beast::http::verb::get:
+            pResponse = pHandler->handleRequest_Get(queries, body, m_pServerCtx);
+            break;
+        case boost::beast::http::verb::head:
+            pResponse = pHandler->handleRequest_Head(queries, body, m_pServerCtx);
+            break;
+        case boost::beast::http::verb::post:
+            pResponse = pHandler->handleRequest_Post(queries, body, m_pServerCtx);
+            break;
+        case boost::beast::http::verb::put:
+            pResponse = pHandler->handleRequest_Put(queries, body, m_pServerCtx);
+            break;
+        default:
+            break;
+        }
+        if (!pResponse) throw std::exception("Failed to retrieve response");
+
+        switch (pHandler->getType())
+        {
+            case HTTPRequestHandler::DataType::JSON:
+            {
+                // dump the json body
+                auto pResp = std::make_shared<http::response<http::string_body>>(http::status::ok, req.version());
+                m_pResponse = pResp;
+
+                pResp->set(http::field::server, BOOST_BEAST_VERSION_STRING);
+                pResp->set(http::field::content_type, "text/html");
+                pResp->keep_alive(req.keep_alive());
+                pResp->body() = pResponse->toJSON().dump();
+                pResp->prepare_payload();
+
+                // Write the response
+                http::async_write(
+                    *m_pStream,
+                    *pResp,
+                    beast::bind_front_handler(
+                        &GenericSession::onWrite,
+                        shared_from_this(),
+                        pResp->need_eof()));
+                break;
+            }
+            case HTTPRequestHandler::DataType::WebPage:
+            {
+                // fetch the desired webpage
+                // Respond to GET request
+                beast::error_code ec;
+                http::file_body::value_type body;
+
+                auto j = std::dynamic_pointer_cast<ResponseInfoBody>(pResponse)->findBody("Web_Page_Info")->toJSON();
+                std::string path = j["Path"].get<std::string>();
+
+                if (path.empty())
+                {
+                    not_found(epString);
+                    return;
+                }
+
+                body.open(path.c_str(), beast::file_mode::scan, ec);
+
+                auto pResp = std::make_shared<http::response<http::file_body>>(
+                    std::piecewise_construct,
+                    std::make_tuple(std::move(body)),
+                    std::make_tuple(http::status::ok, req.version()) );
+                pResp->set(http::field::server, BOOST_BEAST_VERSION_STRING);
+                pResp->set(http::field::content_type, "text/html");
+                pResp->content_length(body.size());
+                pResp->keep_alive(req.keep_alive());
+                m_pResponse = pResp;
+                // Write the response
+                http::async_write(
+                    *m_pStream,
+                    *pResp,
+                    beast::bind_front_handler(
+                        &GenericSession::onWrite,
+                        shared_from_this(),
+                        pResp->need_eof()));
+                break;
+            }
+            default:
+                server_error("Unknown handler type");
+                break;
+        }
+    }
+    catch (std::exception& err)
+    {
+        server_error(err.what());
+    }
+}
 
 #endif // !LISTENER_H

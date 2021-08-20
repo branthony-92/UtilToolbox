@@ -41,4 +41,32 @@ public:
 };
 typedef std::map<std::string,std::shared_ptr<JSONInfoBody>> BodyMap;
 
+class WebPageInfoBody : public JSONInfoBody
+{
+public:
+	WebPageInfoBody()
+		: JSONInfoBody("Web_Page_Info")
+		, m_resourcePath("")
+	{
+	}
+
+	virtual JSON toJSON() const override
+	{
+		JSON info;
+		info["Path"] = m_resourcePath;
+		return info;
+	}
+	virtual void loadJSON(JSON info) override
+	{
+		m_resourcePath = info["Path"].get<std::string>();
+	}
+
+	std::string		getPath()  const { return m_resourcePath; }
+	void setPath(std::string val)     { m_resourcePath = val; }
+
+protected:
+	std::string		m_resourcePath;
+};
+
+
 #endif // !RESTMODELS_H

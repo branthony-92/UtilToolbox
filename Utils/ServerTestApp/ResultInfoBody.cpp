@@ -12,7 +12,7 @@ JSON ResultInfoBody::toJSON() const
 	JSON info = JSON::object();
 
 	info["Name"] = m_name;
-	info["JSON"] = m_val;
+	info["Value"] = m_val;
 	return info;
 }
 

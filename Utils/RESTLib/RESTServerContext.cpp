@@ -44,6 +44,13 @@ bool RESTServerContext::addEndpoint(std::string name)
 	return true;
 }
 
+std::string RESTServerContext::findResource(std::string target)
+{
+	if (target == "/")          return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\index.html";
+	else if (target == "/test") return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\Test\\test.html";
+	return "";
+}
+
 std::shared_ptr<ConnectionInfoBody> RESTServerContext::handleConnectionRequest(TokenInfoBody::Lifetime type, unsigned int timeout)
 {
 	auto pConnection = m_pConnectionMgr->openNewConnection(type, timeout);

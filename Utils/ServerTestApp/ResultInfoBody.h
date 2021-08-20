@@ -23,4 +23,5 @@ private:
 };
 typedef std::shared_ptr<ResultInfoBody> ResultInfoPtr;
 
+
 #endif // !RESULTINFO_H

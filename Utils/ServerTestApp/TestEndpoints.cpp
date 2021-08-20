@@ -150,3 +150,17 @@ std::shared_ptr<JSONInfoBody> TestEndpoint_Auth::handleRequest_Post(SplitQueries
 	*/
 }
 
+std::shared_ptr<JSONInfoBody> TestEndpoint_Hello::handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx)
+{
+	auto pTestCtx = std::dynamic_pointer_cast<ServerTest>(pCtx);
+	if (!pTestCtx)
+	{
+		throw RESTServerException("Endpoint context is invalid", ServerErrorCode::BadContext);
+	}
+	auto pResp = std::make_shared<ResponseInfoBody>();
+	auto pModel = pTestCtx->m_pTestModel_1;
+	pModel->setName("World");
+	pModel->setVal(69);
+	pResp->addBody(pModel);
+	return pResp;
+}

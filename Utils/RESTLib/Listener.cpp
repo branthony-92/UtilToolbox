@@ -69,7 +69,7 @@ void Listener::on_accept(beast::error_code ec, tcp::socket socket)
         // Create the session and run it
         auto pSession = m_pSessionPrototype->clone(std::move(socket), m_SSLContext);
         pSession->run();
-        m_liveSessions.push_back(pSession);
+        //m_liveSessions.push_back(pSession);
     }
 
     // Accept another connection

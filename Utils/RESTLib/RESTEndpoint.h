@@ -10,9 +10,16 @@ class HTTPRequestHandler
 {
 public:
 
+    enum class DataType
+    {
+        WebPage,
+        JSON,
+        Unknown
+    };
 
-    HTTPRequestHandler(std::string name)
+    HTTPRequestHandler(std::string name, DataType type)
         : m_name(name)
+        , m_dataType(type)
     {}
 
     virtual ~HTTPRequestHandler() {};
@@ -27,12 +34,23 @@ public:
 
     // base property accessors
     std::string getName() const { return m_name; }
+    DataType getType() const { return m_dataType; }
 
-private:
+protected:
     std::string m_name;
+    DataType    m_dataType;
 };
 typedef std::shared_ptr<HTTPRequestHandler>  ReqHandlerPtr;
 typedef std::map<std::string, ReqHandlerPtr> ReqHandlerMap;
 
+class WebPageRequestHandler : public HTTPRequestHandler
+{
+
+public:
+    WebPageRequestHandler() : HTTPRequestHandler("WebPage", HTTPRequestHandler::DataType::WebPage) {}
+
+    // virtual HTTP method handlers
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
+};
 
 #endif // !RESTENDPOINT_H

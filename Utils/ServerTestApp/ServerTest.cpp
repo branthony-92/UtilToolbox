@@ -37,19 +37,21 @@ void TestApp::init(std::string address, unsigned short port)
 	auto endpointName_1   = "/api/TestEndpoint_1";
 	auto endpointName_2   = "/api/TestEndpoint_2";
 	auto endpointName_3   = "/api/TestEndpoint_Add";
+	auto endpointName_4   = "/api/Hello";
 
 	auto pEndpointRoot = std::make_shared<TestEndpoint_Root>(endpointNameRoot);
 	auto pEndpointAuth = std::make_shared<TestEndpoint_Auth>(endpointNameAuth);
 	auto pEndpoint1    = std::make_shared<TestEndpoint_1>(endpointName_1);
 	auto pEndpoint2    = std::make_shared<TestEndpoint_2>(endpointName_2);
 	auto pEndpoint3    = std::make_shared<TestEndpoint_Add>(endpointName_3);
+	auto pEndpoint4	   = std::make_shared<TestEndpoint_Hello>(endpointName_4);
 
 	m_pTestContext->registerHandler(endpointNameRoot, pEndpointRoot);
 	m_pTestContext->registerHandler(endpointNameAuth, pEndpointAuth);
 	m_pTestContext->registerHandler(endpointName_1,   pEndpoint1);
 	m_pTestContext->registerHandler(endpointName_2,   pEndpoint2);
 	m_pTestContext->registerHandler(endpointName_3,   pEndpoint3);
-
+	m_pTestContext->registerHandler(endpointName_4,   pEndpoint4);
 	// spin it up
 	
 	auto ssl_callback = [](ssl::context& ctx) {

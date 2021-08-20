@@ -6,7 +6,7 @@
 class TestEndpoint_Root : public HTTPRequestHandler
 {
 public:
-	TestEndpoint_Root(std::string name) : HTTPRequestHandler(name) {}
+	TestEndpoint_Root(std::string name) : HTTPRequestHandler(name, HTTPRequestHandler::DataType::JSON) {}
 
 	// virtual HTTP method handlers
 	virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
@@ -16,7 +16,7 @@ public:
 class TestEndpoint_Auth : public HTTPRequestHandler
 {
 public:
-	TestEndpoint_Auth(std::string name) : HTTPRequestHandler(name) {}
+	TestEndpoint_Auth(std::string name) : HTTPRequestHandler(name, HTTPRequestHandler::DataType::JSON) {}
 
 	// virtual HTTP method handlers
 	virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
@@ -28,7 +28,7 @@ public:
 class TestEndpoint_1 : public HTTPRequestHandler
 {
 public:
-	TestEndpoint_1(std::string name) : HTTPRequestHandler(name) {}
+	TestEndpoint_1(std::string name) : HTTPRequestHandler(name, HTTPRequestHandler::DataType::JSON) {}
 
 	// virtual HTTP method handlers
 
@@ -39,7 +39,7 @@ public:
 class TestEndpoint_2 : public HTTPRequestHandler
 {
 public:
-	TestEndpoint_2(std::string name) : HTTPRequestHandler(name) {}
+	TestEndpoint_2(std::string name) : HTTPRequestHandler(name, HTTPRequestHandler::DataType::JSON) {}
 
 	// virtual HTTP method handlers
 	virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
@@ -49,7 +49,16 @@ public:
 class TestEndpoint_Add : public HTTPRequestHandler
 {
 public:
-	TestEndpoint_Add(std::string name) : HTTPRequestHandler(name) {}
+	TestEndpoint_Add(std::string name) : HTTPRequestHandler(name, HTTPRequestHandler::DataType::JSON) {}
+
+	// virtual HTTP method handlers
+	virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
+};
+
+class TestEndpoint_Hello : public HTTPRequestHandler
+{
+public:
+	TestEndpoint_Hello(std::string name) : HTTPRequestHandler(name, HTTPRequestHandler::DataType::JSON) {}
 
 	// virtual HTTP method handlers
 	virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;

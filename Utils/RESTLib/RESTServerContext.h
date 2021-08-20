@@ -41,7 +41,7 @@ public:
 	bool addEndpoint(std::string name);
 	std::set<std::string> getEndpoints() const { return m_pServerInfo->getEndpointNames(); }
 	
-
+	std::string findResource(std::string target);
 
 	// connection management
 	std::shared_ptr<ConnectionInfoBody> handleConnectionRequest(TokenInfoBody::Lifetime type, unsigned int timeout);
