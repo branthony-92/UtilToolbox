@@ -26,11 +26,11 @@ public:
 
     // virtual HTTP method handlers 
     // These will be responsible for parsing the target string for queries
-    virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries,    std::string body, TRESTCtxPtr pCtx) { return nullptr; }
-    virtual std::shared_ptr<JSONInfoBody> handleRequest_Put(SplitQueries queries,    std::string body, TRESTCtxPtr pCtx) { return nullptr; }
-    virtual std::shared_ptr<JSONInfoBody> handleRequest_Post(SplitQueries queries,   std::string body, TRESTCtxPtr pCtx) { return nullptr; }
-    virtual std::shared_ptr<JSONInfoBody> handleRequest_Delete(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) { return nullptr; }
-    virtual std::shared_ptr<JSONInfoBody> handleRequest_Head(SplitQueries queries,   std::string body, TRESTCtxPtr pCtx) { return nullptr; }
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(std::string target, SplitQueries queries,    std::string body, TRESTCtxPtr pCtx) { return nullptr; }
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Put(std::string target, SplitQueries queries,    std::string body, TRESTCtxPtr pCtx) { return nullptr; }
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Post(std::string target, SplitQueries queries,   std::string body, TRESTCtxPtr pCtx) { return nullptr; }
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Delete(std::string target, SplitQueries queries, std::string body, TRESTCtxPtr pCtx) { return nullptr; }
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Head(std::string target, SplitQueries queries,   std::string body, TRESTCtxPtr pCtx) { return nullptr; }
 
     // base property accessors
     std::string getName() const { return m_name; }
@@ -50,7 +50,7 @@ public:
     WebPageRequestHandler() : HTTPRequestHandler("WebPage", HTTPRequestHandler::DataType::WebPage) {}
 
     // virtual HTTP method handlers
-    virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
+    virtual std::shared_ptr<JSONInfoBody> handleRequest_Get(std::string target, SplitQueries queries, std::string body, TRESTCtxPtr pCtx) override;
 };
 
 #endif // !RESTENDPOINT_H

@@ -22,6 +22,8 @@ protected:
 	std::atomic_bool      m_resetFlag;
 	TConnectionMgrPtr     m_pConnectionMgr;
 
+	unsigned int m_transactionID;
+
 	std::map<std::string, std::shared_ptr<HTTPRequestHandler>> m_requestHandlers;
 
 public:
@@ -41,7 +43,7 @@ public:
 	bool addEndpoint(std::string name);
 	std::set<std::string> getEndpoints() const { return m_pServerInfo->getEndpointNames(); }
 	
-	std::string findResource(std::string target);
+	virtual  std::string findResource(std::string target);
 
 	// connection management
 	std::shared_ptr<ConnectionInfoBody> handleConnectionRequest(TokenInfoBody::Lifetime type, unsigned int timeout);
@@ -60,6 +62,8 @@ public:
 
 	void checkTimeout();
 	void ping();
+
+	unsigned int getNextransactionID();
 };
 typedef std::shared_ptr<RESTServerContext> TRESTCtxPtr;
 

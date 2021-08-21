@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{444899f3-f3ee-478a-9177-6e31cf42d18d}</ProjectGuid>
-    <RootNamespace>RESTLib</RootNamespace>
+    <ProjectGuid>{56ef8b66-d584-4853-9a8b-ff6070eee99e}</ProjectGuid>
+    <RootNamespace>RestLibClient</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>RESTLibServer</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -80,7 +79,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
-    <LibraryPath>..\3rdParty\cpprestsdk-master\build.x64v142\src\x64\$(Configuration);..\ActionProcessor\x64\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -117,22 +115,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;CPPREST_FORCE_HTTP_LISTENER_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)..\ActionProcessor;$(ProjectDir)..\3rdParty\Boost\Include;$(ProjectDir)..\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PrecompiledHeader>Create</PrecompiledHeader>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Winhttp.lib;httpapi.lib;bcrypt.lib;crypt32.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\boost_system-vc140-mt-gd.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\boost_date_time-vc140-mt-gd.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\boost_regex-vc140-mt-gd.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\libssl.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\libcrypto.lib;D:\vcpkg\installed\x64-windows-static\debug\lib\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -151,37 +143,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="HTTPUtils.h" />
-    <ClInclude Include="JSONModelKeys.h" />
-    <ClInclude Include="Listener.h" />
-    <ClInclude Include="MdlConnectionInfo.h" />
-    <ClInclude Include="MdlErrorInfo.h" />
-    <ClInclude Include="MdlResponseInfo.h" />
-    <ClInclude Include="MdlServerInfo.h" />
-    <ClInclude Include="MdlTokenInfo.h" />
-    <ClInclude Include="MdlUriInfo.h" />
-    <ClInclude Include="RESTModels.h" />
-    <ClInclude Include="RESTConnection.h" />
-    <ClInclude Include="RESTEndpoint.h" />
-    <ClInclude Include="RESTServerContext.h" />
-    <ClInclude Include="RESTServer.h" />
-    <ClInclude Include="RESTServerException.h" />
-    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="RESTClient.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Listener.cpp" />
-    <ClCompile Include="MdlConnectionInfo.cpp" />
-    <ClCompile Include="MdlErrorInfo.cpp" />
-    <ClCompile Include="MdlResponseInfo.cpp" />
-    <ClCompile Include="MdlServerInfo.cpp" />
-    <ClCompile Include="MdlTokenInfo.cpp" />
-    <ClCompile Include="MdlUriInfo.cpp" />
-    <ClCompile Include="RESTModels.cpp" />
-    <ClCompile Include="RESTConnection.cpp" />
-    <ClCompile Include="RESTEndpoint.cpp" />
-    <ClCompile Include="RESTServerContext.cpp" />
-    <ClCompile Include="RESTServer.cpp" />
-    <ClCompile Include="RESTServerException.cpp" />
+    <ClCompile Include="RESTClient.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

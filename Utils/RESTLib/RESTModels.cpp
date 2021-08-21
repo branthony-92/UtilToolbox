@@ -16,18 +16,18 @@ namespace
 		{ JSONInfoBody::BodyType::Body_ErrorInfo,	   "Error_Info"       },
 		{ JSONInfoBody::BodyType::Body_ReponseInfo,	   "Reponse_Info"     },
 		{ JSONInfoBody::BodyType::Body_ServerInfo,	   "Server_Info"      },
-		{ JSONInfoBody::BodyType::Body_ConnectionInfo, "BConnection_Info" },
-		{ JSONInfoBody::BodyType::Body_TokenInfo,	   "BToken_Info"      }
+		{ JSONInfoBody::BodyType::Body_ConnectionInfo, "Connection_Info" },
+		{ JSONInfoBody::BodyType::Body_TokenInfo,	   "Token_Info"      }
 	};
 
 	const std::map<std::string, JSONInfoBody::BodyType> c_bodyNameToID =
 	{
 		{ "URI_Info",        JSONInfoBody::BodyType::Body_URIInfo         },
 		{ "Error_Info",      JSONInfoBody::BodyType::Body_ErrorInfo       },
-		{ "Reponse_Info",    JSONInfoBody::BodyType::Body_ReponseInfo	 },
-		{ "Server_Info",     JSONInfoBody::BodyType::Body_ServerInfo	     },
+		{ "Reponse_Info",    JSONInfoBody::BodyType::Body_ReponseInfo	  },
+		{ "Server_Info",     JSONInfoBody::BodyType::Body_ServerInfo	  },
 		{ "Connection_Info", JSONInfoBody::BodyType::Body_ConnectionInfo  },
-		{ "Token_Info",      JSONInfoBody::BodyType::Body_TokenInfo		 }
+		{ "Token_Info",      JSONInfoBody::BodyType::Body_TokenInfo		  }
 	};
 }
 

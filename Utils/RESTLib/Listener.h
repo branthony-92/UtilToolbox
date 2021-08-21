@@ -368,11 +368,12 @@ void GenericSession::handleRequest(http::request<Body, http::basic_fields<Alloca
         http::write(*m_pStream, res);
     };
 
+    auto transID = m_pServerCtx->getNextransactionID();
+
     if (!m_pServerCtx->hasHandlers())
     {
         throw std::exception("No Handlers registerd");
     }
-    std::string body;
     std::shared_ptr<JSONInfoBody> pResponse = nullptr;
     try
     {
@@ -384,14 +385,25 @@ void GenericSession::handleRequest(http::request<Body, http::basic_fields<Alloca
         if (epString.find("/api/") != std::string::npos)
         {
             pHandler = m_pServerCtx->retrieveHandler(getEndpoint(target));
-            body = parseBody(req);
         }
         else
         {
             pHandler = std::make_shared<WebPageRequestHandler>();
-            body = epString;
         }
+        // retrieve the JSON body from the request body if there is one
+        std::string body = parseBody(req);
+        auto jsonStart = body.find_first_of('{');
+        auto jsonEnd = body.find_last_of('}');
 
+        if (jsonStart != std::string::npos && jsonEnd != std::string::npos)
+        {
+            body = body.substr(jsonStart, jsonEnd - jsonStart + 1);
+        }
+        else 
+        {
+            body = "";
+        }
+ 
         if (!pHandler) throw std::exception("Failed to retrieve request handler");
 
         // extract the queries
@@ -403,52 +415,57 @@ void GenericSession::handleRequest(http::request<Body, http::basic_fields<Alloca
 
         std::cout << "Request received: " << methodStr << "\n";
 
-        // find the method
+        // find the method and handle the request
         http::verb method = req.method();
         switch (method)
         {
         case boost::beast::http::verb::delete_:
-            pResponse = pHandler->handleRequest_Delete(queries, body, m_pServerCtx);
+            pResponse = pHandler->handleRequest_Delete(epString, queries, body, m_pServerCtx);
             break;
         case boost::beast::http::verb::get:
-            pResponse = pHandler->handleRequest_Get(queries, body, m_pServerCtx);
+            pResponse = pHandler->handleRequest_Get(epString, queries, body, m_pServerCtx);
             break;
         case boost::beast::http::verb::head:
-            pResponse = pHandler->handleRequest_Head(queries, body, m_pServerCtx);
+            pResponse = pHandler->handleRequest_Head(epString, queries, body, m_pServerCtx);
             break;
         case boost::beast::http::verb::post:
-            pResponse = pHandler->handleRequest_Post(queries, body, m_pServerCtx);
+            pResponse = pHandler->handleRequest_Post(epString, queries, body, m_pServerCtx);
             break;
         case boost::beast::http::verb::put:
-            pResponse = pHandler->handleRequest_Put(queries, body, m_pServerCtx);
+            pResponse = pHandler->handleRequest_Put(epString, queries, body, m_pServerCtx);
             break;
         default:
             break;
         }
         if (!pResponse) throw std::exception("Failed to retrieve response");
 
+        // get the handler type and process the response
         switch (pHandler->getType())
         {
             case HTTPRequestHandler::DataType::JSON:
             {
                 // dump the json body
-                auto pResp = std::make_shared<http::response<http::string_body>>(http::status::ok, req.version());
-                m_pResponse = pResp;
+                auto pResponseBody = std::dynamic_pointer_cast<ResponseInfoBody>(pResponse);
+                if (!pResponseBody) throw std::exception("Incorrect response body type");
 
+                pResponseBody->setTransactionID(transID);
+
+                auto pResp = std::make_shared<http::response<http::string_body>>(http::status::ok, req.version());
                 pResp->set(http::field::server, BOOST_BEAST_VERSION_STRING);
                 pResp->set(http::field::content_type, "text/html");
                 pResp->keep_alive(req.keep_alive());
-                pResp->body() = pResponse->toJSON().dump();
+                pResp->body() = pResponseBody->toJSON().dump();
                 pResp->prepare_payload();
+                m_pResponse = pResp;
 
                 // Write the response
-                http::async_write(
-                    *m_pStream,
-                    *pResp,
+                http::async_write(*m_pStream, *pResp,
                     beast::bind_front_handler(
                         &GenericSession::onWrite,
                         shared_from_this(),
-                        pResp->need_eof()));
+                        pResp->need_eof()
+                    )
+                );
                 break;
             }
             case HTTPRequestHandler::DataType::WebPage:
@@ -458,30 +475,37 @@ void GenericSession::handleRequest(http::request<Body, http::basic_fields<Alloca
                 beast::error_code ec;
                 http::file_body::value_type body;
 
-                auto j = std::dynamic_pointer_cast<ResponseInfoBody>(pResponse)->findBody("Web_Page_Info")->toJSON();
-                std::string path = j["Path"].get<std::string>();
+                auto pWebPageBody = std::dynamic_pointer_cast<WebPageInfoBody>(pResponse);
+                if (!pWebPageBody) throw std::exception("Incorrect response body type");
+                
+                std::string path = pWebPageBody->getPath();
 
                 if (path.empty())
                 {
-                    not_found(epString);
+                    not_found(path);
                     return;
                 }
 
                 body.open(path.c_str(), beast::file_mode::scan, ec);
-
+                if (ec)
+                {
+                    not_found(path);
+                    return;
+                }
+                const auto type = mime_type(path);
+                const auto size = body.size();
                 auto pResp = std::make_shared<http::response<http::file_body>>(
                     std::piecewise_construct,
                     std::make_tuple(std::move(body)),
                     std::make_tuple(http::status::ok, req.version()) );
                 pResp->set(http::field::server, BOOST_BEAST_VERSION_STRING);
-                pResp->set(http::field::content_type, mime_type(path));
-                pResp->content_length(body.size());
+                pResp->set(http::field::content_type, type);
+                pResp->content_length(size);
                 pResp->keep_alive(req.keep_alive());
                 m_pResponse = pResp;
+
                 // Write the response
-                http::async_write(
-                    *m_pStream,
-                    *pResp,
+                http::async_write(*m_pStream, *pResp,
                     beast::bind_front_handler(
                         &GenericSession::onWrite,
                         shared_from_this(),

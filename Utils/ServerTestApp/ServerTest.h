@@ -20,7 +20,7 @@ public:
 	ResultInfoPtr m_pTestModel_1;
 	ResultInfoPtr m_pTestModel_2;
 
-	int addJSONs() const {	
+	int addValues() const {	
 		return m_pTestModel_1->getVal() + m_pTestModel_2->getVal(); 
 	};
 

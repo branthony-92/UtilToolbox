@@ -64,3 +64,5 @@
 *.pem
 *.csr
 *.crt
+/Utils/ClientTestApp/x64/Debug
+/Utils/RestLibClient/x64/Debug

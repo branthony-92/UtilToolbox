@@ -130,7 +130,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(ProjectDir)..\RESTLib\$(Platform)\$(Configuration)\RESTLib.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_system-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_date_time-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_regex-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\libssl.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\libcrypto.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;Winhttp.lib;httpapi.lib;bcrypt.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(ProjectDir)..\RESTLib\$(Platform)\$(Configuration)\RESTLibServer.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_system-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_date_time-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\boost_regex-vc140-mt-gd.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\libssl.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\libcrypto.lib;$(ProjectDir)..\3rdParty\Boost\Lib\x64\$(Configuration)\zlibd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;Winhttp.lib;httpapi.lib;bcrypt.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

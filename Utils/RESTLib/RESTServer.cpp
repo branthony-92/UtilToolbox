@@ -57,7 +57,7 @@ bool Server::reset()
 		m_ioCtxThreads.clear();
 		return true;
 	}
-	catch (std::exception& err)
+	catch (std::exception /*& err*/)
 	{
 		return false;
 	}

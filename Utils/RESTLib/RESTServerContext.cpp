@@ -5,6 +5,7 @@
 RESTServerContext::RESTServerContext(std::string name)
 	: m_name(name)
 	, m_lastTransaction()
+	, m_transactionID(0u)
 	, m_stopFlag(false)
 	, m_resetFlag(false)
 	, m_pServerInfo(std::make_shared<ServerInfoBody>())
@@ -48,7 +49,7 @@ std::string RESTServerContext::findResource(std::string target)
 {
 	if (target == "/")          return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\index.html";
 	else if (target == "/test") return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\Test\\test.html";
-	else if (target == "/img")  return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\Test\\omni.jpg";
+	else if (target == "/img")  return "C:\\Users\\xs_br\\source\\repos\\branthony-92\\UtilToolbox\\Utils\\HTML\\Test\\img.jpg";
 	return "";
 }
 
@@ -157,4 +158,9 @@ void RESTServerContext::checkTimeout()
 void RESTServerContext::ping()
 {
 	m_lastTransaction = std::chrono::system_clock::now();
+}
+
+unsigned int RESTServerContext::getNextransactionID()
+{
+	return m_transactionID++;
 }
