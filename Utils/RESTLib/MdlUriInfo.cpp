@@ -16,6 +16,6 @@ JSON URIInfoBody::toJSON() const
 }
 void URIInfoBody::loadJSON(JSON info) 
 {
-	m_address = info["Address"].get<std::string>();
-	m_port = info["Port"].get<unsigned int>();
+	m_address = jsonUtils::extractValue<std::string>(info, "Address", "");
+	m_port    = jsonUtils::extractValue<unsigned int>(info, "Port", 0u);
 }

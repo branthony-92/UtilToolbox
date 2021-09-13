@@ -81,6 +81,18 @@
     <ClInclude Include="Listener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RESTClient.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTTPSession.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HTTPSSession.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RESTServer.cpp">
@@ -101,9 +113,6 @@
     <ClCompile Include="RESTModels.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MdlUriInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MdlTokenInfo.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
@@ -119,7 +128,22 @@
     <ClCompile Include="MdlServerInfo.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
+    <ClCompile Include="RESTClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Listener.cpp">
+      <Filter>Source Files\ServerSide</Filter>
+    </ClCompile>
+    <ClCompile Include="MdlUriInfo.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTTPSession.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HTTPSSession.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

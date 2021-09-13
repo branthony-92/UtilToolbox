@@ -18,24 +18,30 @@ JSON TokenInfoBody::toJSON() const
 	std::ostringstream oss;
 	oss << expirationTimepoint;
 
-	info["Token_Value"] = m_val;
+	info["Token_Value"]			 = m_val;
 	info["Expiration_Timepoint"] = oss.str();
-	info["Lifetime"] = m_timeout;
-	info["Lifetime_Type"] = static_cast<unsigned int>(m_type);
+	info["Lifetime"]			 = m_timeout;
+	info["Lifetime_Type"]		 = static_cast<unsigned int>(m_type);
 
 	return info;
 }
 
 void TokenInfoBody::loadJSON(JSON info)
 {
-	auto exp     = info["Expiration_Timepoint"].get<std::string>();
-	auto type    = info["Lifetime_Type"].get<unsigned int>();
+	m_type    = jsonUtils::extractValue<Lifetime, unsigned int>(info, "Lifetime_Type", Lifetime::Invalid);
+	m_val     = jsonUtils::extractValue<std::string>(info, "Token_Value", "");
+	m_timeout = jsonUtils::extractValue<unsigned int>(info, "Lifetime", UINT32_MAX);
 
-	auto durSinceEpoc = std::stoll(exp);
-	std::chrono::milliseconds t(durSinceEpoc);
+	auto exp = jsonUtils::extractValue<std::string>(info, "Expiration_Timepoint", "0");
 
-	m_val            = info["Token_Value"].get<std::string>();
-	m_timeout        = info["Lifetime"].get<unsigned int>();
-	m_expirationTime = TimeStamp(t);
-	m_type			 = static_cast<Lifetime>(type);
+	try
+	{
+		auto durSinceEpoc = std::stoll(exp);
+		std::chrono::milliseconds t(durSinceEpoc);
+		m_expirationTime = TimeStamp(t);
+	}
+	catch (std::exception)
+	{
+		m_expirationTime = TimeStamp(std::chrono::milliseconds(0));
+	}
 }

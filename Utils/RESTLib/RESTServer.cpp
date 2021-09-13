@@ -22,8 +22,13 @@ void Server::startServer(std::string address, unsigned short port, SessionPtr pS
 	m_pIOContext = std::make_shared<net::io_context>(m_threadCount);
 	m_pSSLContext = std::make_shared<ssl::context>(ssl::context::tlsv12_server);
 
+	std::string schema = "http";
 	// server-owner defined SSL certificate initialization
-	sslInitHandler(*m_pSSLContext);
+	if (pSessionPrototype->m_useSSLTLS)
+	{
+		schema = "https";
+		sslInitHandler(*m_pSSLContext);
+	}
 
 	m_pListener = std::make_shared<Listener>(
 		*m_pIOContext,
@@ -44,7 +49,11 @@ void Server::startServer(std::string address, unsigned short port, SessionPtr pS
 		// run our IO context threads
 		m_ioCtxThreads.emplace_back([&] { m_pIOContext->run(); });
 	}
-	std::cout << "Server Listening: https://" << address << ":" << port <<"\n";
+
+	auto name = m_pCtx->getName();
+	if (name.empty()) name = "Test Server";
+
+	std::cout << name << " Listening: " << schema <<"://" << address << ":" << port <<"\n";
 }
 
 bool Server::reset()

@@ -23,8 +23,9 @@ JSON ConnectionInfoBody::toJSON() const
 
 void ConnectionInfoBody::loadJSON(JSON info)
 {
-	m_id = info["Connection_ID"].get<unsigned int>();
+	m_id = jsonUtils::extractValue<unsigned int>(info, "Connection_UD", UINT32_MAX);
 
 	m_pToken = std::make_shared<TokenInfoBody>();
-	m_pToken->loadJSON(info[m_pToken->c_name]);
+	auto tokenBody = jsonUtils::extractValue<JSON>(info, m_pToken->c_name, JSON::object());
+	m_pToken->loadJSON(tokenBody);
 }

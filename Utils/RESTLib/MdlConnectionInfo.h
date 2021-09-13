@@ -22,6 +22,8 @@ private:
 
 	std::shared_ptr<TokenInfoBody> m_pToken;
 	unsigned int				   m_id;
+
+public:
 };
 
 #endif // !MDLCONNECTIONINFO_H

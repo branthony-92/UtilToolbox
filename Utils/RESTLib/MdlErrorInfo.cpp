@@ -18,10 +18,8 @@ JSON ErrorInfoBody::toJSON() const
 
 void ErrorInfoBody::loadJSON(JSON info)
 {
-	auto code = info["Error_Code"].get<unsigned int>();
-	m_errorMessage = info["Error_Message"].get<std::string>();
-
-	m_errorCode = static_cast<ServerErrorCode>(code);
+	m_errorCode    = jsonUtils::extractValue<ServerErrorCode, unsigned int>(info, "Error_Code", ServerErrorCode::Generic);
+	m_errorMessage = jsonUtils::extractValue<std::string>(info, "Error_Message", "");
 }
 
 void ErrorInfoBody::fromException(RESTServerException& err)

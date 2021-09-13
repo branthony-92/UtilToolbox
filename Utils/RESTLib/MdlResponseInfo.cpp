@@ -25,8 +25,7 @@ JSON ResponseInfoBody::toJSON() const
 
 void ResponseInfoBody::loadJSON(JSON info)
 {
-	m_transactionID = info["Transaction_ID"].get<unsigned int>();
-
+	m_transactionID = jsonUtils::extractValue<unsigned int>(info, "Transaction_ID", UINT32_MAX);
 
 	for (JSON::iterator iter = info.begin(); iter != info.end(); iter++ )
 	{

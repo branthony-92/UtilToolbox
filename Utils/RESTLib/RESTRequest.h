@@ -1,8 +1,6 @@
 #ifndef RESTREQUEST_H
 #define RESTREQUEST_H
 
-#include <cpprest\uri.h>
-#include <cpprest\http_client.h>
 #include <map>
 #include "AsyncAction.h"
 #include "AsyncResult.h"
@@ -13,10 +11,11 @@ public:
 	typedef std::map<utility::string_t, utility::string_t> TQueryMap;
 	RequestData()
 		: m_method()
-		, m_rootPath()
-		, m_endpointPath()
+		, m_address()
+		, m_port()
 		, m_body()
 		, m_queries()
+		, m_target()
 	{}
 
 	utility::string_t  getRootPath()      const { return m_rootPath;     }

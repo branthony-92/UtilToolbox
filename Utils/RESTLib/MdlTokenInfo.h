@@ -2,6 +2,7 @@
 #define MDLTOKENINFO_H
 
 #include "RESTModels.h"
+#include <chrono>
 
 typedef std::chrono::system_clock::time_point TimeStamp;
 class TokenInfoBody : public JSONInfoBody

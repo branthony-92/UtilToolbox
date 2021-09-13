@@ -6,6 +6,23 @@
 
 using JSON = nlohmann::json;
 
+namespace jsonUtils {
+
+	JSON loadFile(const std::string path);
+
+	template <typename Type, typename SrcType = Type>
+	Type extractValue(JSON& j, const std::string key, Type defaultValue)
+	{
+		try
+		{
+			return static_cast<Type>(j[key].get<SrcType>());
+		}
+		catch (...)
+		{
+			return defaultValue;
+		}
+	}
+}
 
 class JSONInfoBody {
 public:
@@ -21,6 +38,8 @@ public:
 		Body_ConnectionInfo,
 		Body_TokenInfo,
 		
+		Body_Custom,
+
 		NumBodies,
 
 		Body_Invalid = -1,
@@ -39,6 +58,8 @@ public:
 	static std::shared_ptr<JSONInfoBody> createBody(std::string name);
 
 };
+typedef std::shared_ptr<JSONInfoBody> BodyInfoPtr;
+
 typedef std::map<std::string,std::shared_ptr<JSONInfoBody>> BodyMap;
 
 class WebPageInfoBody : public JSONInfoBody
@@ -58,7 +79,7 @@ public:
 	}
 	virtual void loadJSON(JSON info) override
 	{
-		m_resourcePath = info["Path"].get<std::string>();
+		m_resourcePath = jsonUtils::extractValue(info, "Path", std::string());
 	}
 
 	std::string		getPath()  const { return m_resourcePath; }

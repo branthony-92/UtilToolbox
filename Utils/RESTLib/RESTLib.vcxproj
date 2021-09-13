@@ -24,11 +24,11 @@
     <ProjectGuid>{444899f3-f3ee-478a-9177-6e31cf42d18d}</ProjectGuid>
     <RootNamespace>RESTLib</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>RESTLibServer</ProjectName>
+    <ProjectName>RESTLib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
@@ -47,7 +47,7 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -84,6 +84,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -91,6 +92,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\xs_br\source\repos\branthony-92\UtilToolbox\Utils\3rdParty\Boost\Include;C:\Users\xs_br\source\repos\branthony-92\UtilToolbox\Utils\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -119,11 +122,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;CPPREST_FORCE_HTTP_LISTENER_ASIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\ActionProcessor;$(ProjectDir)..\3rdParty\Boost\Include;$(ProjectDir)..\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\3rdParty\Boost\Include;$(ProjectDir)..\json-develop\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <FunctionLevelLinking>false</FunctionLevelLinking>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +147,9 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\3rdParty\Boost\Include;$(ProjectDir)..\json-develop\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -151,6 +159,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="HTTPSession.h" />
+    <ClInclude Include="HTTPSSession.h" />
     <ClInclude Include="HTTPUtils.h" />
     <ClInclude Include="JSONModelKeys.h" />
     <ClInclude Include="Listener.h" />
@@ -160,15 +170,19 @@
     <ClInclude Include="MdlServerInfo.h" />
     <ClInclude Include="MdlTokenInfo.h" />
     <ClInclude Include="MdlUriInfo.h" />
+    <ClInclude Include="RESTClient.h" />
     <ClInclude Include="RESTModels.h" />
     <ClInclude Include="RESTConnection.h" />
     <ClInclude Include="RESTEndpoint.h" />
     <ClInclude Include="RESTServerContext.h" />
     <ClInclude Include="RESTServer.h" />
     <ClInclude Include="RESTServerException.h" />
+    <ClInclude Include="Session.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="HTTPSession.cpp" />
+    <ClCompile Include="HTTPSSession.cpp" />
     <ClCompile Include="Listener.cpp" />
     <ClCompile Include="MdlConnectionInfo.cpp" />
     <ClCompile Include="MdlErrorInfo.cpp" />
@@ -176,12 +190,14 @@
     <ClCompile Include="MdlServerInfo.cpp" />
     <ClCompile Include="MdlTokenInfo.cpp" />
     <ClCompile Include="MdlUriInfo.cpp" />
+    <ClCompile Include="RESTClient.cpp" />
     <ClCompile Include="RESTModels.cpp" />
     <ClCompile Include="RESTConnection.cpp" />
     <ClCompile Include="RESTEndpoint.cpp" />
     <ClCompile Include="RESTServerContext.cpp" />
     <ClCompile Include="RESTServer.cpp" />
     <ClCompile Include="RESTServerException.cpp" />
+    <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

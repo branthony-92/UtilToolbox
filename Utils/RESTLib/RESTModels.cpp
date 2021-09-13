@@ -8,6 +8,8 @@
 #include "MdlTokenInfo.h"
 #include "MdlUriInfo.h"
 
+#include <fstream>
+
 namespace
 {
 	const std::map<JSONInfoBody::BodyType, std::string> c_bodyIDToString =
@@ -29,6 +31,26 @@ namespace
 		{ "Connection_Info", JSONInfoBody::BodyType::Body_ConnectionInfo  },
 		{ "Token_Info",      JSONInfoBody::BodyType::Body_TokenInfo		  }
 	};
+}
+
+JSON jsonUtils::loadFile(const std::string path)
+{
+	try
+	{
+		std::ifstream file(path);
+		if (!file.is_open())
+		{
+			throw std::runtime_error("Failed to open config file");
+		}
+
+		nlohmann::json config;
+		file >> config;
+		return config;
+	}
+	catch (...)
+	{
+		return JSON::object();
+	}
 }
 
 JSONInfoBody::JSONInfoBody(BodyType ID)

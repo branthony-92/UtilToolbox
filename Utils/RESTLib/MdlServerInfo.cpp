@@ -55,18 +55,20 @@ JSON ServerInfoBody::toJSON() const
 
 void ServerInfoBody::loadJSON(JSON info)
 {
-	m_serverName = info["Server_Name"].get<std::string>();
-	m_APIVersion = info["API_Version"].get<double>();
-	m_serverIdleTimoutSec = info["Idle_Timout_Sec"].get<unsigned int>();
-	m_URLString = info["API_Root_URL"].get<std::string>();
+	m_serverName          = jsonUtils::extractValue<std::string>(info, "Server_Name", "");
+	m_APIVersion          = jsonUtils::extractValue<double>(info, "API_Version", 0.0);
+	m_serverIdleTimoutSec = jsonUtils::extractValue<unsigned int>(info, "Idle_Timout_Sec", UINT32_MAX);
+	m_URLString			  = jsonUtils::extractValue<std::string>(info, "API_Root_URL", "");
 
-	auto endpoints = info["API_Endpoints"];
+	auto endpoints = jsonUtils::extractValue<std::vector<std::string>>(info, "API_Endpoints", std::vector<std::string>());
 
 	m_endpointNames.clear();
 	for (auto& e : endpoints)
 	{
-		m_endpointNames.insert(e.get<std::string>());
+		m_endpointNames.insert(e);
 	}
 	m_pURI = std::make_shared<URIInfoBody>();
-	m_pURI->loadJSON(info[m_pURI->c_name]);
+
+	auto uriBody = jsonUtils::extractValue<JSON>(info, m_pURI->c_name, JSON::object());
+	m_pURI->loadJSON(uriBody);
 }
