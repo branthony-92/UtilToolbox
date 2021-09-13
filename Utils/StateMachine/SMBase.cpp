@@ -132,7 +132,7 @@ void CSMBase::onTic()
 			m_pContext->postEvent(m_pErrorEvent);
 			return;
 		}
-		setNextState(pNextState);
+		setCurrentState(pNextState);
 	}
 	else
 	{
@@ -159,10 +159,6 @@ void CSMBase::onTic()
 	}
 }
 
-void CSMBase::setNextState(TStatePtr pState)
-{
-	m_pCurrentState = pState;
-}
 
 TStatePtr CSMBase::getNextState(uint32_t eventID)
 {

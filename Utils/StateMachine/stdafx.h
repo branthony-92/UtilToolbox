@@ -21,4 +21,3 @@
 
 // smart pointers
 #include <memory>
-

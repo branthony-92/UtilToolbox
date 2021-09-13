@@ -13,7 +13,7 @@ class CSMState
 {
 public:
 	CSMState(uint32_t id, std::string name, bool sFinalState = false);
-	~CSMState();
+	virtual ~CSMState();
 
 protected:
 	TTransitionMap m_transitions;

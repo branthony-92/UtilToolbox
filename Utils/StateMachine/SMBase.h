@@ -28,7 +28,6 @@ public:
 
 	void setStateTable(TStateList table) { m_stateTable = table; }
 
-	void setNextState(TStatePtr pState);
 	TStatePtr getNextState(uint32_t eventID);
 
 	void setErrorState(TStatePtr pState)  { m_pErrorState = pState; }

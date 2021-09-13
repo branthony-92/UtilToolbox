@@ -66,3 +66,6 @@
 *.crt
 /Utils/ClientTestApp/x64/Debug
 /Utils/RestLibClient/x64/Debug
+/Utils/PasswordGenerator/x64/Debug
+/Utils/PasswordGenerator/Debug
+/Utils/PasswordGenerator/.vs/PasswordGenerator
