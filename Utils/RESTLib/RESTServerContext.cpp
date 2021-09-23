@@ -8,16 +8,22 @@ RESTServerContext::RESTServerContext(std::string name)
 	, m_transactionID(0u)
 	, m_stopFlag(false)
 	, m_resetFlag(false)
-	, m_pServerInfo(std::make_shared<ServerInfoBody>())
+	, m_pHandlerInfo(nullptr)
 	, m_pConnectionMgr(std::make_unique<ConnectionManager>())
 {
+	//replace spaces with underscores for the json body name
+	for (char& c : name)
+	{
+		if (c == ' ') c = '_';
+	}
+	m_pHandlerInfo = std::make_shared<ContextHandlersInfoBody>(name);
 }
 
 void RESTServerContext::registerHandler(std::string path, ReqHandlerPtr pEndpoint)
 {
-	if (!pEndpoint) return;
+	if (!pEndpoint || path.empty()) return;
 	m_requestHandlers.insert_or_assign(path, pEndpoint);
-	addEndpoint(path);
+	addHandlerName(path);
 }
 
 std::shared_ptr<HTTPRequestHandler> RESTServerContext::retrieveHandler(std::string name)
@@ -32,17 +38,10 @@ bool RESTServerContext::hasHandlers() const
 	return !m_requestHandlers.empty();
 }
 
-bool RESTServerContext::addEndpoint(std::string name)
+bool RESTServerContext::addHandlerName(std::string name)
 {
-	if (!m_pServerInfo) return false;
-
-	auto endpoints = m_pServerInfo->getEndpointNames();
-
-	if (endpoints.count(name) > 0) return false;
-
-	endpoints.insert(name);
-	m_pServerInfo->setEndpointNames(endpoints);
-	return true;
+	if (!m_pHandlerInfo) return false;
+	return m_pHandlerInfo->add(name);
 }
 
 std::string RESTServerContext::findResource(std::string target)
@@ -118,38 +117,6 @@ bool RESTServerContext::checkConnection(unsigned int id, std::string token)
 		break;
 	}
 	return valid;
-}
-
-bool RESTServerContext::stopRequested()
-{
-	bool val = m_stopFlag.load();
-	
-	// consume the flag on retrieval
-	if (val) m_stopFlag = false;
-
-	return val;
-}
-
-bool RESTServerContext::resetRequested()
-{
-	bool val = m_resetFlag.load();
-
-	// consume the flag on retrieval
-	if (val) m_resetFlag = false;
-
-	return val;
-}
-
-void RESTServerContext::checkTimeout()
-{
-	auto now = std::chrono::system_clock::now();
-	auto dt = std::chrono::duration_cast<std::chrono::seconds>(now - m_lastTransaction).count();
-
-	if (dt > m_pServerInfo->getIdleTimeout())
-	{
-		// server has been idle too long, signal a stop
-		stop();
-	}
 }
 
 void RESTServerContext::ping()

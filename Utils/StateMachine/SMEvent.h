@@ -1,8 +1,11 @@
 #ifndef SMEVENT_H
 #define SMEVENT_H
 
+#include <deque>
+
 class CSMEvent
 {
+	const std::string   c_eventName;
 public:
 	enum class Priority : unsigned int
 	{
@@ -12,12 +15,14 @@ public:
 		Critical,
 	};
 
-	CSMEvent(uint32_t id, std::string name,  Priority priority = Priority::Medium);
+	CSMEvent(uint32_t id, std::string name, Priority priority = Priority::Medium);
 	virtual ~CSMEvent();
 
 	const Priority		c_eventPriority;
 	const uint32_t		c_eventID;
-	const std::string   c_eventName;
+
+	std::string getName() const { return c_eventName; }
+
 };
 typedef std::shared_ptr<CSMEvent> TEventPtr;
 

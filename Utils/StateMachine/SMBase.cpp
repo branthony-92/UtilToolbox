@@ -34,8 +34,10 @@ void CSMBase::startSM(TStatePtr pInitialState)
 {
 	if (pInitialState)
 	{
-		m_pCurrentState = pInitialState;
+		setCurrentState(pInitialState);
 	}
+	m_stateHistory.push_back(m_pCurrentState->c_stateName);
+
 	setSMDone(false);
 	setSMEnabled(true);
 	m_ticThread = std::thread( [&]()
@@ -90,7 +92,7 @@ void CSMBase::onTic()
 		if (!pNextState)
 		{
 			std::ostringstream oss;
-			oss << "Transition Failure: Event:" << pEvent->c_eventName << "- Failed to retrieve Next State for " << m_pCurrentState->c_stateName;
+			oss << "Transition Failure: Event:" << pEvent->getName() << "- Failed to retrieve Next State for " << m_pCurrentState->c_stateName;
 			m_pErrorEvent->setErrorMsg(oss.str());
 			m_pContext->clearEventQueue();
 			m_pContext->postEvent(m_pErrorEvent);
@@ -104,11 +106,12 @@ void CSMBase::onTic()
 		ossExit << "Leaving State " << m_pCurrentState->c_stateName;
 		CONSOLE_LOG(ossExit.str());
 
+
 		isOk = m_pCurrentState->exitState(m_pContext, pEvent);
 		if (!isOk)
 		{
 			std::ostringstream oss;
-			oss << "Transition Failure: Event: " << pEvent->c_eventName << " - Failed to Leave State: " << m_pCurrentState->c_stateName;
+			oss << "Transition Failure: Event: " << pEvent->getName() << " - Failed to Leave State: " << m_pCurrentState->c_stateName;
 			m_pErrorEvent->setErrorMsg(oss.str());
 			m_pContext->clearEventQueue();
 			m_pContext->postEvent(m_pErrorEvent);
@@ -122,11 +125,12 @@ void CSMBase::onTic()
 		CONSOLE_LOG(ossEnter.str());
 
 		isOk = pNextState->enterState(m_pContext, pEvent);
+		m_stateHistory.push_back(m_pCurrentState->c_stateName);
 
 		if (!isOk)
 		{
 			std::ostringstream oss;
-			oss << "Transition Failure: Event: " << pEvent->c_eventName << " - Failed to Enter State: " << pNextState->c_stateName;
+			oss << "Transition Failure: Event: " << pEvent->getName() << " - Failed to Enter State: " << pNextState->c_stateName;
 			m_pErrorEvent->setErrorMsg(oss.str());
 			m_pContext->clearEventQueue();
 			m_pContext->postEvent(m_pErrorEvent);
@@ -160,6 +164,15 @@ void CSMBase::onTic()
 }
 
 
+void CSMBase::setCurrentState(TStatePtr pState)
+{
+	m_pCurrentState = pState;
+	if (m_recordStates)
+	{
+		m_stateHistory.push_back(pState->c_stateName);
+	}
+}
+
 TStatePtr CSMBase::getNextState(uint32_t eventID)
 {
 	if (m_stateTable.empty()) return nullptr;
@@ -171,9 +184,19 @@ TStatePtr CSMBase::getNextState(uint32_t eventID)
 	{
 		targetStateID = m_pCurrentState->findTargetState(eventID);
 	}
-	if (targetStateID < m_stateTable.size())
+	if (m_stateTable.find(targetStateID) != m_stateTable.end() )
 	{
 		pNextState = m_stateTable[targetStateID];
 	}
 	return pNextState;
+}
+
+std::string CSMBase::dumpStateHistory()
+{
+	std::string history = "";
+	for (auto& state : m_stateHistory)
+	{
+		history.append(state + "\n");
+	}
+	return history;
 }

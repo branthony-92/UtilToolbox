@@ -56,7 +56,7 @@ protected:
 		return std::dynamic_pointer_cast<context>(pCtx);
 	}
 };
-typedef std::shared_ptr<CSMState> TStatePtr;
-typedef std::vector<TStatePtr>    TStateList;
+typedef std::shared_ptr<CSMState>        TStatePtr;
+typedef std::map<uint32_t, TStatePtr>    TStateList;
 
 #endif // SMSTATES_H

@@ -33,10 +33,10 @@ typedef std::shared_ptr<net::io_context>   IOCtxPtr;
 */
 class Listener : public std::enable_shared_from_this<Listener>
 {
-    net::io_context& m_IOContext;
-    ssl::context&    m_SSLContext;
-    tcp::acceptor    m_acceptor;
-    SessionPtr       m_pSessionPrototype;
+    net::io_context&        m_IOContext;
+    ssl::context&           m_SSLContext;
+    tcp::acceptor           m_acceptor;
+    SessionPtr              m_pSessionPrototype;
     std::vector<SessionPtr> m_liveSessions;
 
 public:

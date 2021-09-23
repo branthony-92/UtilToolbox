@@ -1,6 +1,36 @@
 #include "stdafx.h"
 #include "MdlServerInfo.h"
 
+ContextHandlersInfoBody::ContextHandlersInfoBody(std::string name)
+	: JSONInfoBody(name)
+{}
+
+JSON ContextHandlersInfoBody::toJSON() const
+{
+	JSON info = JSON::object();
+	info["Context_Name"] = c_name;
+	info["Endpoints"] = JSON::array();
+
+	for (auto& h : m_handlerNames)
+	{
+		info["Endpoints"].push_back(h);
+	}
+	return info;
+}
+
+void ContextHandlersInfoBody::loadJSON(JSON info)
+{
+	m_handlerNames = jsonUtils::extractValue<std::set<std::string>>(info, "Endpoints", std::set<std::string>());
+}
+
+bool ContextHandlersInfoBody::add(std::string name)
+{
+	if (name.empty()) return false;
+	if (m_handlerNames.count(name) > 0) return false;
+	m_handlerNames.insert(name);
+	return true;
+}
+
 
 ServerInfoBody::ServerInfoBody()
 	: JSONInfoBody(JSONInfoBody::BodyType::Body_ServerInfo)
@@ -13,7 +43,7 @@ ServerInfoBody::ServerInfoBody()
 	, m_endpointNames()
 {}
 
-std::string ServerInfoBody::stringFromState(ServerStatus state)
+std::string ServerInfoBody::stringFromState(ServerStatus state) const
 {
 	std::string name = "";
 
@@ -30,21 +60,21 @@ std::string ServerInfoBody::stringFromState(ServerStatus state)
 JSON ServerInfoBody::toJSON() const
 {
 	JSON info = JSON::object();
-
 	JSON uriInfo = JSON::object();
-
 
 	info["Server_Name"]     = m_serverName;
 	info["API_Version"]     = m_APIVersion;
 	info["API_Root_URL"]    = m_URLString;
 	info["Idle_Timout_Sec"] = m_serverIdleTimoutSec;
+	info["Server_Status"]   = stringFromState(m_serverState);
 
 	JSON ar = JSON::array();
 	for (auto& e : m_endpointNames)
 	{
-		ar.push_back(e);
+		JSON h = e->toJSON();
+		ar.push_back(h);
 	}
-	info["API_Endpoints"] = ar;
+	info["Endpoint_List"] = ar;
 
 	if (m_pURI)
 	{
@@ -60,12 +90,18 @@ void ServerInfoBody::loadJSON(JSON info)
 	m_serverIdleTimoutSec = jsonUtils::extractValue<unsigned int>(info, "Idle_Timout_Sec", UINT32_MAX);
 	m_URLString			  = jsonUtils::extractValue<std::string>(info, "API_Root_URL", "");
 
-	auto endpoints = jsonUtils::extractValue<std::vector<std::string>>(info, "API_Endpoints", std::vector<std::string>());
+	auto endpoints = jsonUtils::extractValue<std::vector<JSON>>(info, "Endpoint_List", std::vector<JSON>());
 
 	m_endpointNames.clear();
-	for (auto& e : endpoints)
+	for (JSON& e : endpoints)
 	{
-		m_endpointNames.insert(e);
+		auto name = jsonUtils::extractValue<std::string>(e, "Context_Name", "");
+		if (name.empty()) continue;
+
+		auto pHanderInfo = std::make_shared<ContextHandlersInfoBody>(name);
+		jsonUtils::extractValue<std::vector<std::string>>(e, "Hanlders", std::vector<std::string>());
+
+		m_endpointNames.push_back(pHanderInfo);
 	}
 	m_pURI = std::make_shared<URIInfoBody>();
 

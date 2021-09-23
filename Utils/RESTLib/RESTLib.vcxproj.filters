@@ -51,12 +51,6 @@
     <ClInclude Include="RESTServerException.h">
       <Filter>Header Files\ServerSide</Filter>
     </ClInclude>
-    <ClInclude Include="JSONModelKeys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HTTPUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MdlResponseInfo.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
@@ -78,19 +72,25 @@
     <ClInclude Include="RESTModels.h">
       <Filter>Header Files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="Listener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RESTClient.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Session.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="HTTPSession.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\ServerSide</Filter>
     </ClInclude>
     <ClInclude Include="HTTPSSession.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="HTTPUtils.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="Listener.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Header Files\ServerSide</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerInfoContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -141,9 +141,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HTTPSession.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\ServerSide</Filter>
     </ClCompile>
     <ClCompile Include="HTTPSSession.cpp">
+      <Filter>Source Files\ServerSide</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerInfoContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

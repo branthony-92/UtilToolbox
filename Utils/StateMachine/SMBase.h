@@ -13,6 +13,8 @@ public:
 	void startSM(TStatePtr pInitialState = nullptr);
 	void stopSM();
 	void resetTimer(unsigned int intervalMS);
+
+	virtual void initSM() {} ;
 	virtual void onTic();
 
 protected:
@@ -21,10 +23,13 @@ protected:
 	TStatePtr        m_pErrorState;
 	TErrorEventPtr   m_pErrorEvent;
 
+	std::list<std::string> m_stateHistory;
+	bool m_recordStates;
+
 public:
 
 	TStatePtr getCurrentState() const { return m_pCurrentState; }
-	void setCurrentState(TStatePtr pState) { m_pCurrentState = pState; }
+	void setCurrentState(TStatePtr pState);
 
 	void setStateTable(TStateList table) { m_stateTable = table; }
 
@@ -32,6 +37,10 @@ public:
 
 	void setErrorState(TStatePtr pState)  { m_pErrorState = pState; }
 	void setErrorEvent(TErrorEventPtr pEvent) { m_pErrorEvent = pEvent; }
+
+	
+	void enableStateHistory(bool enabled) { m_recordStates = enabled; }
+	std::string dumpStateHistory();
 
 protected:
 	std::thread					m_ticThread;

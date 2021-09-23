@@ -2,10 +2,10 @@
 #include "RESTEndpoint.h"
 
 
-std::shared_ptr<JSONInfoBody> WebPageRequestHandler::handleRequest_Get(std::string target, QueryList queries, std::string body, TRESTCtxPtr pCtx)
+std::shared_ptr<JSONInfoBody> ResourceRequestHandler::handleRequest_Get(std::string target, ParameterMap queries, ParameterMap body, TRESTCtxPtr pCtx)
 {
 	if (!pCtx) return nullptr;
-	auto pWebPageBody = std::make_shared<WebPageInfoBody>();
+	auto pWebPageBody = std::make_shared<ResourceInfoBody>();
 	pWebPageBody->setPath(pCtx->findResource(target));
 	return pWebPageBody;
 }

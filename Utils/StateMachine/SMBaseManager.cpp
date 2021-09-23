@@ -4,27 +4,68 @@
 #include "SMBase.h"
 #include "SMContext.h"
 
-CSMBaseMgr::CSMBaseMgr(std::shared_ptr<CSMBase> pSM)
-	: m_pSM(pSM)
-	, m_pCtx(nullptr)
+using namespace std::chrono_literals;
+
+CSMBaseMgr::CSMBaseMgr(std::string name, uint32_t timeout)
+	: m_stateMachines()
+	, m_enabled(false)
+	, c_name(name)
+	, c_ticTimeout(timeout)
 {
-	if (pSM)
-	{
-		m_pCtx = m_pSM->getContext();
-	}
 }
 
 CSMBaseMgr::~CSMBaseMgr()
 {
+	resetStateMachines();
 }
 
-void CSMBaseMgr::reset()
+void CSMBaseMgr::startStateMachines()
 {
-	if (m_pSM)
+	for (auto& SM : m_stateMachines)
 	{
-		m_pSM->stopSM();
+		// init each of our state machines
+		auto pSM = SM.second;
+		if (pSM)
+		{
+			pSM->initSM();
+		}
 	}
 
-	m_pSM  = nullptr;
-	m_pCtx = nullptr;
+	stopStateMachines();
+	m_ticThread = std::thread([&]{
+		m_enabled = true;
+		while (m_enabled)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(c_ticTimeout));
+			for (auto& SM : m_stateMachines)
+			{
+				// tic each of our state machines
+				auto pSM = SM.second;
+				if (pSM && pSM->getSMEnabled())
+				{
+					SM.second->onTic();
+				}
+			}
+		}
+	});
+}
+
+void CSMBaseMgr::stopStateMachines()
+{
+	m_enabled = false;
+	if (m_ticThread.joinable()) m_ticThread.join();
+}
+
+void CSMBaseMgr::registerStateMachine(SMPtr pSM)
+{
+	auto name = pSM->c_stateName;
+	m_stateMachines.insert_or_assign(name, pSM);
+}
+
+
+
+void CSMBaseMgr::resetStateMachines()
+{
+	stopStateMachines();
+	m_stateMachines.clear();
 }

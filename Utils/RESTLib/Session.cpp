@@ -1,11 +1,107 @@
 #include "stdafx.h"
 #include "Session.h"
 
-SplitQueries SessionBase::extractQueries(beast::string_view target)
+#include <set>
+
+const std::set<std::string> c_supportedContentTypes = {
+    "application/json",
+    "application/x-www-form-urlencoded"
+};
+
+
+void parseJSONBody(std::map<std::string, std::string> &map, const std::string body)
+{
+    // parse as json
+    JSON jBody = JSON::parse(body);
+    for (auto j : jBody.items())
+    {
+        JSON value = j.value();
+        std::string valStr;
+        if (value.is_string())
+        {
+            valStr = value;
+        }
+        else if (value.is_number_float())
+        {
+            valStr = std::to_string(value.get<double>());
+        }
+        else if (value.is_number_integer())
+        {
+            valStr = std::to_string(value.get<int>());
+        }
+        else if (value.is_boolean())
+        {
+            valStr = value.get<bool>() ? "true" : "false";
+        }
+
+        if (valStr.empty()) return;
+
+        map.insert_or_assign(j.key(), valStr);
+    }
+}
+
+void parse_x_www_form_urlencoded(std::map<std::string, std::string>& map, const std::string body)
+{
+    // TODO : figure out how to parse this
+    
+    const char c_eqChar = '=';
+    const char c_delimChar = '&';
+
+    int offset = 0u;
+
+    do
+    {
+        int keyStartIndex = offset;
+        int keyEndIndex   = body.find_first_of(c_eqChar, offset);
+        int valStartIndex = keyEndIndex + 1;
+        int valEndIndex   = body.find_first_of(c_delimChar, valStartIndex);
+
+        auto keyLen = keyEndIndex - keyStartIndex;
+        auto valLen = valEndIndex - valStartIndex;
+
+        auto keyString = body.substr(keyStartIndex, keyLen);
+        auto valString = body.substr(valStartIndex, valLen);
+
+        map.insert_or_assign(keyString, valString);
+
+        offset = valEndIndex + 1;
+    }     
+    while (offset > 0 && offset < body.length());
+}
+
+std::map<std::string, std::string> SessionBase::parseBody(std::string contentType, const std::string body)
+{
+    
+    std::map<std::string, std::string> bodyData;
+
+    if (c_supportedContentTypes.count(contentType) == 0)
+    {
+        // unsupported content type
+        return bodyData;
+    }
+
+    if (contentType == "application/json")
+    {
+        // parse as json
+        parseJSONBody(bodyData, body);
+    }
+    else if (contentType == "application/x-www-form-urlencoded")
+    {
+        parse_x_www_form_urlencoded(bodyData, body);
+    }
+    else
+    {
+
+    }
+
+    return bodyData;
+}
+
+std::map<std::string, std::string> SessionBase::extractQueries(beast::string_view target)
 {
     // find '?' to identify a key and '=' to identify values, all deliminated by '&'
     // find first query key
-    SplitQueries queries{};
+    std::map<std::string, std::string> queries{};
 
     size_t searchOffset = 0;
     size_t keyIndex = 0;
@@ -55,4 +151,21 @@ std::string SessionBase::extractEndpoint(beast::string_view target)
         return ep;
     }
     return "";
+}
+
+HandlerContextData SessionBase::findHandler(std::string endpoint)
+{
+    HandlerContextData handlerInfo = { nullptr, nullptr };
+    // scan our context list for handlers
+    for (auto& pContext : m_serverContexts)
+    {
+        auto pHandler = pContext->retrieveHandler(endpoint);
+        if (pHandler)
+        {
+            handlerInfo.pCtx     = pContext;
+            handlerInfo.pHanlder = pHandler;
+            return handlerInfo;
+        }
+    }
+    return handlerInfo;
 }

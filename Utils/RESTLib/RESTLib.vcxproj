@@ -162,7 +162,6 @@
     <ClInclude Include="HTTPSession.h" />
     <ClInclude Include="HTTPSSession.h" />
     <ClInclude Include="HTTPUtils.h" />
-    <ClInclude Include="JSONModelKeys.h" />
     <ClInclude Include="Listener.h" />
     <ClInclude Include="MdlConnectionInfo.h" />
     <ClInclude Include="MdlErrorInfo.h" />
@@ -177,6 +176,7 @@
     <ClInclude Include="RESTServerContext.h" />
     <ClInclude Include="RESTServer.h" />
     <ClInclude Include="RESTServerException.h" />
+    <ClInclude Include="ServerInfoContext.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="StdAfx.h" />
   </ItemGroup>
@@ -197,6 +197,7 @@
     <ClCompile Include="RESTServerContext.cpp" />
     <ClCompile Include="RESTServer.cpp" />
     <ClCompile Include="RESTServerException.cpp" />
+    <ClCompile Include="ServerInfoContext.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

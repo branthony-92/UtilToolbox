@@ -23,11 +23,14 @@ public:
 protected:
 	const std::string c_contextName;
 	std::string m_lastError;
+	std::string m_resourceRoot;
 public:
-	std::string getName() const { return c_contextName; }
+	std::string getCtxName() const { return c_contextName; }
 
 	std::string getLastError() const { return m_lastError; }
 	void setLastError(std::string err) { m_lastError = err; }
+
+	void setResourceRootDirectory(std::string dir) { m_resourceRoot = dir; }
 };
 typedef std::shared_ptr<CSMStateContext> TContextPtr;
 

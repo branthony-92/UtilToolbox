@@ -19,9 +19,15 @@ namespace ssl = boost::asio::ssl;           // from <boost/asio/ssl.hpp>
 using     tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 class RESTServerContext;
-typedef std::shared_ptr<RESTServerContext> TRESTCtxPtr;
-typedef std::shared_ptr<ssl::context>    SSLCtxPtr;
-typedef std::shared_ptr<net::io_context> IOCtxPtr;
+typedef std::shared_ptr<RESTServerContext>  RESTCtxPtr;
+typedef std::list<TRESTCtxPtr>              RESTCtxList;
+typedef std::shared_ptr<ssl::context>       SSLCtxPtr;
+typedef std::shared_ptr<net::io_context>    IOCtxPtr;
+
+typedef struct {
+    ReqHandlerPtr pHanlder;
+    RESTCtxPtr    pCtx;
+} HandlerContextData;
 
 /*  The class Session Handles an HTTP server connection
 *
@@ -34,16 +40,16 @@ class SessionBase
 protected:
 
     std::atomic_bool  m_closed;
-    TRESTCtxPtr       m_pServerCtx;
+    RESTCtxList&      m_serverContexts;
 
 public:
     const std::string c_sessionName;
     const bool        m_useSSLTLS;
 
-    explicit SessionBase(TRESTCtxPtr pServerCtx, bool useSSL = false)
+    explicit SessionBase(RESTCtxList& contexts, bool useSSL = false)
         : m_closed(true)
+        , m_serverContexts(contexts)
         , m_useSSLTLS(useSSL)
-        , m_pServerCtx(pServerCtx)
     {}
 
     // clone must move a socket, the SSL context is only needed for HTTPS sessions
@@ -56,10 +62,44 @@ public:
 
     void setClosed(bool closed) { m_closed = closed; }
 
-    SplitQueries extractQueries(beast::string_view target);
+    std::map<std::string, std::string> parseBody(std::string contentType, const std::string body);
+
+    std::map<std::string, std::string> extractQueries(beast::string_view target);
     std::string extractEndpoint(beast::string_view target);
 
+    HandlerContextData findHandler(std::string endpoint);
+
+
+
 protected:
+
+    template< class Body, class Allocator>
+    std::map<std::string, std::string> extractBody(http::request<Body, http::basic_fields<Allocator>> req)
+    {
+        std::map<std::string, std::string> bodyData;
+
+        return bodyData;
+    }
+    template<>
+    std::map<std::string, std::string> extractBody(http::request<http::string_body, http::basic_fields<std::allocator<char>>> req)
+    {
+        std::map<std::string, std::string> bodyData{};
+
+        auto& header = req.base();
+
+        if (header.find("Content-Type") == header.end())
+        {
+            return bodyData;
+        }
+        auto body = req.body();
+        if (body.empty()) return bodyData;
+
+        auto content = header.at("Content-Type");
+        auto contentType = std::string(content.data(), content.length());
+
+        bodyData = parseBody(contentType, body);
+        return bodyData;
+    }
 };
 typedef std::shared_ptr<SessionBase> SessionPtr;
 

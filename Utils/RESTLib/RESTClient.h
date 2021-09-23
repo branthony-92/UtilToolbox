@@ -20,7 +20,7 @@ namespace ssl = net::ssl;       // from <boost/asio/ssl.hpp>
 using tcp = net::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 using JSON = nlohmann::json;
-typedef std::map<std::string, std::string> SplitQueries;
+typedef std::map<std::string, std::string> ParsedQueries;
 
 enum class RequestStatus
 {
@@ -51,7 +51,7 @@ public:
 	std::string     m_address;
 	std::string     m_port;
 	std::string     m_target;
-	SplitQueries    m_queries;
+	ParsedQueries    m_queries;
 	RequestStatus   m_status;
 protected:
 };

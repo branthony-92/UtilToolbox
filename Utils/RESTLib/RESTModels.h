@@ -62,11 +62,11 @@ typedef std::shared_ptr<JSONInfoBody> BodyInfoPtr;
 
 typedef std::map<std::string,std::shared_ptr<JSONInfoBody>> BodyMap;
 
-class WebPageInfoBody : public JSONInfoBody
+class ResourceInfoBody : public JSONInfoBody
 {
 public:
-	WebPageInfoBody()
-		: JSONInfoBody("Web_Page_Info")
+	ResourceInfoBody()
+		: JSONInfoBody("Resource_Info")
 		, m_resourcePath("")
 	{
 	}

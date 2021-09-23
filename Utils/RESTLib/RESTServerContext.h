@@ -13,9 +13,7 @@ class RESTServerContext
 protected:
 
 	std::string m_name;
-
-	std::shared_ptr<ServerInfoBody> m_pServerInfo;
-
+	std::shared_ptr<ContextHandlersInfoBody>  m_pHandlerInfo;
 	std::chrono::system_clock::time_point m_lastTransaction;
 
 	std::atomic_bool      m_stopFlag;
@@ -29,9 +27,6 @@ protected:
 public:
 	RESTServerContext(std::string name);
 
-	std::shared_ptr<ServerInfoBody> getServerInfo() { return m_pServerInfo; }
-	void setServerInfo(std::shared_ptr<ServerInfoBody> pInfo) { m_pServerInfo = pInfo; }
-
 	virtual ~RESTServerContext() {}
 
 	// endpoint management
@@ -40,8 +35,9 @@ public:
 
 	bool hasHandlers() const;
 
-	bool addEndpoint(std::string name);
-	std::set<std::string> getEndpoints() const { return m_pServerInfo->getEndpointNames(); }
+	bool addHandlerName(std::string name);
+	std::set<std::string> getHandlerNames() const { return m_pHandlerInfo->getHandlerNames(); }
+	HandlersInfoBodyPtr getHandlerInfo() const { return m_pHandlerInfo; }
 	
 	virtual  std::string findResource(std::string target);
 
@@ -57,10 +53,10 @@ public:
 	void stop()  { m_stopFlag = true; }
 	void reset() { m_resetFlag = true; }
 
-	bool stopRequested();
-	bool resetRequested();
+	virtual void onServerStart()    { /* do nothing by default */}
+	virtual void onServerReset()    { /* do nothing by default */}
+	virtual void onServerShutdown() { /* do nothing by default */}
 
-	void checkTimeout();
 	void ping();
 
 	unsigned int getNextransactionID();

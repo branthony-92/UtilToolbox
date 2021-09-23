@@ -10,6 +10,8 @@
 #include "RESTServerContext.h"
 #include "Listener.h"
 
+#include "ServerInfoContext.h"
+
 typedef std::lock_guard<std::mutex> TLock;
 
 /*
@@ -18,33 +20,38 @@ typedef std::lock_guard<std::mutex> TLock;
 class Server
 {
 public:
-	using SSLCtxInitHandler = std::function<void(boost::asio::ssl::context&)>;
+	using SSLCtxInitHandler = std::function<bool(boost::asio::ssl::context&)>;
 	using TEndpointMap = std::map<std::string, ReqHandlerPtr>;
 	using TEndpointMapData = std::pair<std::string, ReqHandlerPtr>;
 
-	Server(TRESTCtxPtr pCtx, unsigned int threads = 1);
-	virtual ~Server() {}
+	Server(unsigned int threads = 1);
+	virtual ~Server();
 
-	virtual void startServer(std::string address, unsigned short port, SessionPtr pSessionPrototype, const SSLCtxInitHandler& sslInitHandler);
+	virtual bool startServer(std::string address, unsigned short port, SessionPtr pSessionPrototype, const SSLCtxInitHandler& sslInitHandler);
 	virtual bool reset();
 	void shutdown();
 
-	void addEndpoint(std::string path, ReqHandlerPtr pEndpoint);
-	ServerInfoBody::ServerStatus getStatus() const      { TLock lock(m_mutex); return m_pCtx->getServerInfo()->getState(); }
-	void setStatus(ServerInfoBody::ServerStatus status) { TLock lock(m_mutex); m_pCtx->getServerInfo()->setState(status); }
-	std::string getURL() const { TLock lock(m_mutex); return m_pCtx->getServerInfo()->getURLString(); }
-	std::shared_ptr<ServerInfoBody> getServerInfo() const { TLock lock(m_mutex); return m_pCtx->getServerInfo(); }
+	unsigned int getServerThreadCount()const { return m_threadCount; }
+	void setServerThreadCount(unsigned int count) { m_threadCount = count; }
+
+	std::string getLastServerError() const   { return m_lastServerError; }
+	void getLastServerError(std::string msg) { m_lastServerError = msg;  }
+
+	void registerContext(RESTCtxPtr pContext);
+	RESTCtxList getContexts() const { return m_serverContexts; }
 
 protected:
-	ListenerPtr    m_pListener;
-	TEndpointMap m_endpoints;
+	ListenerPtr  m_pListener;
 
-	TRESTCtxPtr  m_pCtx;
+	RESTCtxList  m_serverContexts;
 	IOCtxPtr     m_pIOContext;
 	SSLCtxPtr    m_pSSLContext;
 	unsigned int m_threadCount;
 	std::vector<std::thread> m_ioCtxThreads;
 	mutable std::mutex m_mutex;
+
+	std::string m_lastServerError;
+	ServerInfoPtr m_pInfo;
 };
 typedef std::shared_ptr<Server> ServerPtr;
 

@@ -5,6 +5,7 @@ CSMStateContext::CSMStateContext(std::string name)
 	: c_contextName(name)
 	, m_events()
 	, m_lastError()
+	, m_resourceRoot("")
 {
 }
 
