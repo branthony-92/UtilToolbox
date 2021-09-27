@@ -32,6 +32,6 @@ public:
 
 	void setResourceRootDirectory(std::string dir) { m_resourceRoot = dir; }
 };
-typedef std::shared_ptr<CSMStateContext> TContextPtr;
+typedef std::shared_ptr<CSMStateContext> TSMContextPtr;
 
 #endif // !SMCONTEXT_H

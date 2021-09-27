@@ -12,7 +12,7 @@ namespace Constants {
 	constexpr uint32_t c_defaultInterval = 5;
 }
 
-CSMBase::CSMBase(uint32_t id, std::string name, TContextPtr pCtx)
+CSMBase::CSMBase(uint32_t id, std::string name, TSMContextPtr pCtx)
 	: CSMState(id, name)
 	, m_ticThread()
 	, m_ticIntervalMS(Constants::c_defaultInterval)
@@ -22,6 +22,7 @@ CSMBase::CSMBase(uint32_t id, std::string name, TContextPtr pCtx)
 	, m_pCurrentState(nullptr)
 	, m_pErrorState(nullptr)
 	, m_pErrorEvent(nullptr)
+	, m_isInitialized(false)
 {
 }
 

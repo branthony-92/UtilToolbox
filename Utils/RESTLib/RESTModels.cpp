@@ -9,6 +9,7 @@
 #include "MdlUriInfo.h"
 
 #include <fstream>
+#include <iomanip>
 
 namespace
 {
@@ -45,11 +46,30 @@ JSON jsonUtils::loadFile(const std::string path)
 
 		nlohmann::json config;
 		file >> config;
+		file.close();
 		return config;
 	}
 	catch (...)
 	{
 		return JSON::object();
+	}
+}
+
+bool jsonUtils::saveFile(const std::string path, JSON j)
+{
+	try
+	{
+		std::ofstream configFile;
+		configFile.open(path, std::fstream::trunc);
+		if (!configFile.is_open()) return false;
+
+		configFile << std::setw(4) << j << std::endl;
+		configFile.close();
+		return true;
+	}
+	catch (...)
+	{
+		return false;
 	}
 }
 

@@ -27,6 +27,7 @@ public:
 	void resetStateMachines();
 	void stopStateMachines();
 	void registerStateMachine(SMPtr pSM);
+	void unregisterStateMachine(std::string name);
 
 
 protected:

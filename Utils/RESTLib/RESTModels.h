@@ -9,6 +9,7 @@ using JSON = nlohmann::json;
 namespace jsonUtils {
 
 	JSON loadFile(const std::string path);
+	bool saveFile(const std::string path, JSON j);
 
 	template <typename Type, typename SrcType = Type>
 	Type extractValue(JSON& j, const std::string key, Type defaultValue)

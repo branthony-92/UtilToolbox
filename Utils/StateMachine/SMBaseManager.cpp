@@ -25,7 +25,7 @@ void CSMBaseMgr::startStateMachines()
 	{
 		// init each of our state machines
 		auto pSM = SM.second;
-		if (pSM)
+		if (pSM && !pSM->getIsInitialized())
 		{
 			pSM->initSM();
 		}
@@ -58,11 +58,26 @@ void CSMBaseMgr::stopStateMachines()
 
 void CSMBaseMgr::registerStateMachine(SMPtr pSM)
 {
+	bool wasRunning = m_enabled;
+	stopStateMachines();
 	auto name = pSM->c_stateName;
 	m_stateMachines.insert_or_assign(name, pSM);
+	if (wasRunning) startStateMachines();
 }
 
+void CSMBaseMgr::unregisterStateMachine(std::string name)
+{
+	auto smIter = m_stateMachines.find(name);
+	if (smIter != m_stateMachines.end())
+	{
+		bool wasRunning = m_enabled;
+		stopStateMachines();
+		m_stateMachines.erase(smIter);
 
+		// restart the statemachine if it was running
+		if (wasRunning) startStateMachines();
+	}
+}
 
 void CSMBaseMgr::resetStateMachines()
 {

@@ -7,7 +7,7 @@
 class CSMBase : public CSMState
 {
 public:
-	CSMBase(uint32_t id, std::string name, TContextPtr pCtx = nullptr);
+	CSMBase(uint32_t id, std::string name, TSMContextPtr pCtx = nullptr);
 	~CSMBase();
 
 	void startSM(TStatePtr pInitialState = nullptr);
@@ -25,6 +25,7 @@ protected:
 
 	std::list<std::string> m_stateHistory;
 	bool m_recordStates;
+	bool m_isInitialized;
 
 public:
 
@@ -41,6 +42,8 @@ public:
 	
 	void enableStateHistory(bool enabled) { m_recordStates = enabled; }
 	std::string dumpStateHistory();
+
+	bool getIsInitialized() const { return m_isInitialized; }
 
 protected:
 	std::thread					m_ticThread;
@@ -59,11 +62,11 @@ public:
 	void setSMDone(bool done) { m_finalStateReached = done; }
 
 protected:
-	TContextPtr m_pContext;
+	TSMContextPtr m_pContext;
 
 public:
-	TContextPtr getContext() const { return m_pContext; }
-	void setContext(TContextPtr pCtx) { m_pContext = pCtx; }
+	TSMContextPtr getContext() const { return m_pContext; }
+	void setContext(TSMContextPtr pCtx) { m_pContext = pCtx; }
 };
 typedef std::shared_ptr<CSMBase> TSMPtr;
 #endif // !SMBASE_H

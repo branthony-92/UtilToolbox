@@ -125,3 +125,28 @@ void Server::registerContext(RESTCtxPtr pContext)
 	auto& endpoints = m_pInfo->getEndpointNames();
 	endpoints.push_back(pContext->getHandlerInfo());
 }
+
+void Server::unregisterContext(RESTCtxPtr pContext)
+{
+	for (auto ctxIter = m_serverContexts.begin(); ctxIter != m_serverContexts.end(); ctxIter++)
+	{
+		auto pCtx = *ctxIter;
+
+		if (pContext == pCtx)
+		{
+			m_serverContexts.erase(ctxIter);
+			break;
+		}
+	}
+	auto& endpoints = m_pInfo->getEndpointNames();
+	for (auto epIter = endpoints.begin(); epIter != endpoints.end(); epIter++)
+	{
+		auto pEpInfo = *epIter;
+
+		if (pContext->getHandlerInfo() == pEpInfo)
+		{
+			endpoints.erase(epIter);
+			break;
+		}
+	}
+}

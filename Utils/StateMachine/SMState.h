@@ -23,9 +23,9 @@ public:
 	uint32_t findTargetState(uint32_t eventID);
 
 public:
-	virtual bool enterState(TContextPtr pCtx, TEventPtr pEvent) { return true; }
-	virtual bool ticState(TContextPtr pCtx)						{ return true; }
-	virtual bool exitState(TContextPtr pCtx, TEventPtr pEvent)  { return true; }
+	virtual bool enterState(TSMContextPtr pCtx, TEventPtr pEvent) { return true; }
+	virtual bool ticState(TSMContextPtr pCtx)						{ return true; }
+	virtual bool exitState(TSMContextPtr pCtx, TEventPtr pEvent)  { return true; }
 
 	virtual void initTransitionTable() {}
 
@@ -52,7 +52,7 @@ public:
 
 protected:
 	template <typename context>
-	std::shared_ptr<context> recoverCtx(TContextPtr pCtx) {
+	std::shared_ptr<context> recoverCtx(TSMContextPtr pCtx) {
 		return std::dynamic_pointer_cast<context>(pCtx);
 	}
 };

@@ -38,6 +38,7 @@ public:
 	void getLastServerError(std::string msg) { m_lastServerError = msg;  }
 
 	void registerContext(RESTCtxPtr pContext);
+	void unregisterContext(RESTCtxPtr pContext);
 	RESTCtxList getContexts() const { return m_serverContexts; }
 
 protected:

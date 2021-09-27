@@ -36,42 +36,21 @@ RequestPromisePtr Client::makeRequest(RequestPtr pReq, http::verb verb)
 			// The io_context is required for all I/O
 			net::io_context ioc;
 
-			// The SSL context is required, and holds certificates
-			ssl::context ctx(ssl::context::tlsv12_client);
-
-			m_fSSLInitHandler(ctx);
-
-			// Verify the remote server's certificate
-			ctx.set_verify_mode(ssl::verify_none);
-
 			// These objects perform our I/O
 			tcp::resolver resolver(ioc);
-			beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
-
-			// Set SNI Hostname (many hosts need this to handshake successfully)
-			if (!SSL_set_tlsext_host_name(stream.native_handle(), host))
-			{
-				beast::error_code ec{ static_cast<int>(::ERR_get_error()), net::error::get_ssl_category() };
-				throw beast::system_error{ ec };
-			}
+			beast::tcp_stream stream(ioc);
 
 			// Look up the domain name
 			auto const results = resolver.resolve(host, port);
 
-			// Make the connection on the IP address we get from a lookup
-			beast::get_lowest_layer(stream).connect(results);
+			stream.connect(results);
 
 			// Perform the SSL handshake
 			beast::error_code ec;
-			stream.handshake(ssl::stream_base::client, ec);
-			if (ec)
-			{
-				auto why = ec.message();
-				throw std::exception(why.c_str());
-			}
+		
 			// Set up an HTTP GET request message
 
-			http::request<http::string_body> req{ verb, target.c_str(), 10 };
+			http::request<http::string_body> req{ verb, target.c_str(), version };
 			req.set(http::field::host, host);
 			req.set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
 
@@ -92,28 +71,21 @@ RequestPromisePtr Client::makeRequest(RequestPtr pReq, http::verb verb)
 
 			// Receive the HTTP response
 			http::read(stream, buffer, res, ec);
-			if (ec)
-			{
-				auto why = ec.message();
-				throw std::exception(why.c_str());
-			}
+
+			// Write the message to standard out
+			std::cout << res << std::endl;
 
 			// read the response in to the body
 			pResponse->setResponse(res);
 			
-			// Write the message to standard out
-			std::cout << res << std::endl;
-
 			// Gracefully close the stream
-			stream.shutdown(ec);
-			if (ec == net::error::eof)
-			{
-				// Rationale:
-				// http://stackoverflow.com/questions/25587403/boost-asio-ssl-async-shutdown-always-finishes-with-an-error
-				ec = {};
-			}
-			if (ec) throw beast::system_error{ ec };
-
+			stream.socket().shutdown(tcp::socket::shutdown_both, ec);
+			// not_connected happens sometimes
+			// so don't bother reporting it.
+			//
+			if (ec && ec != beast::errc::not_connected)
+				throw beast::system_error{ ec };
+	
 			// If we get here then the connection is closed gracefully
 			pReq->m_status = RequestStatus::ResponseReady;
 			return pResponse;
